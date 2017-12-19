@@ -44,7 +44,7 @@ if numel(h)>0
 end
 
 helpFile = [getenv('DOTTER_PATH') 'HELP.html'];
-chFile = [getenv('DOTTER_PATH') 'CHANGELOG.html'];
+chFile = [getenv('DOTTER_PATH') 'README.html'];
 bugsFile = [getenv('DOTTER_PATH') 'BUGS.html'];
 
 helpFile = ['file://' unRelFileName(helpFile)];

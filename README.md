@@ -8,6 +8,8 @@
 
 # Changes to DOTTER 
 
+ * Moved to github.
+
 ## 0.479
  * Changes in detection of local maxima. Previously a
    3x3x3 unit cube was used. Now a 3D 'plus' is used. Might be too
