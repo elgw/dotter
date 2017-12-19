@@ -6,17 +6,14 @@ if strcmp(DOTTER_PATH, '')
 end
 
 if isunix || ismac
-    
-    disp('Removing .o files')
-    !rm *.o
-    
-    cd([DOTTER_PATH  'volBucket'])
+        
+    cd([DOTTER_PATH  'common/volBucket'])
     mex CFLAGS='$CFLAGS -std=c99 -march=native' COPTIMFLAGS='-DNDEBUG -O3' df_bcluster.c volBucket.c
     
-    cd([DOTTER_PATH 'cluster3e'])
+    cd([DOTTER_PATH 'common/cluster3e'])
     mex CFLAGS='$CFLAGS -std=c99 -march=native' COPTIMFLAGS='-DNDEBUG -O3' cluster3ec.c
     
-    cd([DOTTER_PATH 'piccs/'])
+    cd([DOTTER_PATH 'common/piccs/'])
     mex CFLAGS='$CFLAGS -std=c99 -march=native' COPTIMFLAGS='-DNDEBUG -O3' ccum_mex.c
     
     cd([DOTTER_PATH 'common/mex'])

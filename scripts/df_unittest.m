@@ -92,7 +92,7 @@ if hasJava
 end
 
 disp('localization')
-test = [getenv('DOTTER_PATH') 'localization/unitTests.m'];
+test = [getenv('DOTTER_PATH') 'common/localization/unitTests.m'];
 disp(['-> Running: ' test]);
 run(test)
 
