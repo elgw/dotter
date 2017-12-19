@@ -1,0 +1,6 @@
+Code for measurements and correction of chromatic aberrations. See
+corresponding .m files for information of current use.
+
+To do:
+- Make a more user friendly interface. Allow file names as
+  input/output. More asserts to pick up strange things.

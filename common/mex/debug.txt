@@ -1,0 +1,2 @@
+nKx: 11 nKy: 11
+x-direction, nKx: 21x-direction, nKx: 21x-direction, nKx: 21

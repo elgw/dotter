@@ -1,0 +1,30 @@
+all:
+clang -c\
+    -DMX_COMPAT_32 \
+    -DMATLAB_MEX_FILE \
+    -I"/Applications/MATLAB_R2016b.app/extern/include" \
+    -I"/Applications/MATLAB_R2016b.app/simulink/include" \
+    -fno-common \
+    -arch x86_64 \
+    -fexceptions \
+    -O2 \
+    -fwrapv \
+    -DNDEBUG \
+    "/Applications/MATLAB_R2016b.app/extern/version/c_mexapi_version.c" \
+    $(mex).c
+clang \
+    -Wl,-twolevel_namespace \
+    -undefined error \
+    -arch x86_64 \
+    -bundle  \
+    -Wl,-exported_symbols_list,"/Applications/MATLAB_R2016b.app/extern/lib/maci64/mexFunction.map" \
+    $(mex).o \
+    c_mexapi_version.o  \
+    -O \
+    -Wl,-exported_symbols_list,"/Applications/MATLAB_R2016b.app/extern/lib/maci64/c_exportsmexfileversion.map"  \
+    -L"/Applications/MATLAB_R2016b.app/bin/maci64" \
+    -lmx \
+    -lmex \
+    -lmat \
+    -lc++ \
+    -o $(mex).mexmaci64

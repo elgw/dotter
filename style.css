@@ -1,0 +1,99 @@
+html {
+ background-color: #eeeeee;
+ }  
+ 
+body {
+  background: #ffffef;
+  color: #100000;
+  width: 800px;
+  padding-top: 0px;
+  padding-left: 3em;
+  padding-right: 3em;
+  padding-bottom: 1em;
+  margin: 0 auto;
+  margin-top: 1em;
+  margin-bottom: 1em;
+-webkit-box-shadow:0px 5px 10px #1c1c1c;
+-moz-box-shadow:0px 5px 10px #1c1c1c;
+box-shadow:0px 5px 10px #1c1c1c;
+
+}
+
+
+/* #Code */
+code {
+	background:#F1F1F1;
+	border: 1px solid #E1E1E1;
+	border-radius: 4px;
+	font-size: 100%;
+	padding: .2rem .5rem;
+	font-family: 'Roboto Mono', 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+}
+/* Fenced code goes into a block*/
+pre > code { 
+  display: block; 
+  border: 1px;
+  margin-left: 50px;
+}
+
+.TODO{
+  color:#aa0000;
+  font-family: bold;
+  background: #dddddd;
+}
+
+.DONE{
+  color:#00aa00;
+  font-family: bold;
+  background: #dddddd;
+}
+
+
+#main{
+  max-width: 800;
+}
+
+h1 {
+  color : #201000;
+  text-align: center;
+  font-family: 'Roboto Mono', 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+}
+
+h2 {
+  font-family: 'Roboto Mono', 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+}
+
+
+a:link{
+  color: black;
+}
+
+a:visited {
+  color: black;
+}
+
+#future {
+  color: #005500;
+  padding-left: 80px;
+}
+
+
+# https://css-tricks.com/snippets/css/simple-and-nice-blockquote-styling/ 
+blockquote {
+  background: #f9f9f9;
+  border-left: 10px solid #ccc;
+  margin: 1.5em 10px;
+  padding: 0.5em 10px;
+  quotes: "\201C""\201D";
+}
+blockquote:before {
+  color: #ccc;
+  content: open-quote;
+  font-size: 4em;
+  line-height: 0.1em;
+  margin-right: 0.25em;
+  vertical-align: -0.4em;
+}
+blockquote p {
+  display: inline;
+}
