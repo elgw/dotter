@@ -1,0 +1,390 @@
+<p><link rel="stylesheet" href="style.css"></p>
+
+<p><a href="REQUESTS.html">Requests</a>
+<a href="BUGS.html">Bugs</a>
+<a href="HELP.html">Help</a></p>
+
+<p><img src="dotter/logo_758.jpg" alt="DOTTER LOGO" /></p>
+
+<h1>Changes to DOTTER</h1>
+
+<ul>
+<li>Moved to github.</li>
+</ul>
+
+
+<h2>0.479</h2>
+
+<ul>
+<li>Changes in detection of local maxima. Previously a
+3x3x3 unit cube was used. Now a 3D &lsquo;plus&rsquo; is used. Might be too
+sensitive for really noisy images.</li>
+</ul>
+
+
+<h2>0.478</h2>
+
+<ul>
+<li>SetUserDots
+
+<ul>
+<li>Dots can be added with the right button</li>
+<li>The closest dot is picked (behaviour is still undefined if there
+are two identical dots)</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>0.471</h2>
+
+<ul>
+<li>Bug fix, MaxDots would not be applied to the last channel.</li>
+</ul>
+
+
+<h2>0.462</h2>
+
+<ul>
+<li>Support for up to eight clusters in <code>setUserDotsDNA</code></li>
+<li>Hierachical clustering, need some validation before use.</li>
+</ul>
+
+
+<h2>0.460, 2017-11-21</h2>
+
+<ul>
+<li>Contours for dilated nuclei also shown</li>
+</ul>
+
+
+<h2>0.456, 2017-11-17</h2>
+
+<ul>
+<li>Changes in <code>setUserDotsDNA</code>:</li>
+<li>Possible to turn on/off markers, per class</li>
+<li>Plots for dots per nuclei in the current slide</li>
+<li>Possible to jump directly to any nuclei.</li>
+</ul>
+
+
+<h2>0.455, 2017-11-17</h2>
+
+<ul>
+<li>First clustering plugins put in place.</li>
+</ul>
+
+
+<h2>0.454, 2017-11-16</h2>
+
+<ul>
+<li><em>Visual thresholds</em> works again in setUserDotsDNA</li>
+<li>Major improvements in the export GUI.</li>
+<li>Docked the nd2tif conversion dialog into DOTTER.</li>
+<li>Rewrote the logistics beyond the clustering in setUserDotsDNA so
+that it will be possible to write new clustering methods as
+plugins.</li>
+</ul>
+
+
+<h2>0.449, 2017-11-15</h2>
+
+<ul>
+<li>Added missing help section.</li>
+<li>Linked axes when plotting fwhm.</li>
+</ul>
+
+
+<h2>0.446, 2017-11-07</h2>
+
+<ul>
+<li>Fixed a bug in <code>A_settings</code>, it did not care about what ranking
+method that was used before.</li>
+<li>Set the number of dots to calculate fwhm for to be variable and
+increased the default number.</li>
+<li>Set <em>nkmers</em> to 96 by default.</li>
+</ul>
+
+
+<h2>0.440, 2017-11-03</h2>
+
+<ul>
+<li>Updated functions for correction of chromatic aberrations. The
+major change is how the dots are clustered which much smarter now.
+On top of that the API is completely rewritten except for the piece of
+GUI used to create the cc-files that needs to be refreshed at some
+point. Properties:
+
+<ul>
+<li>Handles bead samples with more dots without getting puzzled and
+seems to be more stable in general.</li>
+<li>Much faster in correcting 3D images.</li>
+<li>Can be applied in <code>df_plot</code> as well as when exporting userDots.</li>
+<li>cc-files can be &lsquo;viewed&rsquo; for some quick statistics.</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>0.428, 2017-10-30</h2>
+
+<ul>
+<li>&lsquo;setUserDotsDNA&rsquo;
+
+<ul>
+<li>Looking for the double number of dots for G2 nuclei.</li>
+<li>Showing that the outlier distance is given in pixels.</li>
+<li>Load/save metadata ok</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>0.427, 2017-10-30</h2>
+
+<ul>
+<li>Working towards integration of DNA- and RNA-FISH analysis.</li>
+<li>New functions to compare dot pickings, <code>df_compareUserDots</code> and
+<code>df_compareUserDotsGUI</code>.</li>
+<li><code>setUserDotsDNA</code> now dilates the mask by default 10 pixels before
+assigning dots to nuclei.</li>
+<li>Set a max area in the cell segmentation gui <code>get_nuclei_dapi_ui</code> to
+15000 pixels by default. No key to change this but the property is
+accessible by pressing <code>e</code>.</li>
+</ul>
+
+
+<h2>0.425, 2017-10-24</h2>
+
+<ul>
+<li><code>get_nuclei_manual.m</code> got some improvements. It is now possible to
+refine the contours with the button <code>s</code>.</li>
+<li>Removed any non alpha-numeric character from channel names when
+converting to tif.</li>
+<li>Useful example on how to update the name of the DAPI file reference
+for all NM files in a folder:
+<code>
+files = dir('*.NM');
+for kk = 1:numel(files)
+  load(files(kk).name, '-mat');
+  M.dapifile  = regexprep(M.dapifile,'_*','_')    
+</code></li>
+<li>Better <em>glow filter</em> in the nuclei segmentation.</li>
+<li>HP filter enabled by default in the nuclei segmentation</li>
+<li>Fixed flipped image in some cases (the image was display upside
+down)</li>
+<li>Fixed some minor things in the <code>setUserDotsDNA</code>, in some cases dots
+could not be clicked.</li>
+<li>Fixed some broken keyboard shortcuts in <code>setUserDotsDNA</code>.</li>
+</ul>
+
+
+<h2>0.416, 2017-10-13</h2>
+
+<ul>
+<li>setUserDots will now avoid fields with 0 nuclei instead of
+crashing.</li>
+</ul>
+
+
+<h2>0.415, 2017-10-12</h2>
+
+<ul>
+<li>Major changes in <code>setUserDotsDNA</code> which includes filtering on Z and
+FWHM. Also some batch processing included now.</li>
+</ul>
+
+
+<h2>0.410, 2017-09-29</h2>
+
+<ul>
+<li><code>df_fwhm</code> is now about 14x faster by using a new function to
+determine fwhm from 1d lines that I implemented in C <code>df_fwhm1d</code>.
+Compared to the previous routine, <code>getw</code>, <code>df_fwhm1d</code> is about 1000x
+faster.</li>
+<li>The tool to correct for chromatic aberrations in images seems to
+run well again. It was broken at some point when a bunch of
+functions were renamed.</li>
+</ul>
+
+
+<h2>0.390, 2017-09-21</h2>
+
+<ul>
+<li>New plot tool, accessible from <em>DNA-FISH->basic plots</em>. File:
+<code>df_plot</code>.</li>
+<li>Changes in menu</li>
+<li>Bug fixes in <code>df_getNucleiFromNM</code></li>
+</ul>
+
+
+<h2>0.388, 2017-09-20</h2>
+
+<ul>
+<li>Dot&rsquo;s can now be localized using weighted centre of mass via <code>df_com3</code>. This option is enabled in <em>nuclei -> find nuclei and dots</em>. Will be default after some more testing.</li>
+<li>Better integration with DAPI threshold (an upper limit on the
+integrated DAPI intensity). A DAPI threshold is picked already
+directly after nuclei are segmented and is used when selecting
+userDots and when exporting userDots.</li>
+<li>Old data sets have to be given a DAPI threshold from <em>nuclei->set upper DAPI threshold
+for calc folder</em>.</li>
+</ul>
+
+
+<h2>0.387, 2017-09-19</h2>
+
+<ul>
+<li>Now asks for number of kmers per probe for new experiments, this
+information is saved to the metadata, M.</li>
+<li>By default generates plots showing dot threshold vs how similar the
+distribution of dots per nuclei is to a binomial distribution, for
+an explanation, see the notes from the GM 20170915.</li>
+<li><code>df_setNUserDotsDNA</code> now compatible with <code>setUserDotsDNA</code> in the
+sense that dots can be edited in the later now.</li>
+<li>Fixed a bug in <code>setUserDotsDNA</code> which caused dots from all channels
+to be reset when the threshold was changed for one channel.</li>
+</ul>
+
+
+<h2>0.385, 2017-09-13</h2>
+
+<ul>
+<li>New function: <code>df_getFWHMstrongest</code>, calculates the FWHM for the
+strongest dot for each nuclei for all fields in a calc-folder.
+Useful for setting limits on FWHM later on. Found in menu: <em>dots->Get
+fwhm for strongest dots</em>.</li>
+</ul>
+
+
+<h2>0.378, 2017-09-11</h2>
+
+<ul>
+<li><code>D_integralIntensity</code> now outputs the sum, mean and std for each
+nuclei and channel.</li>
+<li><code>df_dotsPerNucleiMM</code> (which has to be called manually by typing the
+function name in MATLAB) measures the number of dots per nuclei by the
+following procedure:
+
+<ul>
+<li>For each nuclei and non-dapi channel, measure mean and standard deviation</li>
+<li>Identify pixels stronger than mean+2.5 x std.</li>
+<li>Each region with 2 or more pixels is counted as a dot.</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>0.375, 2017-09-07</h2>
+
+<ul>
+<li>Fixed some bugs in <code>A_cells</code> introduced on 0.373.</li>
+</ul>
+
+
+<h2>0.373, 2017-08-30</h2>
+
+<ul>
+<li>When running <em>find nuclei and dots</em> the user is now asked to
+select which fields to process. Should be useful to correct
+individual fields. These changes are implemented in <code>A_cells()</code></li>
+</ul>
+
+
+<h2>0.372, 2017-08-30</h2>
+
+<ul>
+<li>It is now possible to delete nuclei in the manual segmentation UI
+by right clicking inside them. This feature was asked for.</li>
+<li>factorization, added <code>df_dPeriphery.m</code> for calculation of distance
+to periphery for a mask and some dots.</li>
+<li>Closed bug B1 and B2.</li>
+<li>Added a warning in the cell-segmentation interface if the
+ most-in-focus slice is close to the first or last slize.</li>
+</ul>
+
+
+<h2>0.371, 2017-08-30</h2>
+
+<ul>
+<li>Also converts <code>czi</code>-files from the confocal. This was already
+included in the bioformats package so no extra packages needed.</li>
+<li>Eliminated a warning message from
+<code>A_generate_segmentation_preview.m</code> when no nuclei were segmented
+for a field of view.</li>
+<li>Fixed error in <code>A_cells_generate_dot_curves.m</code>. Did not save the
+correct window to the <code>...dpn.png</code> images.</li>
+<li>made <code>df_getNucleiFromNM</code> less verbosive.</li>
+</ul>
+
+
+<h2>0.370, 2017-08-28</h2>
+
+<ul>
+<li>New functionality: <code>df_setNUserDotsDNA</code> can be used to set a
+certain number of dots for each nuclei.</li>
+<li>Spotted and corrected a bug in <code>twomeans.m</code>. When only two dots
+were given as input they were sometimes assigned the same starting
+label. The input is now balanced so that there are equal number of
+dots in the initial guess.</li>
+</ul>
+
+
+<h2>0.365, 2017-08-23</h2>
+
+<ul>
+<li><p>DNA-FISH/Get basic properties of clusters/alleles
+Calls <code>DOTTER.m/@userDotsAlleles</code> to export a table for a set of NM
+files containing</p>
+
+<ul>
+<li>File name</li>
+<li>Nuclei number</li>
+<li>Number of dots for each allele</li>
+<li>Distance between alleles, measured as centroid distance</li>
+<li>Distance between each allele and the periphery of the nuclei</li>
+<li>Volume of each allele</li>
+</ul>
+</li>
+<li><p>setUserDotsDNA, properly closes the climSlider before opening a new
+one &ndash; not cluttering the screen with windows any more.</p></li>
+<li>Fixed export to &lsquo;base&rsquo; of DAPI and Area when measuring those
+properties. I.e., when doing &lsquo;Get nuclei DAPI intensity and area from NE files&rsquo;, then it is possible to export or visualize from the MATLAB command window</li>
+</ul>
+
+
+<pre><code>scatter(A,D)
+xlabel('Area [pixels]')
+ylabel('DAPI [au]')
+</code></pre>
+
+<ul>
+<li><code>df_getNucleiFromNM.m</code>,
+
+<ul>
+<li>added <em>select NM files(s)</em> to the prompt</li>
+<li>Now also exports the meta data, <code>M</code> from each field and each
+nuclei point to a <code>M</code> using the field <code>.metaNo</code></li>
+<li>this function also appends clusters to each N, N.cluster{} which
+is convenient for further processing</li>
+</ul>
+</li>
+</ul>
+
+
+<p>Example:
+<code>
+[N, M] = df_getNucleiFromNM(); # opens file selector
+Loaded 11 files, 238 nuclei, 420 clusters into M and N
+185 nuclei has two clusters
+</code></p>
+
+<h2>0.355, 2017-08-21</h2>
+
+<ul>
+<li>Improvements in the interface when exporting dots</li>
+<li>Improvements in the interface when measuring DAPI contents and area</li>
+<li>Showing free disk drive space when starting conversion from nd2 tif</li>
+<li>Removed green background colours in some dialogue boxes.</li>
+<li>Late is better than never, introduced this changelog.</li>
+</ul>
+
