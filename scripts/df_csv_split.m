@@ -1,9 +1,10 @@
 file = 'UserDots_IEG364_004_ml.csv';
 file = 'UserDots_iEG408_003.csv';
 file = 'UserDots_iEG458_003.csv';
+file = 'UserDots_iEG458_004.csv';
 pwd
 
-s.channel = 'Cy5'; % a594 cy5, tmr, a647
+s.channel = 'tmr'; % a594 cy5, tmr, a647, ir800
 
 s.translate = 0; % Center each nuclei to (0,0,0)
 s.scale = 1;     % Scale by pixel size

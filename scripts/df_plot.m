@@ -22,9 +22,9 @@ end
 if numel(tab) == 0
     %% Create GUI components
     f = figure('Position', [0,200,400,600], 'Menubar', 'none', ...
-    'NumberTitle','off', ...
-    'Name', 'nd2 tif conversion', ...
-    'Resize', 'Off');
+        'NumberTitle','off', ...
+        'Name', 'nd2 tif conversion', ...
+        'Resize', 'Off');
     tabs = uitabgroup();
     tab = uitab(tabs, 'title', 'df_plot');
     closefun = @() close(f);
@@ -47,7 +47,7 @@ if nargin == 99
     dbg = 1 % assignin('base', 'A', A) and assignin('base', 'B', B) after plot
 end
 
-addpath([getenv('DOTTER_PATH') '/dotter/addons/structdlg/'])
+addpath([getenv('DOTTER_PATH') '/addons/structdlg/'])
 
 %% Global data
 N = [];
@@ -82,9 +82,14 @@ t = [];
 % D number of dots
 
 % Load measurement plugins
-pluginPath = [getenv('DOTTER_PATH') 'dotter/plugins/measurements/'];
+pluginPath = [getenv('DOTTER_PATH') 'plugins/measurements/'];
 plugins = dir([pluginPath 'df_m_*.m']);
 addpath(pluginPath)
+
+if(numel(plugins)==0)
+    warning('No plugins found!');
+    return
+end
 
 for kk = 1:numel(plugins)
     fs = str2func(plugins(kk).name(1:end-2));
@@ -95,6 +100,7 @@ for kk = 1:numel(plugins)
     t.fun = fs;
     d.nucProps(kk) = t;
 end
+
 
 % Sort by string
 strings = {d.nucProps.string};
@@ -187,11 +193,11 @@ gui.nucA = uicontrol('Style', 'listbox', 'String', {d.nucProps(:).string}, ...
     'Parent', gui.tabNuc, ...
     'Callback', @nucChangeSelection);
 
-    cA = uicontextmenu('Parent', tab.Parent.Parent);
-    gui.nucA.UIContextMenu = cA;    
-    uimenu(cA,'Label','Info','Callback', @getInfoA);    
-    uimenu(cA,'Label','Settings','Callback', @settingsA);
-    uimenu(cA,'Label','Edit','Callback', @getInfoA);
+cA = uicontextmenu('Parent', tab.Parent.Parent);
+gui.nucA.UIContextMenu = cA;
+uimenu(cA,'Label','Info','Callback', @getInfoA);
+uimenu(cA,'Label','Settings','Callback', @settingsA);
+uimenu(cA,'Label','Edit','Callback', @getInfoA);
 
 gui.nucChanA = uicontrol('Style', 'listbox', 'String', d.channels, ...
     'Units', 'Normalized', ...
@@ -219,10 +225,10 @@ gui.nucB = uicontrol('Style', 'listbox', 'String', {d.nucProps(:).string}, ...
     'Callback', @nucChangeSelection);
 
 cB = uicontextmenu('parent', tab.Parent.Parent);
-    gui.nucB.UIContextMenu = cB;    
-    uimenu(cB,'Label','Info','Callback', @getInfoB);
-    uimenu(cB,'Label','Settings','Callback', @settingsB);
-    
+gui.nucB.UIContextMenu = cB;
+uimenu(cB,'Label','Info','Callback', @getInfoB);
+uimenu(cB,'Label','Settings','Callback', @settingsB);
+
 gui.nucChanB = uicontrol('Style', 'listbox', 'String', d.channels, ...
     'Units', 'Normalized', ...
     'Position', [.51,.35,.24,.3], ...
@@ -291,10 +297,10 @@ nucChangeSelection();
         updateGUI();
     end
 
-function loadCCfile(varargin)
-    gui.DataInfo.String = 'waiting for CC file';
-    ccFolder = df_getConfig('df_cc', 'ccfolder', '~/');
-        [b, a] = uigetfile([ccFolder '*.cc'], 'Select cc file');        
+    function loadCCfile(varargin)
+        gui.DataInfo.String = 'waiting for CC file';
+        ccFolder = df_getConfig('df_cc', 'ccfolder', '~/');
+        [b, a] = uigetfile([ccFolder '*.cc'], 'Select cc file');
         if ~isnumeric(a)
             ccFile = [a b];
             applyCC();
@@ -304,7 +310,7 @@ function loadCCfile(varargin)
             warning('No CC file given')
         end
         updateGUI();
-end
+    end
 
     function loadNMfiles(varargin)
         gui.DataInfo.String = 'waiting for NM files';
@@ -314,14 +320,14 @@ end
         [N, M] = df_getNucleiFromNM('ccFile', ccFile);
         
         if numel(N) >0
-        if isfield(M{1}, 'pixelSize')
-            d.resolution = M{1}.pixelSize;
-        else
-            warning('No pixel size in meta data')
-        end        
-        
-        updateGUI();
-        
+            if isfield(M{1}, 'pixelSize')
+                d.resolution = M{1}.pixelSize;
+            else
+                warning('No pixel size in meta data')
+            end
+            
+            updateGUI();
+            
         end
     end
 
@@ -420,8 +426,8 @@ end
         funF = d.nucFilters(gui.nucFilters.Value).fun;
         
         Nselect = {};
-        for kk = 1:numel(N)            
-            if funF(M,N{kk})            
+        for kk = 1:numel(N)
+            if funF(M,N{kk})
                 Nselect{end+1} = N{kk};
             end
         end
@@ -443,7 +449,7 @@ end
         
         if strcmpi(d.nucProps(m1).features, d.nucProps(m2).features)
             
-            A = funA(M, Nselect, chanA, chanA2, settingsA);            
+            A = funA(M, Nselect, chanA, chanA2, settingsA);
             B = funB(M, Nselect, chanB, chanB2, settingsB);
             
             if s.plot
@@ -485,10 +491,11 @@ end
                 prop = m2;
             end
             
-            fprintf('%d values\n', numel(A));
-            fprintf('%d values are NaN\n', sum(isnan(A)));
-            fprintf('Mean: %d, std: %d\n', mean(A(~isnan(A))), std(A(~isnan(A))));
-            fprintf('Min: %d, Max: %d\n', min(A(~isnan(A))), max(A(~isnan(A))));
+            showBasicStatistics(A);
+            Aplus = A(A>0);
+            fprintf('And for the values >0')
+            showBasicStatistics(Aplus);
+            clear Aplus;
             
             ylabelString = '';
             nucFilterString = d.nucFilters(gui.nucFilters.Value).string;
@@ -499,7 +506,7 @@ end
                     'xlabel', xlabelString, ...
                     'ylabel', ylabelString, ...
                     'title', '', ...
-                    'legend', {sprintf('%d(%d) objects\n%s', sum(~isnan(A)), numel(A), nucFilterString)});                                
+                    'legend', {sprintf('%d(%d) objects\n%s', sum(~isnan(A)), numel(A), nucFilterString)});
             end
             
             if s.export
@@ -582,10 +589,10 @@ end
         fName = func2str(d.nucProps(gui.nucA.Value).fun);
         fHelp = help(func2str(d.nucProps(gui.nucA.Value).fun));
         
-        if strcmpi(varargin{1}.Label, 'Info')                                
-            msgbox(sprintf('Function: %s\n\n%s', fName, fHelp)); 
+        if strcmpi(varargin{1}.Label, 'Info')
+            msgbox(sprintf('Function: %s\n\n%s', fName, fHelp));
         end
-        if strcmpi(varargin{1}.Label, 'Edit')                                
+        if strcmpi(varargin{1}.Label, 'Edit')
             edit(fName)
         end
     end
@@ -614,10 +621,17 @@ end
                 d.nucProps(method).s = newS;
             else
                 disp('No setting changed');
-            end       
+            end
         else
             msgbox('No settings');
         end
+    end
+
+    function showBasicStatistics(A)
+        fprintf('%d values\n', numel(A));
+        fprintf('%d values are NaN\n', sum(isnan(A)));
+        fprintf('Mean: %d, std: %d\n', mean(A(~isnan(A))), std(A(~isnan(A))));
+        fprintf('Min: %d, Max: %d\n', min(A(~isnan(A))), max(A(~isnan(A))));
     end
 
     function applyCC()
