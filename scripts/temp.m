@@ -75,3 +75,15 @@ for kk = 1:numel(files)
     M.dapifile  = regexprep(M.dapifile,'_*','_')    
     save(files(kk).name, 'M', 'N');
 end
+
+D = [  7.673798e+03       51304566  % chr22
+       8.433787e+03     135006516  % chr11
+       7.189571e+03     141213431  % chr9    
+       9.026785e+03     159138663];% chr7		
+p = plot(D(:,2), D(:,1))
+set(gca, 'XTick', D(:,2));
+set(gca, 'XTickLabel', {'22', '11', '9', '7'});
+xlabel('Linear size, chr')
+ylabel('Centroid distance, nm')
+grid on
+

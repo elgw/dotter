@@ -52,13 +52,15 @@ end
 s.method_number = -1;
 
 %% Figure out available methods and read their defaults
-s.methods = dir([getenv('DOTTER_PATH') 'dotter/plugins/clustering/' 'df_ud_clusters*.m']);
+s.methods = dir([getenv('DOTTER_PATH') 'plugins/clustering/' 'df_ud_clusters*.m']);
 s.method_names = {};
 for mm = 1:numel(s.methods)
     s.methods(mm).fun = str2func(s.methods(mm).name(1:end-2));
     s.ms = s.methods(mm).fun('getSettings');
     s.methods_names{mm} = s.ms.string;
 end
+
+assert(numel(s.methods)>0)
 
 createGUIcomponents();
 

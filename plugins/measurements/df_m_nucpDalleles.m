@@ -20,6 +20,12 @@ N = varargin{2};
 chan = varargin{3};
 % chan2 = varargin{4};
 
+if ~isfield(M{1}, 'pixelSize')
+    warning('Pixel size not specified!')
+    res = [130,130,300];
+else
+    res = M{1}.pixelSize;
+end
 
 AD = zeros(numel(N), 1);
 for kk = 1:numel(N)
@@ -39,7 +45,7 @@ for kk = 1:numel(N)
     else
         mA1 = mean(A1(:,1:3),1);
         mA2 = mean(A2(:,1:3),1);
-        AD(kk) = norm(d.resolution.*(mA1-mA2));
+        AD(kk) = norm(res.*(mA1-mA2));
     end
 end
 

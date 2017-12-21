@@ -441,6 +441,7 @@ nucChangeSelection();
             if ~(strcmpi(d.nucProps(m1).features, '0') || strcmpi(d.nucProps(m2).features, '0'))
                 if ~strcmpi(d.nucProps(m1).features, d.nucProps(m2).features)
                     fprintf('Can''t plot %s vs %s features\n', d.nucProps(m1).features, d.nucProps(m2).features);
+                    return
                 end
             end
         end
@@ -478,9 +479,20 @@ nucChangeSelection();
                 assignin('base', 'A', A);
                 assignin('base', 'B', B);
             end
+            return
         end
         
         if strcmpi(d.nucProps(m1).features, '0') || strcmpi(d.nucProps(m2).features, '0')
+            if strcmp(d.nucProps(m1).features, 'alone')
+                funA(M, Nselect, chanA, chanA2, settingsA);                
+                return
+            end
+            if strcmp(d.nucProps(m2).features, 'alone')
+                funB(M, Nselect, chanB, chanB2, settingsB);
+                return
+            end
+            
+            
             if strcmpi(d.nucProps(m2).features, '0')
                 A = funA(M, Nselect, chanA, chanA2, settingsA);
                 xlabelString = d.nucProps(m1).string;
@@ -493,7 +505,7 @@ nucChangeSelection();
             
             showBasicStatistics(A);
             Aplus = A(A>0);
-            fprintf('And for the values >0')
+            fprintf('And for the values >0\n')
             showBasicStatistics(Aplus);
             clear Aplus;
             
@@ -524,6 +536,7 @@ nucChangeSelection();
             if dbg
                 assignin('base', 'A', A);
             end
+            return
         end
         
     end
@@ -542,6 +555,20 @@ nucChangeSelection();
         
         selA = gui.nucA.Value;
         selB = gui.nucB.Value;
+        
+        %% Some properties can only be used alone, disable the other feature list
+        %  if one of them was selected
+        if strcmpi(d.nucProps(selA).features, 'alone')
+            gui.nucB.Enable = 'off';            
+        else
+            gui.nucB.Enable = 'on';            
+        end
+        
+        if strcmpi(d.nucProps(selB).features, 'alone')
+            gui.nucA.Enable = 'off';            
+        else
+            gui.nucA.Enable = 'on';            
+        end
         
         switch d.nucProps(selA).selChan
             case 2
