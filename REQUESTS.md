@@ -8,6 +8,10 @@
 
 # Requests and things to do
 
+ * Measurements:
+   * Volume of dot clouds (i.e. don't care about what cluster). Report
+     back to Eleni when done.
+
  * in `setUserDotsDNA` 
    * Set threshold per nuclei.
    * Apply dot selection to one channel at a time

@@ -647,7 +647,7 @@ fig_menu_delete()
         
         dotMarkers = parseMarkers();
         % Plot the markers
-        a = subplot(ctrl.markerPlot)
+        a = subplot(ctrl.markerPlot);
         hold off
         d = {};
         for kk = 1:numel(dotMarkers)
