@@ -4,7 +4,7 @@ function setUserDotsDNA(folder)
 % Purpose:
 %  GUI for selection of
 %  userDots : dots for further processing/analysis
-%  userDotsLabels : 0, 1 or 2 depending on the allele
+%  userDotsLabels : 0, 1 or 2 depending on the homolog
 %
 % Input:
 %  a _calc folder
@@ -207,6 +207,13 @@ fig_image = figure('KeyPressFcn', @gui_keyPress, ...
     'WindowButtonUpFcn', @fig_endMove, ...
     'Name', 'setUserDotsDNA - viewer', ...
     'Position', [win.h, 0, 600, 600]);
+
+gui.plotInfo = uicontrol('Style', 'Text', ...
+    'Units', 'Normalized', ...
+    'Position', [0,0,1, .05], ...    
+    'String', 'Info goes here', ...
+    'Background', 'w', ...
+    'HorizontalAlignment', 'left');
 
 tightPos=get(gca,'TightInset');
 noDeadSpacePos = [0 0 1 1] + 3*[tightPos(1:2) -(tightPos(1:2) + ...
@@ -1277,11 +1284,11 @@ fig_menu_delete()
             if min(d2)<s.captureRadius
                 kk = find(d2==min(d2));
                 kk = kk(1);
-                % Allele 1 -> Allele 2
-                allele = N{s.nuclei}.userDotsLabels{s.channel}(kk);
-                if allele == 0 || allele == 1
-                    N{s.nuclei}.userDotsLabels{s.channel}(kk) = allele + 1;
-                else % Allele 2 -> userDotsExtra
+                % homolog 1 -> homolog 2
+                homolog = N{s.nuclei}.userDotsLabels{s.channel}(kk);
+                if homolog == 0 || homolog == 1
+                    N{s.nuclei}.userDotsLabels{s.channel}(kk) = homolog + 1;
+                else % homolog 2 -> userDotsExtra
                     %keyboard
                     
                     % Grab D0 again, all of them
@@ -1406,19 +1413,26 @@ fig_menu_delete()
                 'Visible', style.visible);
             
             % Color depending on userDotsLabels
-            allele = N{s.nuclei}.userDotsLabels{s.channel};
+            homolog = N{s.nuclei}.userDotsLabels{s.channel};
             
             for kk = 2:numel(s.dotMarkers)
                 style = s.dotMarkers{kk};
                 if numel(N{s.nuclei}.userDots{s.channel}) >0
-                    DH{kk} = plot(N{s.nuclei}.userDots{s.channel}(allele==kk-2,2), ...
-                        N{s.nuclei}.userDots{s.channel}(allele==kk-2,1), ...
+                    HD = N{s.nuclei}.userDots{s.channel}(homolog==kk-2,:);                    
+                    DH{kk} = plot(HD(:,2), HD(:,1), ...
                         style.shape, 'Color', style.color, 'MarkerSize', style.size, 'ButtonDownFcn', @gui_dotClick, ...
                         'Visible', style.visible);
                 end
             end
             
-            title(sprintf('%s nuc: %d th: %.2f dots: %d\n', M.channels{s.channel}, s.nuclei, s.dots.th{s.channel}, size(N{s.nuclei}.userDots{s.channel},1)));
+            
+            gui.plotInfo.String = sprintf('%s nuc: %d th: %.2f dots: %d (0: %d, 1: %d, 2: %d)\n', ...
+                M.channels{s.channel}, s.nuclei, ...
+                s.dots.th{s.channel}, ...
+                size(N{s.nuclei}.userDots{s.channel},1), ...
+            sum(homolog==0), ...
+            sum(homolog==1), ...
+            sum(homolog==2));            
             
         else
             %% If all nuclei are shown at the same time
@@ -1438,8 +1452,8 @@ fig_menu_delete()
             for ll = 2:numel(s.dotMarkers)
                 d = [];
                 for kk = 1:numel(N)
-                    allele = N{kk}.userDotsLabels{s.channel};
-                    d = [d; N{kk}.userDots{s.channel}(allele==ll-2,:)];
+                    homolog = N{kk}.userDotsLabels{s.channel};
+                    d = [d; N{kk}.userDots{s.channel}(homolog==ll-2,:)];
                 end
                 style = s.dotMarkers{ll};
                 DH{ll} = plot(d(:,2), d(:,1), ...
@@ -1456,7 +1470,8 @@ fig_menu_delete()
                 end
                 anno(kk) = text(N{kk}.bbx(3), N{kk}.bbx(2), sprintf('%d', kk), 'Color', color, 'background', 'black');
             end
-            title(sprintf('th: %.2f', s.dots.th{s.channel}));
+            
+            gui.plotInfo.String = sprintf('th: %.2f', s.dots.th{s.channel});
             
             
         end
@@ -1831,7 +1846,7 @@ fig_menu_delete()
 
     function gui_restrictDots(nuc, chan)
         % Don't use more dots than specified by M.nTrueDots/2
-        % per allele
+        % per homolog
         % split user dots depending on label
         % pick strongest M.nTrueDots{cc}/2 from each
         % write back

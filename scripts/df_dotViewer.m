@@ -81,7 +81,9 @@ end
     end
 
     function keyPressed(varargin)
+        % Handle keyboard
         
+        % 0-9, turn on/off individual channels
         nkey = str2num(varargin{2}.Key);
         if numel(nkey)>0
             if( (nkey)>0 && nkey<=numel(s.markerVisible) )
@@ -90,6 +92,9 @@ end
                 updateMarkerTable();
             end
         end
+        
+        % arrow up and down, go to next/previous nuclei
+        
     end
 
     function setNuclei(varargin)

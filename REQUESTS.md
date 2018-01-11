@@ -21,6 +21,7 @@
    * Draw a rectangle to remove all dots.
    * Indicator about non-specific signals, i.e., very bright and
    appearing in multiple channels. (2017-08-29).
+   * Add a symbol to indicate overlapping dots
 
 # On a higher level/or for the next version
 
