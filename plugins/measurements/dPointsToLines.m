@@ -28,4 +28,5 @@ dL(t<0) = inf;
 dL(t>1) = inf;
 
 d = min(dA,min(dB, dL));
+
 end

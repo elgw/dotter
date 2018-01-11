@@ -23,8 +23,7 @@ if numel(tab) == 0
     %% Create GUI components
     f = figure('Position', [0,200,400,600], 'Menubar', 'none', ...
         'NumberTitle','off', ...
-        'Name', 'nd2 tif conversion', ...
-        'Resize', 'Off');
+        'Name', 'nd2 tif conversion');
     tabs = uitabgroup();
     tab = uitab(tabs, 'title', 'df_plot');
     closefun = @() close(f);
@@ -74,11 +73,11 @@ t = [];
 % Plugins to write:
 % Integral intensity
 % Signal to noise ratio per nuclei
-% Volume of allele
+% Volume of cluster
 
 % Number of features:
 % N number of nuclei
-% 2N number of alleles
+% 2N number of clusters
 % D number of dots
 
 % Load measurement plugins
@@ -127,7 +126,7 @@ d.nucFilters(end+1) = t;
 
 d.channels = {};
 
-%d.nucPropA = {'Area [pixels]', 'Dapi sum [AU]', '# Dots per Nuclei', 'Distance between alleles'};
+%d.nucPropA = {'Area [pixels]', 'Dapi sum [AU]', '# Dots per Nuclei', 'Distance between clusters'};
 %d.nucPropAselChan = [0, 0, 1, 1];
 %d.nucPropB = {'Area [pixels]', 'Dapi sum [AU]', '# Dots per Nuclei', 'None/Histogram'};
 %d.nucPropBselChan = [0, 0, 1, 0];
@@ -147,7 +146,7 @@ gui.tabg = uitabgroup(tab,'Position',[0 0 1 1]); %, 'SelectionChangedFcn', @read
 
 gui.tabExp =   uitab(gui.tabg, 'Title', 'NM files');
 %gui.tabDot =   uitab(gui.tabg, 'Title', 'Per Dot');
-%gui.tabAl  =   uitab(gui.tabg, 'Title', 'Per Allele');
+%gui.tabAl  =   uitab(gui.tabg, 'Title', 'Per Cluster');
 gui.tabNuc =   uitab(gui.tabg, 'Title', 'Properties');
 %gui.tabField = uitab(gui.tabg, 'Title', 'Per Field');
 

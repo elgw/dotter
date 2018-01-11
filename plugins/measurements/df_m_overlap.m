@@ -160,33 +160,6 @@ close(w);
 
 end
 
-function P = getMST(D)
-% Calculates the minimal spanning tree in D
-% Returns P, all paths in the graph
-% each row in P desribes a line segment by from x,y,z, to x,y,z
-
-g_mst = graphminspantree(sparse(squareform(pdist(D, 'euclidean'))));
-P = [];
-for aa = 1:size(g_mst,1)
-    for bb = 1:size(g_mst,2)
-        if(g_mst(aa,bb))>0
-            P = [P; [D(aa,:), D(bb,:)]];
-        end
-    end
-end
-
-end
 
 
-function plot3DLine(L, radius, color)
-for kk=1:size(L,1)
-    hold on
-    drawCylinder([L(kk,1:3) L(kk,4:6) radius], 16, 'FaceColor', color);% , 'FaceAlpha', 0.5);    
-    drawSphere([L(kk,1:3), radius], 'FaceColor', color);
-    drawSphere([L(kk,4:6), radius], 'FaceColor', color);
-    plot3([L(kk,1), L(kk,4)], [L(kk,2), L(kk,5)], [L(kk,3), L(kk,6)]);
-end
-view(3)
-axis equal
-end
 

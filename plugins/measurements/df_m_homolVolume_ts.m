@@ -1,9 +1,11 @@
-function D = df_m_homolVolume(varargin)
-% Returns all pairwise distances from all alleles
+function D = df_m_homolVolume_ts(varargin)
+% Find the closest path connecting the dots (the travelling salesman
+% problem) and then dilating the path by a certain radius.
+% Then calculate the volume of the dot cloud based on this.
 
 if numel(varargin)==1
     if strcmpi(varargin{1}, 'getSettings')
-        t.string = 'Cluster Volumes - spheres';
+        t.string = 'Cluster Volumes - connected spheres';
         t.selChan = 1;
         t.features = 'alone';
         s.radius = 130*5;
@@ -43,8 +45,10 @@ for nn = 1:numel(N)
             for kk = 1:3
                 dots(:,kk) = dots(:,kk)*res(kk)/1000;
             end
-            keyboard
-            MM = [MM; size(dots,1), df_volumeSpheres([dots(:,1:3) s.radius/1000*ones(size(dots,1),1)])];
+            
+            T = getMST(dots(:,1:3));
+            
+            MM = [MM; [size(dots,1), df_volumeTubes('data', T, 'radius', s.radius/1000, 'npoints', 100000, 'verbose')]];
         end
     end
     waitbar(nn/numel(N), w);
@@ -52,7 +56,7 @@ end
 close(w);
 
 df_histogramPlot('Data', MM(:,2), ...
-    'title', 'Sphere covering', ...
+    'title', '(connected) Sphere covering', ...
     'xlabel', 'Volume {μm}^3');
 
 D = D(:);

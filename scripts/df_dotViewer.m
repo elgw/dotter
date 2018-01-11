@@ -226,9 +226,9 @@ end
         view(gui.plot, 3)
         axis(gui.plot, 'equal')
         grid(gui.plot, 'on')
-        xlabel(gui.plot, 'x [{\mu}m]')
-        ylabel(gui.plot,'y [{\mu}m]')
-        zlabel(gui.plot,'z [{\mu}m]')
+        xlabel(gui.plot, 'x μm]')
+        ylabel(gui.plot,'y μm]')
+        zlabel(gui.plot,'z μm]')
     end
 
     function parseSettings()

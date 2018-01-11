@@ -1,13 +1,11 @@
-function D = df_m_homolVolume(varargin)
+function D = df_m_homolVolume_ch(varargin)
 % Returns all pairwise distances from all alleles
 
 if numel(varargin)==1
     if strcmpi(varargin{1}, 'getSettings')
-        t.string = 'Cluster Volumes - spheres';
+        t.string = 'Cluster Volumes - convex hull';
         t.selChan = 1;
-        t.features = 'alone';
-        s.radius = 130*5;
-        t.s = s;
+        t.features = 'alone';        
         D = t;
         return
     end
@@ -39,12 +37,15 @@ for nn = 1:numel(N)
             
         end
         
-        if size(dots,1)>1
+        if size(dots,1)>3
             for kk = 1:3
-                dots(:,kk) = dots(:,kk)*res(kk)/1000;
+                dots(:,kk) = dots(:,kk)*res(kk);
             end
-            keyboard
-            MM = [MM; size(dots,1), df_volumeSpheres([dots(:,1:3) s.radius/1000*ones(size(dots,1),1)])];
+            dots(:,1:3) = dots(:, 1:3)/1000;
+            [~, v] = convhull(dots(:,1:3));
+            MM = [MM; size(dots,1), v];            
+        else
+            MM = [MM; size(dots,1), NaN];
         end
     end
     waitbar(nn/numel(N), w);
@@ -52,7 +53,7 @@ end
 close(w);
 
 df_histogramPlot('Data', MM(:,2), ...
-    'title', 'Sphere covering', ...
+    'title', 'Convex hull', ...
     'xlabel', 'Volume {μm}^3');
 
 D = D(:);
@@ -61,11 +62,6 @@ figure
 scatter(MM(:,1), MM(:,2))
 xlabel('Number of dots')
 ylabel('Volume, μm^3');
-tString = sprintf('r=%d nm', s.radius);
-if numel(chan) == 1
-    tString = [M{1}.channels(chan(1)) tString];
-end
 grid on
-title(tString);
 
 end

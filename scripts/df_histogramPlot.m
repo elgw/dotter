@@ -1,4 +1,12 @@
 function df_histogramPlot(varargin)
+% A figure that plots a histogram, with some extra features
+%
+% Example: 
+% df_histogramPlot('Data', A, ...
+%    'xlabel', xlabelString, ...
+%    'ylabel', ylabelString, ...
+%    'title', '');
+
 
 s.xlabelString = '';
 s.ylabelString = '';
@@ -37,7 +45,9 @@ doPlot(f, D, s);
         grid on
         xlabel(s.xlabelString);
         ylabel(s.ylabelString);
-        legend(s.legendStrings);
+        if(numel(s.legendStrings)>0)
+            legend(s.legendStrings);
+        end
         title(s.titleString);
         
         
