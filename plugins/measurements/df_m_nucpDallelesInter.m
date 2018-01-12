@@ -1,13 +1,12 @@
 function IAD = df_m_nucpDallelesInter(varargin)
-% Inter allele distance, i.e., distance between dots within each allele.
+% Distance between cluster 1 and 2 in each nuclei
 %
-% The geometric means are calculated for each selection of channels
-% and their euclidean distance is returned.
-
+% Geometric means are used to define the location of the clusters,
+% hence the distance between these are returned
 
 if numel(varargin)==1
     if strcmpi(varargin{1}, 'getSettings')
-        t.string = 'Inter-allele distance';
+        t.string = 'Cluster distance';
         t.selChan = 2;        
         t.features = '2N';        
         IAD = t;
