@@ -27,7 +27,7 @@ if numel(size(mask)) == 2
     I = sum(I,3);
 end
 
-h = histo16(uint16(mask));
+h = df_histo16(uint16(mask));
 h = h(2:end); % exclude background counts
 objects = find(h>0);
 

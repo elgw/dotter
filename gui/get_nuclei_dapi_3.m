@@ -112,7 +112,7 @@ tic
 
 assert(max(L(:)<2^16));
 L = uint16(L);
-H = histo16(L);
+H = df_histo16(L);
 for kk=1:n
     clear nuclei
     if(H(kk+1) >= minVolume)

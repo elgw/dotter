@@ -33,22 +33,9 @@ typedef unsigned long int uint64;
 void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[]) 
 {
 
-/*
-  prhs     An array of right-hand input arguments.
-  plhs     An array of left-hand output arguments.
-  nrhs     The number of right-hand arguments, or the size of the prhs array.
-  nlhs     The number of left-hand arguments, or the size of the plhs array
-*/ 
-
-  unsigned int *in_reg;
-  int *maxheights;
   size_t numel; 
-  int n, maxregion;
-  int current_label, npixlab;
-  const int  *dim_array;
-  int number_of_dims, xres, yres, zres;
 
-  if (!nrhs==1) {
+  if (!(nrhs==1)) {
      mexErrMsgTxt("There should be one input.");
   }
 
@@ -57,21 +44,19 @@ void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[])
     mexErrMsgTxt("First argument must be of type uint16.");
   }
 
-  in_reg = (unsigned int *) mxGetPr(prhs[0]);
   numel = mxGetNumberOfElements(prhs[0]);  
-  number_of_dims = mxGetNumberOfDimensions(prhs[0]);
-  dim_array = mxGetDimensions(prhs[0]);
 
   uint16* in; // Input data matrix
   in = (uint16 *) mxGetPr(prhs[0]);
 
   uint32* seg; // The output, [ 2^bits x 1 ] matrix, uint32;
-  int ut_dim[]={ 65536,1,0};
+  mwSize ut_dim[]={ 65536,1,0};
 
-  plhs[0] = mxCreateNumericArray(1,ut_dim,mxUINT32_CLASS, mxREAL);  
+  plhs[0] = mxCreateNumericArray((mwSize) 1,ut_dim,mxUINT32_CLASS, mxREAL);  
   seg = (uint32 *) mxGetPr(plhs[0]);
 
-  // Go throught the volume and cout the number of occurances of all the posible uint8 values.
+  /* Go through the input and count the number 
+   * to construct the histogram */
 
   for (size_t i =1; i<=numel; i++)
     {

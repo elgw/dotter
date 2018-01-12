@@ -43,7 +43,7 @@ for nn = 1:numel(N)
             for kk = 1:3
                 dots(:,kk) = dots(:,kk)*res(kk)/1000;
             end
-            keyboard
+            
             MM = [MM; size(dots,1), df_volumeSpheres([dots(:,1:3) s.radius/1000*ones(size(dots,1),1)])];
         end
     end

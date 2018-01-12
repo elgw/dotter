@@ -2,7 +2,7 @@ function QQ=quantile16(I, Q)
 % function QQ=quantile16(I, Q)
 % Q values in [0,1]
 
-h = double(histo16(uint16(I)));
+h = double(df_histo16(uint16(I)));
 h = cumsum(h);
 h = h/h(end);
 

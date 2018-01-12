@@ -105,7 +105,7 @@ D2 = D2*n_thresholds;
 D2 = uint16(D2);
 
 % Construct the histogram
-H = histo16( D2 );
+H = df_histo16( D2 );
 
 H = H(2:n_thresholds+1); % result is 32 bit
 H = double(H);

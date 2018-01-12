@@ -59,7 +59,7 @@ title('Averaged sum projection, sigma = 4');
 
 %% Plot the distribution of pixel values and see how they look
 figure
-h = histo16(I);
+h = df_histo16(I);
 d = 0:numel(h)-1;
 plot(d,h);
 title('Distribution of pixel values');
@@ -98,7 +98,7 @@ J = J+mean(Id(:));
 J = uint16(J);
 
 figure
-h = histo16(J);
+h = df_histo16(J);
 d = 0:numel(h)-1;
 plot(d,h);
 

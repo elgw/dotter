@@ -62,7 +62,7 @@ D2 = D2(D2(:,3)<size(I,3)-separation, :);
 fprintf('Finding isolated dots\n');
 
 [c,~] = cluster3e(D2(:,1:3), 2*separation);
-h = histo16(uint16(c));
+h = df_histo16(uint16(c));
 h = h(2:end);
 uni = find(h==1);
 

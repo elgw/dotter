@@ -123,7 +123,7 @@ for kk =1:numel(files)
             
             [L,n] = bwlabeln(nucMasked>nth);
             
-            h = histo16(uint16(L));
+            h = df_histo16(uint16(L));
             nd = sum(h(2:end)>=s.minPixels);
             DPN = [DPN; nd];
             ndots = ndots + nd;

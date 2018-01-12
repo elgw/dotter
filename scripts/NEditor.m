@@ -535,7 +535,7 @@ end
         dots(:,3)=NE.resolution(3)*dots(:,3);
         
         C = cluster3ec(dots', NE.d0nm);
-        H = histo16(uint16(C)); H = H(2:20);
+        H = df_histo16(uint16(C)); H = H(2:20);
         
         Hm1 = max(H(:));
         Hm1 = Hm1(1);

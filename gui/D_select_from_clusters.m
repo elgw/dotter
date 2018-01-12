@@ -53,7 +53,7 @@ for kk = 1:numel(files) %% Per file
             dots(:,1:2)=125*dots(:,1:2);
             dots(:,3)=200*dots(:,3);
             C = cluster3ec(dots', d0nm);
-            H = histo16(uint16(C)); H = H(2:20);
+            H = df_histo16(uint16(C)); H = H(2:20);
             % imagesc(M.mask>0), colormap gray
             
             

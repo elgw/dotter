@@ -14,7 +14,7 @@ D = [];
                 PN = sum(Meta.N{kk}.dots{channel}(:,4)>=threshold); % Dots in this nucleus
                 DPN = [DPN, PN];
             end
-            h = double(histo16(uint16(DPN)))';
+            h = double(df_histo16(uint16(DPN)))';
             e = (1:numel(h))-Meta.M.nTrueDots(channel)-1;
             e = sum(h.*e.^2);            
     end

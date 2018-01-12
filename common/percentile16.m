@@ -7,7 +7,7 @@ assert(min(v)>=0);
 assert(max(v)<=1);
 p = zeros(size(v));
 
-h = histo16(I);
+h = df_histo16(I);
 h=double(h);
 
 s = cumsum(h);

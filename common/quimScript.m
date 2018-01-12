@@ -80,7 +80,7 @@ for ff = 1:numel(files)
     end
 end
 
-H = double(histo16(uint16(D)));
+H = double(df_histo16(uint16(D)));
 location = find(H>0);
 location = location(end);
 

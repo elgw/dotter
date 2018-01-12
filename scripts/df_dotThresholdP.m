@@ -146,7 +146,7 @@ end
             v = (v>dotThres);
             nDots = sum(v,2);
             %p = [sum(nDots==2), sum(nDots==1), sum(nDots==0)];
-            p = double(histo16(uint16(nDots)))';
+            p = double(df_histo16(uint16(nDots)))';
             p = p/sum(p(:));
             p = p(1:(N+1));
             
