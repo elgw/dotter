@@ -58,14 +58,35 @@ end
 
 N = {};
 M = {};
+
+channels = [];
+
 for ff = 1:numel(files)
     fname = files{ff};
     if verbose
         fprintf('Loading %s\n', fname);
     end
     D = load([folder fname], '-mat');
-    M{ff} = D.M;
     
+    if(isfield(D.M, 'channels') == 0)
+           errordlg(sprintf('Can not load the NM. No channels specified in %s', fname));           
+           M = {};
+           N = {};
+           return
+    end    
+    
+    if(ff==1)
+        channels = D.M.channels;
+    else
+       if ~isequal(channels, D.M.channels)           
+           errordlg('Can not load the NM files since the channels does not match!');           
+           M = {};
+           N = {};
+           return;
+       end       
+    end
+    
+    M{ff} = D.M;    
     
     for nn = 1:numel(D.N)
         D.N{nn}.file = fname;
