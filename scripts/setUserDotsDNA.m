@@ -228,14 +228,6 @@ set(b,'Visible','Off');
     'toolbox','matlab','icons','plottype-gscatter.png'));
 % Convert image from indexed to truecolor
 
-if 0
-    p = uipushtool('TooltipString','2-means clustering',...
-        'ClickedCallback', @gui_clustering);
-    
-    % Set the button icon
-    p.CData = icon;
-end
-
 [img,map] = imread(fullfile(matlabroot,...
     'toolbox','matlab','icons','plottype-scatter3.gif'));
 % Convert image from indexed to truecolor

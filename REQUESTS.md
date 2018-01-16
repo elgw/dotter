@@ -8,9 +8,7 @@
 
 # Requests and things to do
 
- * Measurements:
-   * Volume of dot clouds (i.e. don't care about what cluster). Report
-     back to Eleni when done.
+ * Get histogram of DAPI content even for NM files with no userDots.
 
  * in `setUserDotsDNA` 
    * Set threshold per nuclei.

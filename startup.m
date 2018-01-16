@@ -1,6 +1,6 @@
 % Add paths where there are scripts used by DOTTER
 
-disp('Initializing dotter ...');
+fprintf('Initializing DOTTER ...');
 
 codedir = fileparts(mfilename('fullpath'));
 codedir = [codedir '/'];
@@ -19,3 +19,5 @@ addpath([codedir 'common/cCorr/'])
 %addpath([codedir 'csvScripts/'])
 addpath([codedir 'common/piccs/'])
 addpath([codedir 'common/volBucket/'])
+
+fprintf('version %s\n', df_version());
