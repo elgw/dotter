@@ -8,6 +8,14 @@
 
 # Changes to DOTTER 
 
+
+## 0.485
+ * `df_plot` did behave unreasonable if images with mixed sets of
+   channels were loaded. This is prevented now by refusing to load
+such images.
+ * Added more measurement options.
+
+## 0.483
  * Moved to github.
 
 ## 0.479
