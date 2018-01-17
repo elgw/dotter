@@ -1,5 +1,5 @@
 function [m] = df_readExternalMask(file)
-% Read an external mask from a file.
+% Read an external 2D/3D mask from a file and projects it down to 2D
 
 fprintf('Reading mask from %s\n', file);
 if(strcmpi(file(end-3:end), '.tif'))

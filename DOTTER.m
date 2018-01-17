@@ -53,7 +53,7 @@ bugsFile = ['file://' unRelFileName(bugsFile)];
 
 fprintf('DOTTER version %s\n<a href="%s">Changes</a>|<a href="%s">Bugs</a>|<a href="%s">Help</a>\n', ...
     df_version(), chFile, bugsFile, helpFile);
-fprintf('<a href="https://bienkocrosettolabs.org/">BiCroLabs</a> 2015-2017\n');
+fprintf('<a href="https://bienkocrosettolabs.org/">BiCroLabs</a> 2015-2018\n');
 disp(['Session started ' datestr(datetime('now'),'yyyy-mm-dd HH:MM:ss')])
 disp(['MATLAB ' version()])
 

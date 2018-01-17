@@ -130,11 +130,38 @@ else
     disp('Got settings, continuing');
 end
 
-%% Find cells
-if ~s.useExistingSegmentation
-    fprintf('Running A_cellSegmentation to segment cells\n');
+%% Find cells/nuclei/objects
+% Three alternatives: 
+%  - Segment cells
+%  - Use existing segmentation already in NM files
+%  - Load segmentation mask from files, s.askForSegmentationMasks
+
+if s.useExistingSegmentation
+    fprint('Using existing segmentation\n');
+end
+
+if s.askForSegmentationMasks    
+    
+    s.maskFiles = uipickfiles('Prompt', 'Select nuclei mask files', 'REFilter', '\.png$|\.tif$');
+    if(isnumeric(s.maskFiles))
+        warndlg('Got no mask to use. Aborting.');
+        return;
+    end
+    
+    s.maskFiles = sort(s.maskFiles);
+    for kk = 1:numel(s.maskFiles)
+        s.masks{kk} = df_readExternalMask(s.maskFiles{kk});
+    end
     A_cellSegmentation('settings', s);
 end
+
+if s.segmentNuclei
+    fprintf('Running A_cellSegmentation to segment nuclei\n');
+    A_cellSegmentation('settings', s);
+end
+
+
+    
 
 calcFolder = [s.folder(1:end-1) '_calc' filesep()];
 

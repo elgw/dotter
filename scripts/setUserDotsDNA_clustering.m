@@ -72,7 +72,7 @@ end
 
 s.method_number = -1;
 
-s.channels_dots = 3*ones(1, numel(s.channels));
+s.channels_dots = 101*ones(1, numel(s.channels));
 
 %% Figure out available methods and read their defaults
 s.methods = dir([getenv('DOTTER_PATH') 'plugins/clustering/' 'df_ud_clusters*.m']);
@@ -331,9 +331,9 @@ updateGUIcomponents();
         
         colors = [0 0 0
             1 0 0
-            0 0 1
             0 1 1
-            1 0 1];
+            1 0 1
+            0 0 1];
         
         markerStyles = 'oxs.';
         lstrings = {};

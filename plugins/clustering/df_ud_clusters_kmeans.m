@@ -35,7 +35,9 @@ s = varargin{2};
 
 s.nClusters = str2num(s.param(1).Value);
 s.outlierDistance = str2num(s.param(2).Value);
-s
+
+
+
 
 % Load dots from base channels into nucDots
 nucDots = [];
@@ -49,9 +51,12 @@ if size(nucDots,1)>1
     [~, m] = twomeans(nucDots(:,1:3), s.nClusters);
     
     % Assign cluster number to all userDots based on the clusters
+    s.maxDist = s.outlierDistance;
+    
     for cc = s.channels_apply
+        s.maxDots = s.channels_dots(cc);
         if size(N.userDots{cc},1)>0
-            t = twomeans_classify(m, N.userDots{cc}(:,1:3), s.outlierDistance);
+            t = twomeans_classify(m, N.userDots{cc}(:,1:3), s);
             assert(size(t,1) == size(N.userDots{cc},1));
             N.userDotsLabels{cc} = t;
         end

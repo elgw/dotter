@@ -68,15 +68,25 @@ gui.folderInfo = uicontrol(gui.expPanel, 'Style','text',...
     'HorizontalAlignment','left', ...
     'FontName', get(0,'FixedWidthFontName'));
 
-gui.r1 = uicontrol('Style', 'Radiobutton', 'String', 'Yes', ...
-    'Position', [10, 30, 250, 15], ...
+%% gui.qsegPanel: Segment Cells?
+gui.r1 = uicontrol('Style', 'Radiobutton', 'String', 'Segment nuclei!', ...
+    'Units', 'Normalized', ...
+    'Position', [.05, .3, .90, .1], ...
     'Callback', @gui_update, ...
     'Parent', gui.qsegPanel, 'Value', 1);
 
 gui.r2 = uicontrol('Style', 'Radiobutton', ...
-    'String', 'No, keep existing segmentation', ...
-    'Position', [10, 10, 250, 15], ...
+    'Units', 'Normalized', ...
+    'String', 'Keep existing segmentation', ...
+    'Position', [.05, .2, .90, .1], ...
     'Callback', @gui_update, ...
+    'Parent', gui.qsegPanel, 'Value', 0);
+
+gui.r3 = uicontrol('Style', 'Radiobutton', ...
+    'String', 'Load segmentation mask(s) generated externally', ...
+    'Units', 'Normalized', ...
+    'Position', [.05, .1, .90, .1], ...
+    'Callback', @gui_update , ...
     'Parent', gui.qsegPanel, 'Value', 0);
 
 gui.isDNAFISH = uicontrol('Style', 'Radiobutton', 'String', 'DNA FISH', ...
@@ -317,14 +327,24 @@ end
 
     function gui_update(varargin)
         if numel(varargin)>0
-            if varargin{1} == gui.r2
-                seg = abs(gui.r2.Value-1);
-                set(gui.r1, 'Value', seg);
+            varargin{1}
+            if varargin{1} == gui.r1                
+                set(gui.r1, 'Value', 1);
+                set(gui.r2, 'Value', 0);
+                set(gui.r3, 'Value', 0);
             end
-            if varargin{1} == gui.r1
-                seg = gui.r1.Value;
-                set(gui.r2, 'Value', abs(seg-1));
+            if varargin{1} == gui.r2                
+                set(gui.r1, 'Value', 0);
+                set(gui.r2, 'Value', 1);
+                set(gui.r3, 'Value', 0);
             end
+            if varargin{1} == gui.r3                
+                set(gui.r1, 'Value', 0);
+                set(gui.r2, 'Value', 0);
+                set(gui.r3, 'Value', 1);
+            end            
+           
+            
             % Exclusive RNA or DNA
             if varargin{1} == gui.r4
                 exptype = abs(gui.r4.Value-1);
@@ -387,6 +407,10 @@ end
         gui.yres.String = ['x ' gui.xres.String ' x'];
     end
 
+    function gui_loadSegmentationFiles(varargin)
+        % Set source for segmentation masks
+        s.segmentationSource = {'file1', 'file2'};        
+    end
 
     function readsettings(varargin)
         %keyboard
@@ -421,7 +445,9 @@ end
             sout.dotSettings{cc}.refinement = s.dotSettings{1}.refinementMethods(gui.refinement.Value);
         end
         
+        sout.segmentNuclei = get(gui.r1, 'Value');
         sout.useExistingSegmentation = get(gui.r2, 'Value');
+        sout.askForSegmentationMasks = get(gui.r3, 'Value');
         sout.localizationMethod = get(gui.localization, 'String');
         sout.rankingMethod = get(gui.ranking, 'String');
         

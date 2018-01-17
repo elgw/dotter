@@ -8,6 +8,8 @@
 
 # Changes to DOTTER 
 
+## 0.486
+ * Adding the option to import masks generated externally.
 
 ## 0.485
  * `df_plot` did behave unreasonable if images with mixed sets of
