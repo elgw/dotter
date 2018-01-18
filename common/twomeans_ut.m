@@ -33,5 +33,6 @@ if(doPlot)
     for kk = 1:size(m,1)
         plot(m(kk,1), m(kk,2), 'kh', 'MarkerFaceColor', 'g');
     end
+    
     axis equal
 end

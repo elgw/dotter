@@ -19,7 +19,7 @@ function N = df_ud_clusters_kmeans(varargin)
 
 if numel(varargin)==1
     if strcmpi(varargin{1}, 'getSettings')
-        N.string = 'K-means clustering (old)';
+        N.string = 'K-means clustering';
         N.channels_base = 1;        
         N.channels_apply = 1;
         N.param(1).String = 'Number of clusters';
