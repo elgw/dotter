@@ -52,7 +52,7 @@ else
         
         [v,idx] = sort(DL);
         idx = idx(v~=inf);
-        min(s.maxDots, numel(idx))
+        
         L(idx(1:min(s.maxDots, numel(idx)))) = kk;
     end
 end
