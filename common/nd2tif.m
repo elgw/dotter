@@ -1,7 +1,7 @@
-function nd2tif(object, outputDir, varargin)
+function nd2tif(object, outputDir, s)
 %% function nd2tif(object)
 % Reads the content of object: an nd2 file or folder with nd2 files
-% for each .nd2 file, a sum folder is created 
+% for each .nd2 file, a sum folder is created
 % where the tif images are stored.
 %
 % Input:
@@ -14,7 +14,7 @@ function nd2tif(object, outputDir, varargin)
 %   - Has to be modified for MS Windows
 %   - NIS Elements Viewer can also be used but will create one tif per
 %     slice
-% 
+%
 % Example:
 %  > nd2tif(pwd()) will convert all nd2 files in current directory to tif
 % Erik Wernersson
@@ -24,21 +24,23 @@ FileObj = java.io.File(outputDir);
 %total_bytes = FileObj.getTotalSpace;
 usable_bytes = FileObj.getUsableSpace;
 
-fprintf('%.1f GB free on the target drive\n', usable_bytes/1024/1024/1024);
-
-onlyFirst = 0;
-for kk = 1:numel(varargin)
-if strcmp(varargin{kk}, 'onlyFirst')
-    onlyFirst = 1;
+if nargin<3
+    warning('No settings provided, using defaults');
+    s.logFile = 1; % standard out
+    s.focus_check = 1;
+    s.focus_skip = 0;
+    s.onlyFirst = 0;
 end
-end
 
-if nargin == 0   
+fprintf(s.logFile, '%.1f GB free on the target drive\n', usable_bytes/1024/1024/1024);
+
+
+if nargin == 0
     [file, folder] = uigetfile('*.nd2');
     object = [folder file];
     
     if file == 0
-        disp('No file specified, quiting')
+        fprintf(s.logFile, 'No file specified, quiting\n');
     else
         BFfile2tif(folder, file, onlyFirst);
     end
@@ -49,26 +51,26 @@ if ~exist('outputDir', 'var')
     outputDir = './';
 end
 
-if exist(object, 'dir')    
+if exist(object, 'dir')
     if ~(object(end) == '/')
         object = [object '/'];
     end
-    disp([object ' treated as directory'])
+    fprintf(s.logFile, '%s treated as directory\n', object);
     files = dir([object '*.nd2']);
- 
-    for kk = 1:numel(files)
     
-        fprintf('\n(%d/%d) %s\n\n', kk, numel(files), files(kk).name);
-        BFfile2tif([object, files(kk).name], outputDir, onlyFirst);
+    for kk = 1:numel(files)
+        
+        fprintf(s.logFile, '\n(%d/%d) %s\n\n', kk, numel(files), files(kk).name);
+        BFfile2tif([object, files(kk).name], outputDir, s);
     end
     
 else
-    disp([object ' treated as file'])
-    BFfile2tif(object, outputDir, onlyFirst);
+    fprintf(s.logFile, '%s treated as file\n', object);
+    BFfile2tif(object, outputDir, s);
 end
 end
 
-function BFfile2tif(filename, outputDir, onlyFirst)
+function BFfile2tif(filename, outputDir, s)
 reader = bfGetReader(filename);
 
 outFolder = strsplit(filename, '/');
@@ -79,9 +81,9 @@ if ~exist(outFolder, 'dir')
     mkdir(outFolder)
 end
 
-fprintf('Dimension order: %s\n', char(reader.getDimensionOrder()));
-fprintf('Number of series: %d\n', char(reader.getSeriesCount));
-fprintf('XYZ: [%d, %d, %d]\nChannels %d \n', ...
+fprintf(s.logFile, 'Dimension order: %s\n', char(reader.getDimensionOrder()));
+fprintf(s.logFile, 'Number of series: %d\n', char(reader.getSeriesCount));
+fprintf(s.logFile, 'XYZ: [%d, %d, %d]\nChannels %d \n', ...
     reader.getSizeX(), reader.getSizeY(), ...
     reader.getSizeZ(), reader.getSizeC());
 
@@ -94,37 +96,84 @@ omeMeta = reader.getMetadataStore();
 omeMeta.getChannelName(0,0);
 
 nSeries = reader.getSeriesCount();
-if onlyFirst 
+if s.onlyFirst == 1
     nSeries = min(nSeries,1);
 end
-fprintf('...\n');
-w = waitbar(0, 'Converting');
-for kk = 1:nSeries
-        waitbar((kk-1)/nSeries, w, sprintf('Position %d / %d', kk, nSeries));
-    reader.setSeries(kk-1)
-    for cc = 1:reader.getSizeC()
-        V = zeros(reader.getSizeX(), reader.getSizeY(), reader.getSizeZ(), 'uint16');
 
-        for ll = 1:reader.getSizeZ()            
-            % getSeries(z,c,t);
-            plane = reader.getIndex(ll-1,cc-1,0)+1;
-            if size(V,3)==1
-                V = bfGetPlane(reader, plane); 
+for kk = 1:nSeries
+    
+    reader.setSeries(kk-1);
+    
+    %% Figure out which channel is DAPI
+    % Make sure to load that one first
+    
+    dapiFound = 0;
+    channelOrder = reader.getSizeC();
+    for cc = 1:reader.getSizeC()
+        channels{cc} = upper(char(omeMeta.getChannelName(0,cc-1)));
+        if numel(strfind(channels{cc}, 'DAPI'))>0
+            channelOrder = circshift(channelOrder, [0, 1-cc]);
+            cc = inf;
+            dapiFound = 1;
+        end
+    end
+    
+    assert(dapiFound == 1);
+    
+    save_fov = 1;
+    for cc = 1:channelOrder
+        if save_fov == 1
+            V = zeros(reader.getSizeX(), reader.getSizeY(), reader.getSizeZ(), 'uint16');
+            
+            for ll = 1:reader.getSizeZ()
+                % getSeries(z,c,t);
+                plane = reader.getIndex(ll-1,cc-1,0)+1;
+                if size(V,3)==1
+                    V = bfGetPlane(reader, plane);
+                else
+                    V(:,:,ll)=bfGetPlane(reader, plane);
+                end
+            end
+            
+            
+            % getChannelName(imageIndex, channelIndex)
+            cName = char(omeMeta.getChannelName(0,cc-1));
+            % remove everything that is not a letter or number
+            cName = regexprep(cName,'[^a-zA-Z0-9]','');
+            outFileName = sprintf('%s%s_%03d.tif', outFolder, cName, kk);
+            
+            if cc==1 % DAPI                
+                if s.focus_check
+                    F = df_image_focus('image', V, 'method', 'gm');
+                    fmax = find(F==max(F));
+                    fmax = mean(fmax);
+                    fprintf(s.logFile, 'Focus at %f\n', fmax);
+                    if fmax<s.focus_distance
+                        fprintf(s.logFile, 'WARNING: Focus at %.1f is too close to the first slice!\n', fmax);
+                        if s.focus_skip == 1
+                            save_fov = 0;
+                        end
+                    end
+                    if fmax+s.focus_distance > size(V,3)
+                        fprintf(s.logFile, 'WARNING: Focus at %.1f is too close to the last slice!\n', fmax);
+                        if s.focus_skip == 1
+                            save_fov = 0;
+                        end
+                    end
+                end
+            end
+            
+            if save_fov
+                fprintf(s.logFile, 'Writing % s to: %s\n', filename, outFileName);
+                write_tif_volume(V, outFileName);
             else
-                V(:,:,ll)=bfGetPlane(reader, plane); 
+                fprintf(s.logFile, 'Not writing this field\n');
             end
         end
-        % getChannelName(imageIndex, channelIndex)
-        cName = char(omeMeta.getChannelName(0,cc-1));       
-        % remove everything that is not a letter or number
-        cName = regexprep(cName,'[^a-zA-Z0-9]','');
-        outFileName = sprintf('%s%s_%03d.tif', outFolder, cName, kk);
-        fprintf('Writing % s to: %s\n', filename, outFileName);
-        write_tif_volume(V, outFileName);        
     end
 end
 
 reader.close();
-fprintf('nd2tif is done\n');
-close(w);
+fprintf(s.logFile, 'nd2tif is done\n');
+
 end

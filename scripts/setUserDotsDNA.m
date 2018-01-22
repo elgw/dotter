@@ -1969,11 +1969,8 @@ fig_menu_delete()
 
     function Z = plotSliceZ(varargin)
         % Plot slice nr vs contrast
-        V = C{1};
-        dx = gpartial(V,1,1);
-        dy = gpartial(V,2,1);
-        gm = (dx.^2+dy.^2).^(1/2);
-        ctr = squeeze(sum(sum(gm,1),2));
+        ctr = df_image_focus('image', C{1}, 'method', 'gm');
+                
         figure
         plot(1:size(V,3), ctr)
         grid on

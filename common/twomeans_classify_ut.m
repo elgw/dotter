@@ -109,6 +109,3 @@ for N = 3:7
     assert(sum(L==N)<=s.maxDots);
     assert(L(end) == 0);
 end
-
-
-
