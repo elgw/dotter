@@ -173,13 +173,12 @@ uicontrol('Style', 'pushbutton', ...
         s.onlyFirst = get(GUI.onlyFirst, 'Value');
         s.logFileName = [tempdir() 'nd2tif_log.txt'];
         s.logFile = fopen(s.logFileName, 'w');
-        w = waitbar(0, 'Converting to tif');
-        for kk = 1:numel(D.inputFiles)
-            waitbar((kk-1)/numel(D.inputFiles), w);
+        
+        for kk = 1:numel(D.inputFiles)            
             fprintf('nd2tif(''%s'', ''%s'')\n', D.inputFiles{kk}, D.outputDir);
             nd2tif(D.inputFiles{kk}, D.outputDir, s); % , 'onlyFirst'
         end
-        close(w);
+        
         fclose(s.logFile);
         web(s.logFileName, '-browser')
     end

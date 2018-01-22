@@ -100,7 +100,9 @@ if s.onlyFirst == 1
     nSeries = min(nSeries,1);
 end
 
+w = waitbar(0, 'Converting to tif');
 for kk = 1:nSeries
+    waitbar((kk-1)/nSeries, w);
     
     reader.setSeries(kk-1);
     
@@ -142,9 +144,16 @@ for kk = 1:nSeries
             cName = regexprep(cName,'[^a-zA-Z0-9]','');
             outFileName = sprintf('%s%s_%03d.tif', outFolder, cName, kk);
             
-            if cc==1 % DAPI                
+            if cc==1 % DAPI
                 if s.focus_check
                     F = df_image_focus('image', V, 'method', 'gm');
+                    if 0 % Plot out of focus curves
+                        figure(11)
+                        hold on
+                        plot(F)
+                        drawnow
+                    end
+                    
                     fmax = find(F==max(F));
                     fmax = mean(fmax);
                     fprintf(s.logFile, 'Focus at %f\n', fmax);
@@ -172,7 +181,7 @@ for kk = 1:nSeries
         end
     end
 end
-
+close(w);
 reader.close();
 fprintf(s.logFile, 'nd2tif is done\n');
 

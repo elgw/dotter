@@ -25,10 +25,13 @@ if nargout ~= 1
 end
 
 if strcmp(s.method, 'gm')
-    dx = gpartial(V,1,1);
-    dy = gpartial(V,2,1);
-    gm = (dx.^2+dy.^2).^(1/2);
-    varargout{1} = squeeze(sum(sum(gm,1),2));
+    gm = zeros(1,size(V,3));
+    for kk = 1:size(V,3)
+        dx = gpartial(V(:,:,kk),1,1);
+        dy = gpartial(V(:,:,kk),2,1);
+        gm(kk) = mean(mean((dx.^2+dy.^2).^(1/2)));
+    end
+    varargout{1} = gm;
     return;
 end
 
