@@ -48,7 +48,8 @@ end
 if size(nucDots,1)>1
     
     % Get cluster means based on nucDots
-    [~, m] = twomeans(nucDots(:,1:3), s.nClusters);
+
+    [~, m] = twomeans(nucDots(:,1:3), s.nClusters)
     
     % Assign cluster number to all userDots based on the clusters
     s.maxDist = s.outlierDistance;

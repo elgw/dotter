@@ -36,3 +36,11 @@ if(doPlot)
     
     axis equal
 end
+
+D = rand(71,3);
+for kk = 1:50
+    [P, m] = twomeans(D,kk);
+    assert(min(P)==1)
+    assert(max(P)==kk)
+    assert(size(m,1) == kk)
+end

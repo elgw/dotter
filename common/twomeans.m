@@ -26,8 +26,8 @@ end
 if size(X,1) == 1
     P = 0;
 else
-    P = .5+K*rand(size(X,1),1);
-    P = (P>median(P)) + 1; %balancing. Will fail if rand returns a set of identical values
+    P = round(linspace(1, K, size(X,1)))';
+    P = P(randperm(numel(P)))
 end
 
 P0 = P;
@@ -55,8 +55,9 @@ while(niter<maxiter && ~conv)
     for kk = 1:K
         D(:, kk) = eudist(m(kk, :), X);
     end
-        
-    P = (D(:,1)>D(:,2) )+ 1;
+         
+    [~, P] = min(D,[], 2);    
+    
     if sum(P~=P0) == 0
         conv = 1;
     end
