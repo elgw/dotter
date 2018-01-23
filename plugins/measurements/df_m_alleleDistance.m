@@ -3,7 +3,7 @@ function D = df_m_alleleDistance(varargin)
 
 if numel(varargin)==1
     if strcmpi(varargin{1}, 'getSettings')
-        t.string = 'Allele Distances (ALL) [NM]';
+        t.string = 'Clusters: all intercluster distances [NM]';
         t.selChan = 1;
         t.features = 'X';
         D = t;

@@ -42,7 +42,6 @@ if numel(tab) == 0
     closefun = @() close(f);
 end
 
-
 filePanel = uipanel('Position', [0, .5, 1, .5], 'Title', 'Input/Output');
 optionsPanel = uipanel('Position', [0, .1, 1, .45], 'Title', 'Options');
 

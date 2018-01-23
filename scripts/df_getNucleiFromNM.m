@@ -51,17 +51,17 @@ if numel(maxFiles)>0
 end
 
 if numel(files) == 0
-    warning('No NM files to read');
-    N = [];
-    return
+    error('No NM files to read\n');        
 end
 
 N = {};
 M = {};
 
 channels = [];
+w = waitbar(0, 'Loading files');
 
 for ff = 1:numel(files)
+    waitbar((ff-1)/numel(files), w);
     fname = files{ff};
     if verbose
         fprintf('Loading %s\n', fname);
@@ -118,6 +118,7 @@ for ff = 1:numel(files)
     
     
 end
+close(w);
 
 nClusters = 0;
 n2clusters = 0;
