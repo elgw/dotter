@@ -1,3 +1,4 @@
+function df_bcluster_ut()
 % bcluster(Dots, distance)
 %
 % dots is a [Nx3] matrix
@@ -160,3 +161,4 @@ if verbosive
 end
 
 disp(' -- done');
+end

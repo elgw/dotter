@@ -1,3 +1,4 @@
+function df_com3_ut()
 % Tests df_com3
 %
 % df_com3 can be called with two or three arguments
@@ -148,3 +149,4 @@ fprintf('com:   Mean error: %0.2f pixels\n', mean(d(:)));
 fprintf('com+w: Mean error: %0.2f pixels\n', mean(d1(:)));
 
 disp('  -- done')
+end

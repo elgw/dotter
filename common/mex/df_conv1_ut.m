@@ -1,3 +1,4 @@
+function df_conv1_ut()
 %% df_conv1(V, K, dimension)
 % Convolve V, 1D, 2D or 3D by K (1D)
 
@@ -101,3 +102,4 @@ t1 = convn(t, reshape(k,[7,1,1]),'same');
 t2 = df_conv1(t, [], [], flipud(k));
 assert(sum(t1(:) - t2(:))<10e-9);
 
+end

@@ -1,3 +1,4 @@
+function df_imshift()
 %% df_imshift(I, delta, method)
 % shift image I by delta, one per dimension
 % delta has to be less than a pixel, i.e., abs(max(delta))<1
@@ -208,3 +209,4 @@ fprintf('  imtranslate: %.2f s\n', t2);
 assert(S(61,61,61) == max(S(:)));
 assert(max(abs(S(:)-S2(:)))<10e-9)
 
+end

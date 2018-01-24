@@ -1,4 +1,4 @@
-disp('Testing df_kmeans')
+function df_kmeans(ut)
 
 doPlot = 0;
 
@@ -62,3 +62,4 @@ if 0
     view(3)
 end
 
+end

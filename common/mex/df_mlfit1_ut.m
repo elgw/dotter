@@ -1,3 +1,4 @@
+function df_mlfit1_ut()
 disp('--> Testing df_mlfit1')
 %{
 cd /home/erikw/code/dotter_matlab/common/mex
@@ -89,3 +90,4 @@ if 0
 end
 
 disp('  -- done');
+end

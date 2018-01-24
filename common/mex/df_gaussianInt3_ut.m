@@ -1,3 +1,4 @@
+function df_gaussianInt3_ut()
 %% V = df_gaussianInt3(P, S, R)
 % P: position
 % S: sigma
@@ -41,3 +42,4 @@ M = [1 0 1 0 0 0 0 0
  inv(M')*[0 0 0 0 0 1 0 0]'
 %}
  
+end

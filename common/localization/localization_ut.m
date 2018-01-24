@@ -1,3 +1,4 @@
+function localization_ut()
 % Tests for the components involved in the dotFitting
 
 verbose = 0;
@@ -149,3 +150,4 @@ end
 assert(norm(x(1:2)-x0-[side+1,side+1])<0.02)
 testno = testno+1;
 fprintf('Test %d passed\n', testno);
+end

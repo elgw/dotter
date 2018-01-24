@@ -1,3 +1,4 @@
+function df_com2_ut()
 disp('--> Testing df_com2')
 % mex CFLAGS='$CFLAGS -std=c99 -Wall' df_com2.c
 
@@ -86,3 +87,4 @@ if(0)
 end
 
 disp('  -- done')
+end

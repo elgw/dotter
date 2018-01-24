@@ -1,3 +1,4 @@
+function df_histo16_ut()
 disp('--> Testing df_histo16')
 
 disp('  no input')
@@ -49,3 +50,4 @@ assert(sum(h(:)) == numel(t));
 fprintf('  --> df_histo16 took %.3f s for a %dx%dx%d image\n', tval, size(t))
 
 disp('  -- done');
+end

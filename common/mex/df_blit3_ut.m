@@ -1,3 +1,4 @@
+function df_blit3_ut()
 %% W = df_blit3(V, K, P)
 %
 % Compilation:
@@ -188,3 +189,4 @@ end
 
 
 disp('  -- done')
+end

@@ -1,10 +1,10 @@
-disp('--> Testing df_kmeans_classify')
+function df_kmeans_classify()
 
 disp('>> One mean');
 m = [0,0,0];
 P = rand(21, 3);
 L = df_kmeans_classify(m , P);
-assert(size(L,1) == size(p,1));
+assert(size(L,1) == size(P,1));
 assert(size(L,2) == 1);
 assert(sum(L-ones(size(L)))==0);
 
@@ -15,7 +15,7 @@ P(end,:) = P(end,:) + 10;
 s.maxDist = 2;
 s.maxDots = inf;
 L = df_kmeans_classify(m , P, s);
-assert(size(L,1) == size(p,1));
+assert(size(L,1) == size(P,1));
 assert(size(L,2) == 1);
 assert(sum(L) == size(P,1)-1);
 
@@ -39,7 +39,7 @@ disp('>> Two means');
 m = rand(2,3);
 P = rand(21, 3);
 L = df_kmeans_classify(m , P);
-assert(size(L,1) == size(p,1));
+assert(size(L,1) == size(P,1));
 assert(size(L,2) == 1);
 assert(min(L(:))>=1);
 assert(max(L(:))<=2);
@@ -52,7 +52,7 @@ m = rand(2,3);
 P = rand(21, 3);
 P(end,:) = P(end,:)+10;
 L = df_kmeans_classify(m , P, s);
-assert(size(L,1) == size(p,1));
+assert(size(L,1) == size(P,1));
 assert(size(L,2) == 1);
 assert(min(L(:))==0);
 assert(sum(L(:)==0)==1);
@@ -108,4 +108,6 @@ for N = 3:7
     assert(max(L(:))==N);
     assert(sum(L==N)<=s.maxDots);
     assert(L(end) == 0);
+end
+
 end
