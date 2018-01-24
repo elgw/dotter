@@ -10,12 +10,19 @@ else
 end
 
 I = double(I); % uint32 can not be nan
-    
+
+assert(size(I,3)>1);
+
 if size(I,3)>1
     fprintf('  Projecting 3D mask to 2D\n');    
     I(I(:)==0) = nan;
     m = mode(I, 3); % mode in Z, nans ignored
     m = uint16(m);        
+end
+
+% No nuclei
+if(sum(m(:)) == 0)    
+    return
 end
 
 % Check that no mask numbers are skipped

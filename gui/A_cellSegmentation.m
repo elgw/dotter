@@ -84,20 +84,24 @@ for kk = 1:numel(dapifiles)
     M.imageSize = size(idapi);
     dapisettings.useWatershed = s.dapiWS;
     
-    P = idapi; % Projection, might be updated by get_nuclei_dapi_ui
-    if s.dapiGUI
-        if s.threeD
-            refine = 0;
-            mask = get_nuclei_dapi_3_ui(idapi, dapisettings);
-        else
-            [mask, refine, P] = get_nuclei_dapi_ui(idapi, dapisettings);
-        end
+    if isfield(s, 'masks')
+        mask = s.masks{kk};
     else
-        [mask] = get_nuclei_dapi(idapi, dapisettings);
-    end
-    
-    if s.dapiManual || refine
-        [mask] = get_nuclei_manual(mask, P);
+        P = idapi; % Projection, might be updated by get_nuclei_dapi_ui
+        if s.dapiGUI
+            if s.threeD
+                refine = 0;
+                mask = get_nuclei_dapi_3_ui(idapi, dapisettings);
+            else
+                [mask, refine, P] = get_nuclei_dapi_ui(idapi, dapisettings);
+            end
+        else
+            [mask] = get_nuclei_dapi(idapi, dapisettings);
+        end
+        
+        if s.dapiManual || refine
+            [mask] = get_nuclei_manual(mask, P);
+        end
     end
     
     N = create_nuclei_from_mask(mask, idapi);

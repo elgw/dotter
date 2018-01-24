@@ -1,4 +1,4 @@
-function D = df_m_homolVolume_ts(varargin)
+function varargout = df_m_homolVolume_ts(varargin)
 % Find the closest path connecting the dots (the travelling salesman
 % problem) and then dilating the path by a certain radius.
 % Then calculate the volume of the dot cloud based on this.
@@ -10,7 +10,9 @@ if numel(varargin)==1
         t.features = 'alone';
         s.radius = 130*5;
         t.s = s;
-        D = t;
+        if nargout == 1
+            varargout{1} = t;
+        end
         return
     end
 end
@@ -55,12 +57,13 @@ for nn = 1:numel(N)
 end
 close(w);
 
+if nargout == 0
 df_histogramPlot('Data', MM(:,2), ...
     'title', '(connected) Sphere covering', ...
     'xlabel', 'Volume {μm}^3');
-
+end
 D = D(:);
-whos
+if nargout == 0
 figure
 scatter(MM(:,1), MM(:,2))
 xlabel('Number of dots')
@@ -71,5 +74,10 @@ if numel(chan) == 1
 end
 grid on
 title(tString);
+end
+
+if nargout == 1
+    varargout{1} = D;
+end
 
 end

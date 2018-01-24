@@ -1,4 +1,4 @@
-function D = df_m_homolVolume_ch(varargin)
+function varargout = df_m_homolVolume_ch(varargin)
 % Returns all pairwise distances from all alleles
 
 if numel(varargin)==1
@@ -6,8 +6,10 @@ if numel(varargin)==1
         t.string = 'Cluster Volumes - convex hull';
         t.selChan = 1;
         t.features = 'alone';        
-        D = t;
-        return
+        if nargout == 1
+            varargout{1} = t;
+        end
+        return        
     end
 end
 
@@ -52,6 +54,7 @@ for nn = 1:numel(N)
 end
 close(w);
 
+if nargout == 0
 df_histogramPlot('Data', MM(:,2), ...
     'title', 'Convex hull', ...
     'xlabel', 'Volume {μm}^3');
@@ -63,5 +66,10 @@ scatter(MM(:,1), MM(:,2))
 xlabel('Number of dots')
 ylabel('Volume, μm^3');
 grid on
+end
+
+if nargout>0
+    varargout{1} = D(:);
+end
 
 end

@@ -405,7 +405,7 @@ nucChangeSelection();
         
         if strcmpi(varargin{1}.String, 'Export')
             s.export = 1;
-            s.plot = 0;
+            s.plot = 0
         end
         
         m1 = gui.nucA.Value;
@@ -482,13 +482,18 @@ nucChangeSelection();
         end
         
         if strcmpi(d.nucProps(m1).features, '0') || strcmpi(d.nucProps(m2).features, '0')
+            
             if strcmp(d.nucProps(m1).features, 'alone')
-                funA(M, Nselect, chanA, chanA2, settingsA);                
-                return
+                if s.plot
+                    funA(M, Nselect, chanA, chanA2, settingsA);                
+                    return
+                end
             end
             if strcmp(d.nucProps(m2).features, 'alone')
-                funB(M, Nselect, chanB, chanB2, settingsB);
-                return
+                if s.plot
+                    funB(M, Nselect, chanB, chanB2, settingsB);
+                    return
+                end
             end
             
             

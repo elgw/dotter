@@ -11,7 +11,8 @@ function df_histogramPlot(varargin)
 s.xlabelString = '';
 s.ylabelString = '';
 s.titleString = '';
-s.legendStrings = '';
+gs.legendStrings = '';
+s.nBins = 0;
 
 for kk = 1:numel(varargin)
     if strcmpi(varargin{kk}, 'data')
@@ -27,7 +28,7 @@ for kk = 1:numel(varargin)
         s.titleString = varargin{kk+1};
     end
     if strcmpi(varargin{kk}, 'legend')
-        s.legendStrings = varargin{kk+1};
+        gs.legendStrings = varargin{kk+1};
     end
 end
 
@@ -40,13 +41,16 @@ doPlot(f, D, s);
         
         figure(fig)
         clf
-        
-        h = histogram(D);
+        if s.nBins == 0;
+            h = histogram(D);
+        else
+            h = histogram(D, s.nBins);
+        end
         grid on
         xlabel(s.xlabelString);
         ylabel(s.ylabelString);
-        if(numel(s.legendStrings)>0)
-            legend(s.legendStrings);
+        if(numel(gs.legendStrings)>0)
+            legend(gs.legendStrings);
         end
         title(s.titleString);
         
@@ -54,6 +58,7 @@ doPlot(f, D, s);
         ctx = uicontextmenu(fig);
         fig.UIContextMenu = ctx;
         h.UIContextMenu = ctx;
+        set(gca(), 'UIContextMenu', ctx);
         uimenu(ctx,'Label','Save Data','Callback', @saveData);
         uimenu(ctx,'Label','Plot Settings','Callback', @settings);
         

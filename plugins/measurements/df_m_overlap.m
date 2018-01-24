@@ -48,7 +48,7 @@ s = varargin{5};
 disp('Settings:')
 disp(s);
 
-addpath([getenv('DOTTER_PATH') '/dotter/addons/geom3d/geom3d/'])
+addpath([getenv('DOTTER_PATH') '/addons/geom3d/geom3d/'])
 
 
 s.res = M{1}.pixelSize;
