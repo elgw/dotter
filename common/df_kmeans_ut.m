@@ -1,4 +1,4 @@
-disp('Testing twomeans')
+disp('Testing df_kmeans')
 
 doPlot = 0;
 
@@ -7,11 +7,11 @@ if(doPlot)
     P = [P; randn(70,3)+repmat(2*[1,1,1], [70,1])];
     P = P(randperm(140), :);
     P(:,3) = 0;
-    [L1, m] = twomeans(P, 2);
+    [L1, m] = df_kmeans(P, 2);
     
     s.maxDots = 5;
     s.maxDist = 1;
-    L2 = twomeans_classify(m, P, s);
+    L2 = df_kmeans_classify(m, P, s);
     
     
     
@@ -39,8 +39,26 @@ end
 
 D = rand(71,3);
 for kk = 1:50
-    [P, m] = twomeans(D,kk);
-    assert(min(P)==1)
-    assert(max(P)==kk)
+    [P, m] = df_kmeans(D,kk);
+    assert(min(P)>=0)
+    assert(max(P)<=kk)
     assert(size(m,1) == kk)
 end
+
+disp('Auto number of clusters')
+n = 11;
+X = .5*randn(n,3)+repmat([3,0,3], [n,1]);
+Y = .5*randn(n,3)+repmat([0,3,2], [n,1]);
+Z = .5*randn(n,3)+repmat([3,3,0], [n,1]);
+XX = [X;Y;Z];
+[P, m] = df_kmeans(XX, 0);
+if 0
+    figure
+    colors = cool(max(P));
+    for cc = 1:max(P)
+        plot3(XX(P==cc,1), XX(P==cc,2), XX(P==cc,3), 'o', 'Color', colors(cc,:))
+        hold on
+    end
+    view(3)
+end
+

@@ -49,7 +49,7 @@ if size(nucDots,1)>1
     
     % Get cluster means based on nucDots
 
-    [~, m] = twomeans(nucDots(:,1:3), s.nClusters)
+    [~, m] = df_kmeans(nucDots(:,1:3), s.nClusters)
     
     % Assign cluster number to all userDots based on the clusters
     s.maxDist = s.outlierDistance;
@@ -57,7 +57,7 @@ if size(nucDots,1)>1
     for cc = s.channels_apply
         s.maxDots = s.channels_dots(cc);
         if size(N.userDots{cc},1)>0
-            t = twomeans_classify(m, N.userDots{cc}(:,1:3), s);
+            t = df_kmeans_classify(m, N.userDots{cc}(:,1:3), s);
             assert(size(t,1) == size(N.userDots{cc},1));
             N.userDotsLabels{cc} = t;
         end
