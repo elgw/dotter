@@ -38,8 +38,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray
 
   //printf("Input: mu: %.2f, %.2f, sigma: %.2f, side: %.0f \n", mu[0], mu[1], sigma[0], side[0]);
 
-  int w = 2*side[0]+1;
-  int ut_dim[]={ w, w, w};
+  mwSize w = 2*side[0]+1;
+  mwSize ut_dim[]={ w, w, w};
 
 
   plhs[0] = mxCreateNumericArray(3, ut_dim, mxDOUBLE_CLASS, mxREAL);  

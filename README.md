@@ -8,6 +8,16 @@
 
 # Changes to DOTTER 
 
+## 0.495
+ * K-means clustering does now support auto detection of the number of
+   clusters as well as constraints on the maximum number of dots per
+cluster and channel.
+ * Same structure for all tests to run, they end with `_df.m`.
+ * Bugs detected in several of the `.c` files, `mwSize` was not used.
+   Corrected.
+ * Other minor bug fixes.
+ * New measurements available for `df_plot`.
+
 ## 0.486
  * Adding the option to import masks generated externally.
 

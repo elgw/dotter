@@ -32,14 +32,14 @@ void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[])
   }
 
   double * V = (double *) mxGetPr(prhs[0]);
-  int VnDim = mxGetNumberOfDimensions(prhs[0]);
-  const int * Vdim = mxGetDimensions(prhs[0]);
-  const size_t Vnel = mxGetNumberOfElements(prhs[0]);
+  mwSize VnDim = mxGetNumberOfDimensions(prhs[0]);
+  const mwSize * Vdim = mxGetDimensions(prhs[0]);
+  const mwSize Vnel = mxGetNumberOfElements(prhs[0]);
 
   double * shift = (double *) mxGetPr(prhs[1]);
-  int KnDim = mxGetNumberOfDimensions(prhs[1]);
-  const int * Kdim_temp = mxGetDimensions(prhs[1]);
-  const size_t Knel = mxGetNumberOfElements(prhs[1]);
+  mwSize KnDim = mxGetNumberOfDimensions(prhs[1]);
+  const mwSize * Kdim_temp = mxGetDimensions(prhs[1]);
+  const mwSize Knel = mxGetNumberOfElements(prhs[1]);
 
   int method = 1; // linear
 

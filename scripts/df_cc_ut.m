@@ -2,7 +2,6 @@ function df_cc_ut()
 
 s.plot = 0;
 
-
 disp('>>> df_cc_create');
 disp('>> Random displacement in X and Y')
 
@@ -39,7 +38,7 @@ for kk = 1:10
         end
     end
     
-    C = df_cc_apply_dots(D{2}, 'bananas', 'apples', t.filename);
+    C = df_cc_apply_dots('dots', D{2}, 'from', 'bananas', 'to', 'apples', 'ccFile', t.filename);
     assert(max(sum( (C-D{1}).^2, 2).^(1/2)) < 10e-6)
 end
 
@@ -67,7 +66,7 @@ end
 
 
 df_cc_create('dots', D, 'settings', t, 'channels', channels);
-C = df_cc_apply_dots(D{2}, 'bananas', 'apples', t.filename);
+C = df_cc_apply_dots('dots', D{2}, 'from', 'bananas', 'to', 'apples', 'ccFile', t.filename);
 fprintf('mean(D{1}(:,3)): %f\nmean(D{2}(:,3)): %f\nmean(C(:,3)):    %f\n', mean(D{1}(:,3)), mean(D{2}(:,3)), mean(C(:,3)));
 cc = load(t.filename, '-mat');
 assert(abs(mean(C(:,3))-mean(D{1}(:,3))) < 10e-6)

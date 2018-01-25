@@ -52,23 +52,23 @@ void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[])
   }
 
   double * V = (double *) mxGetPr(prhs[0]);
-  int VnDim = mxGetNumberOfDimensions(prhs[0]);
-  const int * Vdim = mxGetDimensions(prhs[0]);
-  const size_t Vnel = mxGetNumberOfElements(prhs[0]);
+  mwSize VnDim = mxGetNumberOfDimensions(prhs[0]);
+  const mwSize * Vdim = mxGetDimensions(prhs[0]);
+  const mwSize Vnel = mxGetNumberOfElements(prhs[0]);
 
   if(! (VnDim == 3))
     mexErrMsgTxt("Volume has to be 3D");
 
   double * K = (double *) mxGetPr(prhs[1]);
-  int KnDim = mxGetNumberOfDimensions(prhs[1]);
-  const int * Kdim_temp = mxGetDimensions(prhs[1]);
-  const size_t Knel = mxGetNumberOfElements(prhs[1]);
+  mwSize KnDim = mxGetNumberOfDimensions(prhs[1]);
+  const mwSize * Kdim_temp = mxGetDimensions(prhs[1]);
+  const mwSize Knel = mxGetNumberOfElements(prhs[1]);
 
   int Kdim[] = {0,0,0};
 
   double * P = (double *) mxGetPr(prhs[2]);
   //  int PnDim = mxGetNumberOfDimensions(prhs[2]);
-  const int * Pdim = mxGetDimensions(prhs[2]);
+  const mwSize * Pdim = mxGetDimensions(prhs[2]);
   //  const size_t Pnel = mxGetNumberOfElements(prhs[2]);
 
   // Also handle 1D and 2D kernels
@@ -87,7 +87,7 @@ void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[])
   if((Pdim[0] < 3))
     mexErrMsgTxt("List of dots has to be of size [3xN] or [7xN]");
 
-  int nF = Pdim[0];
+  mwSize nF = Pdim[0];
 
   if(verbosive) { 
     printf("V: %dx%dx%d\n", Vdim[0], Vdim[1], Vdim[2]);

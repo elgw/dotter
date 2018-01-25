@@ -33,6 +33,13 @@ struct my_f_params {
     double  offset; // shifts the function
     };
 
+double my_f(double , void * );
+int findmin(double , double , gsl_spline *, gsl_interp_accel * , size_t , double * , double * );
+void createGaussian(double * , double * , size_t , double );
+int fwhm(double * , double * , size_t , double * );
+
+
+
 double my_f(double x, void * p)
 {
   struct my_f_params * params = (struct my_f_params*) p;
@@ -178,7 +185,7 @@ if(useLog)
   fprintf(logFile, "bg: %f\n", bg);
 }
 
-if(bg == ym)
+if(bg <= ym)
 {
   if(useLog)
   {

@@ -22,7 +22,7 @@ V = double(V);
 
 s.Side = 11; % lines of size s.Side*2+1 are used
 
-if size(V,3)==1;
+if size(V,3)==1
     interpolation = 'linear'; % 'pchip', 'spline'
 else
     interpolation = 'cubic';
@@ -75,7 +75,7 @@ for kk = 1:size(D,1)
         end
         
         
-        if useNewFWHM1d == 1;
+        if useNewFWHM1d == 1
             wx = df_fwhm1d(lx);
         else
             wx = getw(lx, 0, lzero);

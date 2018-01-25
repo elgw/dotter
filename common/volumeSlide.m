@@ -61,7 +61,11 @@ try
     end
     set(gca, 'clim', climVol)
 catch
-    set(gca, 'Clim', [min(V(:)), max(V(:))]);
+    r = [min(V(:)), max(V(:))];
+    if(r(1)==r(2))
+        r(2) = r(2)+eps();
+    end
+    set(gca, 'Clim', r);
     disp('Set CLim between min and max')
 end
 

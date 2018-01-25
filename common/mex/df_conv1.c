@@ -17,9 +17,9 @@ void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[])
   }
 
   double * V = (double *) mxGetPr(prhs[0]);
-  int VnDim = mxGetNumberOfDimensions(prhs[0]);
-  const int * Vdim = mxGetDimensions(prhs[0]);
-  const size_t Vnel = mxGetNumberOfElements(prhs[0]);
+  mwSize VnDim = mxGetNumberOfDimensions(prhs[0]);
+  const mwSize * Vdim = mxGetDimensions(prhs[0]);
+  const mwSize Vnel = mxGetNumberOfElements(prhs[0]);
 #if verbose
   printf("Vnel: %lu\n", Vnel);
 #endif
