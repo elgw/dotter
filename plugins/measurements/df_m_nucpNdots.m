@@ -3,7 +3,7 @@ function ND = df_m_nucpNdots(varargin)
 
 if numel(varargin)==1
     if strcmpi(varargin{1}, 'getSettings')
-        t.string = 'Dots per Nuclei';
+        t.string = 'Nuclei: Dots per Nuclei';
         t.selChan = 1;
         t.features = 'N';
         ND = t;

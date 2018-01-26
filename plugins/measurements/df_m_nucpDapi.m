@@ -7,7 +7,7 @@ function D = df_m_nucpDapi(varargin)
 
 if numel(varargin)==1
     if strcmpi(varargin{1}, 'getSettings')
-        t.string = 'Dapi sum [AU]';
+        t.string = 'Nuclei: Dapi sum [AU]';
         t.selChan = 0;
         t.features = 'N';
         D = t;

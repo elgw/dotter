@@ -3,7 +3,7 @@ function NDA = df_m_nucpNdotsAlleles(varargin)
 
 if numel(varargin)==1
     if strcmpi(varargin{1}, 'getSettings')
-        t.string = 'Dots per cluster';
+        t.string = 'Clusters: Number of dots';
         t.selChan = 1;
         t.features = '2N';
         NDA = t;

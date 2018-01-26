@@ -49,7 +49,7 @@ if size(nucDots,1)>1
     
     % Get cluster means based on nucDots
 
-    [~, m] = df_kmeans(nucDots(:,1:3), s.nClusters)
+    [~, m] = df_kmeans(nucDots(:,1:3), s.nClusters);
     
     % Assign cluster number to all userDots based on the clusters
     s.maxDist = s.outlierDistance;

@@ -73,6 +73,6 @@ title(tString);
 end
 
 if nargout == 1
-    varargout{1} = D;
+    varargout{1} = MM(:,2);
 end
 end

@@ -5,7 +5,7 @@ function A = df_m_nucpArea(varargin)
 
 if numel(varargin)==1
     if strcmpi(varargin{1}, 'getSettings')
-        t.string = 'Nuclei Area [pixels]';
+        t.string = 'Nuclei: Area [pixels]';
         t.selChan = 0;        
         t.features = 'N';
         A = t;

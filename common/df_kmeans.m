@@ -6,6 +6,7 @@ function [varargout] = df_kmeans(X, K, varargin)
 s.verbose = 0;
 s.plot = 0;
 s.nTries = 3;
+s.fThreshold = .75;
 
 %% Determine the number of clusters automatically if K==0
 if(K==0)
@@ -21,7 +22,7 @@ if(K==0)
     E(2) = e;
     
     nk = 2;
-    while(E(end)/E(end-1) < 0.85)
+    while(E(end)/E(end-1) < s.fThreshold)
         nk = nk+1;
         [~, ~, e] = df_kmeans(X,nk);
         E(nk) = e;

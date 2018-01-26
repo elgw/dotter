@@ -5,7 +5,7 @@ function D = df_m_maxDistanceAlleles(varargin)
 
 if numel(varargin)==1
     if strcmpi(varargin{1}, 'getSettings')
-        t.string = 'Outlier Distance [NM]';
+        t.string = 'Clusters: Outlier Distance [NM]';
         t.selChan = 1;
         t.features = '2N';
         t.s.plot = 0;

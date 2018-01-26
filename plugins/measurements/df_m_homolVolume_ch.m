@@ -69,7 +69,7 @@ grid on
 end
 
 if nargout>0
-    varargout{1} = D(:);
+    varargout{1} = MM(:,2);
 end
 
 end
