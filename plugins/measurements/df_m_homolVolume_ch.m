@@ -3,9 +3,9 @@ function varargout = df_m_homolVolume_ch(varargin)
 
 if numel(varargin)==1
     if strcmpi(varargin{1}, 'getSettings')
-        t.string = 'Cluster Volumes - convex hull';
+        t.string = 'Cluster: Volume - convex hull';
         t.selChan = 1;
-        t.features = 'alone';        
+        t.features = 'C';        
         if nargout == 1
             varargout{1} = t;
         end
@@ -30,7 +30,7 @@ MM = []; % Number of dots, Volume ; ...
 w = waitbar(0, 'Calculating');
 for nn = 1:numel(N)
     
-    for aa = 1:2
+    for aa = 1:numel(N{nn}.clusters)
         dots = [];
         
         for cc = chan
@@ -45,9 +45,9 @@ for nn = 1:numel(N)
             end
             dots(:,1:3) = dots(:, 1:3)/1000;
             [~, v] = convhull(dots(:,1:3));
-            MM = [MM; size(dots,1), v];            
+            MM = [MM; v];            
         else
-            MM = [MM; size(dots,1), NaN];
+            MM = [MM; NaN];
         end
     end
     waitbar(nn/numel(N), w);
@@ -69,7 +69,7 @@ grid on
 end
 
 if nargout>0
-    varargout{1} = MM(:,2);
+    varargout{1} = MM;
 end
 
 end

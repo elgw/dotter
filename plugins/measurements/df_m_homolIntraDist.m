@@ -3,7 +3,7 @@ function D = df_m_homolVolume(varargin)
 
 if numel(varargin)==1
     if strcmpi(varargin{1}, 'getSettings')
-        t.string = 'Homolog Intra Distances';
+        t.string = 'Cluster Inter Distances';
         t.selChan = 1;
         t.features = 'alone';        
         D = t;

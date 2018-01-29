@@ -4,7 +4,7 @@ function V = df_m_dotFWHM(varargin)
 
 if numel(varargin)==1
     if strcmpi(varargin{1}, 'getSettings')
-        t.string = 'Dot FWHM [AU]';
+        t.string = 'Dot: FWHM [AU]';
         t.selChan = 1;
         t.features = 'D';
         V = t;

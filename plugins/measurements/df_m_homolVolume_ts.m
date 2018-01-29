@@ -5,9 +5,9 @@ function varargout = df_m_homolVolume_ts(varargin)
 
 if numel(varargin)==1
     if strcmpi(varargin{1}, 'getSettings')
-        t.string = 'Cluster Volumes - connected spheres';
+        t.string = 'Cluster: Volume - connected spheres';
         t.selChan = 1;
-        t.features = 'alone';
+        t.features = 'C';
         s.radius = 130*5;
         t.s = s;
         if nargout == 1
@@ -34,7 +34,7 @@ MM = []; % Number of dots, Volume ; ...
 w = waitbar(0, 'Calculating');
 for nn = 1:numel(N)
     
-    for aa = 1:2
+    for aa = 1:numel(N{nn}.clusters)
         dots = [];
         
         for cc = chan
@@ -50,34 +50,37 @@ for nn = 1:numel(N)
             
             T = getMST(dots(:,1:3));
             
-            MM = [MM; [size(dots,1), df_volumeTubes('data', T, 'radius', s.radius/1000, 'npoints', 100000, 'verbose')]];
+            MM = [MM; df_volumeTubes('data', T, 'radius', s.radius/1000, 'npoints', 100000, 'verbose')];
+        else
+            MM = [MM; NaN];
         end
+        
     end
     waitbar(nn/numel(N), w);
 end
 close(w);
 
 if nargout == 0
-df_histogramPlot('Data', MM(:,2), ...
-    'title', '(connected) Sphere covering', ...
-    'xlabel', 'Volume {μm}^3');
+    df_histogramPlot('Data', MM(:,2), ...
+        'title', '(connected) Sphere covering', ...
+        'xlabel', 'Volume {μm}^3');
 end
 D = D(:);
 if nargout == 0
-figure
-scatter(MM(:,1), MM(:,2))
-xlabel('Number of dots')
-ylabel('Volume, μm^3');
-tString = sprintf('r=%d nm', s.radius);
-if numel(chan) == 1
-    tString = [M{1}.channels(chan(1)) tString];
-end
-grid on
-title(tString);
+    figure
+    scatter(MM(:,1), MM(:,2))
+    xlabel('Number of dots')
+    ylabel('Volume, μm^3');
+    tString = sprintf('r=%d nm', s.radius);
+    if numel(chan) == 1
+        tString = [M{1}.channels(chan(1)) tString];
+    end
+    grid on
+    title(tString);
 end
 
 if nargout == 1
-    varargout{1} = MM(:,2);
+    varargout{1} = MM;
 end
 
 end

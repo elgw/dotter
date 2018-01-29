@@ -6,9 +6,9 @@ function IAD = df_m_nucpDallelesInter(varargin)
 
 if numel(varargin)==1
     if strcmpi(varargin{1}, 'getSettings')
-        t.string = 'Clusters: distance between centroids';
+        t.string = 'ClusterP: Distance between centroids [NM]';
         t.selChan = 1;
-        t.features = '2N';
+        t.features = 'CP';
         IAD = t;
         return
     end

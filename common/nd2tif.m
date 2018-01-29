@@ -120,7 +120,9 @@ for kk = 1:nSeries
         end
     end
     
-    assert(dapiFound == 1);
+    if dapiFound ~= 1
+        fprintf(s.logFile, 'WARNING: No dapi channel found\n');
+    end
     
     save_fov = 1;
     for cc = 1:channelOrder

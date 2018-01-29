@@ -1972,7 +1972,7 @@ fig_menu_delete()
         ctr = df_image_focus('image', C{1}, 'method', 'gm');
                 
         figure
-        plot(1:size(V,3), ctr)
+        plot(1:size(C{1},3), ctr)
         grid on
         xlabel('Z')
         ylabel('Focus')

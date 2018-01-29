@@ -7,9 +7,9 @@ function AD = df_m_nucpDalleles(varargin)
 
 if numel(varargin)==1
     if strcmpi(varargin{1}, 'getSettings')
-        t.string = 'Distance between alleles';
+        t.string = 'ClusterP: Centroid distances';
         t.selChan = 1;        
-        t.features = 'N';
+        t.features = 'CP';
         AD = t;
         return
     end

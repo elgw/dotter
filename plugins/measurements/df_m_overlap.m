@@ -26,9 +26,9 @@ function U = df_m_overlap(varargin)
 
 if numel(varargin)==1
     if strcmpi(varargin{1}, 'getSettings')
-        t.string = 'Clusters: Volumetric Intermingling';
+        t.string = 'ClusterP: Volumetric Intermingling';
         t.selChan = 2;
-        t.features = 'N';
+        t.features = 'CP';
         s.radius = 130*5;
         s.ndots = 10^5;        
         s.usePaths = 0;

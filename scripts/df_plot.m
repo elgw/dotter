@@ -9,6 +9,7 @@ function df_plot(varargin)
 
 f = [];
 tab = [];
+BQ = {}; % Queue for batch processing
 
 for kk = 1:numel(varargin)
     if strcmpi(varargin{kk}, 'tab')
@@ -264,6 +265,29 @@ gui.ExportNuc = uicontrol('Style', 'Pushbutton', ...
     'Parent', gui.tabNuc, ...
     'Callback', @nucPlot);
 
+gui.bpanel = uipanel(...
+    'Title', 'Batch processing', ...
+    'Position', [.0 ,0,.5,.12], ...
+'Parent', gui.tabNuc);
+gui.ExportNuc = uicontrol('Style', 'Pushbutton', ...
+    'String', 'Add', ...
+    'Units', 'Normalized', ...
+    'Position', [.0 ,0,1/3,1], ...
+    'Parent', gui.bpanel, ...
+    'Callback', @batchq_insert);
+gui.ExportNuc = uicontrol('Style', 'Pushbutton', ...
+    'String', 'Reset', ...
+    'Units', 'Normalized', ...
+    'Position', [1/3,0,1/3,1], ...
+    'Parent', gui.bpanel, ...
+    'Callback', @batchq_reset);
+gui.ExportNuc = uicontrol('Style', 'Pushbutton', ...
+    'String', 'Run', ...
+    'Units', 'Normalized', ...
+    'Position', [2/3,0,1/3,1], ...
+    'Parent', gui.bpanel, ...
+    'Callback', @batchq_run);
+
 if(exist('folder', 'var'))
     loadFolder(folder);
 end
@@ -485,7 +509,7 @@ nucChangeSelection();
             
             if strcmp(d.nucProps(m1).features, 'alone')
                 if s.plot
-                    funA(M, Nselect, chanA, chanA2, settingsA);                
+                    funA(M, Nselect, chanA, chanA2, settingsA);
                     return
                 end
             end
@@ -563,15 +587,15 @@ nucChangeSelection();
         %% Some properties can only be used alone, disable the other feature list
         %  if one of them was selected
         if strcmpi(d.nucProps(selA).features, 'alone')
-            gui.nucB.Enable = 'off';            
+            gui.nucB.Enable = 'off';
         else
-            gui.nucB.Enable = 'on';            
+            gui.nucB.Enable = 'on';
         end
         
         if strcmpi(d.nucProps(selB).features, 'alone')
-            gui.nucA.Enable = 'off';            
+            gui.nucA.Enable = 'off';
         else
-            gui.nucA.Enable = 'on';            
+            gui.nucA.Enable = 'on';
         end
         
         switch d.nucProps(selA).selChan
@@ -667,6 +691,127 @@ nucChangeSelection();
 
     function applyCC()
         
+    end
+
+    function batchq_insert(varargin)
+        % Att things to the batch queue, BQ
+        % Always includes all nuclei regardless of DAPI
+        % only takes measurements from the first list
+        
+        pos = numel(BQ)+1; % Where to insert in the batch queue
+        m1 = gui.nucA.Value; % Which measurement was selected
+        
+        if(pos>1)
+            f1 = d.nucProps(m1).features;
+            f2 = d.nucProps(BQ{pos-1}.measurement).features;
+            if(strcmpi(f1,f2) ~= 1)
+                warndlg(sprintf('Can not insert the selected measurement in the list, wrong type! %s vs %s', f1, f2));
+                return;
+            end
+        end
+        
+        
+        
+        BQ{pos}.measurement = m1;
+        BQ{pos}.string = d.nucProps(m1).string;
+        BQ{pos}.function = d.nucProps(m1).fun;
+        BQ{pos}.settings = d.nucProps(m1).s;
+        BQ{pos}.chanA = gui.nucChanA.Value;
+        BQ{pos}.chanB = gui.nucChanB.Value;
+        BQ{pos}.selChan = d.nucProps(m1).selChan;
+        
+        colName = regexprep(BQ{pos}.string,'[^a-zA-Z]','_');
+        if BQ{pos}.selChan > 0
+            colName = [colName '__'];
+            for ll = 1:numel(BQ{pos}.chanA)
+                colName = [colName '_' M{1}.channels{BQ{pos}.chanA(ll)}];
+            end
+        end
+        if BQ{pos}.selChan > 1
+            colName = [colName '__'];
+            for ll = 1:numel(BQ{pos}.chanB)
+                colName = [colName '_' M{1}.channels{BQ{pos}.chanB(ll)}];
+            end
+        end
+        BQ{pos}.colName = colName;
+        
+    end
+
+    function batchq_run(varargin)
+        % Run all queued measurements and export the data
+        % A few things TODO, se below.
+        
+        if(numel(BQ) == 0) % Nothing to do
+            return;
+        end
+                
+        % Select an output file name
+        tFileName = [];
+        
+        fn = uiputfile({'*.tsv', 'Tab separated table'}, 'Select output file');
+        if ~isnumeric(fn)
+            tFileName = fn;
+        end
+        T = {};
+        ColNames = {};
+            
+        %% Depending on the nubmer of features, insert extra columns
+        % N: one per nuclei
+        % C: one per cluster
+        % D: one per dot
+        
+        features = d.nucProps(BQ{1}.measurement).features;
+        
+        if strcmpi(features, 'N')==1
+            % If the number of output is N, create columns:
+            % File, Nuclei
+        
+            for(kk = 1:numel(N))
+                T{kk,1} = N{kk}.file;
+                T{kk,2} = N{kk}.nucleiNr;
+            end
+            ColNames = {'File', 'Nuclei'};
+        end
+        
+        if strcmpi(features, 'D')==1
+            % File, nuclei, channel, cluster
+        
+        end
+        
+        if strcmpi(features, 'C')==1
+            % File, nuclei, cluster
+            pos = 1;            
+            for kk = 1:numel(N)                
+                for cc = 1:numel(N{kk}.clusters)
+                    T{pos,1} = N{kk}.file;
+                    T{pos,2} = N{kk}.nucleiNr;
+                    T{pos,3} = cc;
+                    pos = pos+1;
+                end
+            end
+            ColNames = {'File', 'Nuclei', 'Cluster'};
+        end
+        
+        for kk = 1:numel(BQ)
+            m = BQ{kk}.function(M, N, BQ{kk}.chanA, BQ{kk}.chanB, BQ{kk}.settings);
+            T = [T mat2cell(m, ones(numel(m),1), 1)];
+            ColNames = [ColNames BQ{kk}.colName];
+        end
+        
+        TT = cell2table(T);
+        TT.Properties.VariableNames = ColNames;
+        
+        % Write table to disk
+        if numel(tFileName) > 0
+            writeTable(TT, tFileName, 'Delimiter', 'tab');
+        else
+            TT
+        end
+        
+    end
+
+    function batchq_reset(varargin)
+        BQ = {};
     end
 
 end

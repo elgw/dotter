@@ -3,9 +3,9 @@ function D = df_m_alleleDistance(varargin)
 
 if numel(varargin)==1
     if strcmpi(varargin{1}, 'getSettings')
-        t.string = 'Clusters: all intercluster distances [NM]';
+        t.string = 'Cluster: mean intercluster distance';
         t.selChan = 1;
-        t.features = 'X';
+        t.features = 'C';
         D = t;
         return
     end
@@ -24,15 +24,15 @@ end
 
 D = [];
 
-for nn = 1:numel(N)    
-        
-    for aa = 1:2
+for nn = 1:numel(N)
+    
+    for aa = 1:numel(N{nn}.clusters)
         dots = [];
         
         for cc = chan
             cdots = N{nn}.clusters{aa}.dots{cc};
-            dots = [dots ; cdots];           
-        end                
+            dots = [dots ; cdots];
+        end
         
         if size(dots,1)>1
             % Convert pixels to metric distance
@@ -40,13 +40,15 @@ for nn = 1:numel(N)
             dots(:,2)=dots(:,2)*res(2);
             dots(:,3)=dots(:,3)*res(3);
             % Distance matrix between dots
-            DM = pdist(dots(:,1:3), 'euclidean');                        
+            DM = pdist(dots(:,1:3), 'euclidean');
             
             % All pairwise distances
-            D = [D; DM(:)];
+            D = [D; mean(DM(:))];
+        else
+            D = [D; NaN];
         end
+        
     end
     
-D = D(:);
-
+    
 end

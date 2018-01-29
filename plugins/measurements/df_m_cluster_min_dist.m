@@ -7,9 +7,9 @@ function IAD = df_m_cluster_min_dist(varargin)
 
 if numel(varargin)==1
     if strcmpi(varargin{1}, 'getSettings')
-        t.string = 'Cluster compaction, mean smallest distance';
-        t.selChan = 1;        
-        t.features = '2N';        
+        t.string = 'Cluster: compaction, mean smallest distance';
+        t.selChan = 1;
+        t.features = 'C';
         IAD = t;
         return
     end
@@ -30,18 +30,19 @@ for kk = 1:numel(chan)
     channelsS = [channelsS '-' M{1}.channels{chan(kk)}];
 end
 
-IAD = nan(numel(N),2);
+IAD = [];
 
-for kk = 1:numel(N)        
-    for ll = 1:2
+for kk = 1:numel(N)
+    for ll = 1:numel(N{kk}.clusters)
         A = [];
         for cc = chan
             D = N{kk}.clusters{ll}.dots{cc};
             A = [A; D];
         end
-                        
-        if size(A,1) == 0            
-                fprintf('No dots in %s\n', channelsS)        
+        
+        if size(A,1) == 0
+            fprintf('No dots in %s\n', channelsS)
+            md = NaN;
         else
             whos
             for cc = 1:3
@@ -50,14 +51,12 @@ for kk = 1:numel(N)
             
             md = pdist(A(:,1:3));
             md = squareform(md);
-            md(1:(size(md,1)+1):end) = inf;                        
-            IAD(kk,ll) = mean(min(md));
+            md(1:(size(md,1)+1):end) = inf;
+            md = mean(min(md));
             
         end
+        IAD = [IAD; md];
     end
 end
-
-IAD = IAD';
-IAD = IAD(:);
 
 end

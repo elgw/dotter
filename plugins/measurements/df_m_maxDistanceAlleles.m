@@ -5,9 +5,9 @@ function D = df_m_maxDistanceAlleles(varargin)
 
 if numel(varargin)==1
     if strcmpi(varargin{1}, 'getSettings')
-        t.string = 'Clusters: Outlier Distance [NM]';
+        t.string = 'Cluster: Outlier Distance [NM]';
         t.selChan = 1;
-        t.features = '2N';
+        t.features = 'C';
         t.s.plot = 0;
         D = t;
         return
@@ -19,12 +19,11 @@ N = varargin{2};
 chan = varargin{3};
 s = varargin{5};
 
-DM = zeros(numel(N),2);
-whos DM
+D = [];
 
 if ~isfield(M{1}, 'pixelSize')
     warning('Pixel size not specified!')
-    res = [130,130,300]
+    res = [130,130,300];
 else
     res = M{1}.pixelSize;
 end
@@ -48,7 +47,7 @@ for nn = 1:numel(N)
         set(gco, 'Clim', [0,2]);
     end
         
-    for aa = 1:2
+    for aa = 1:numel(N{nn}.clusters)
         dots = [];
         
         for cc = chan
@@ -78,10 +77,10 @@ for nn = 1:numel(N)
             DM(1:size(DM,1)+1:end) = Inf;            
             
             % Get outliner distance
-            D(nn,aa) = max(min(DM));
+            D = [D; max(min(DM))];
             
         else
-            D(nn,aa) = nan;
+            D = [D; nan];
         end
     end
     
@@ -94,10 +93,5 @@ for nn = 1:numel(N)
         pause
     end
 end
-
-D = D';
-D = D(:);
-
-
 
 end
