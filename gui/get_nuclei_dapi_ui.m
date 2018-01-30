@@ -61,7 +61,7 @@ gui.win = figure('Position', [300,200,1024,1024], 'Menubar', 'none', ...
 
 %% Display current segmentation
 gui.dapiPlot = subplot('Position', [.15,.15,.8,.8]);
-gui.im = imagesc(imread([getenv('DOTTER_PATH') 'dotter/logo.jpg']), 'ButtonDownFcn', @imClick);
+gui.im = imagesc(imread([getenv('DOTTER_PATH') 'logo.jpg']), 'ButtonDownFcn', @imClick);
 
 
 gui.c1 = uicontextmenu();
