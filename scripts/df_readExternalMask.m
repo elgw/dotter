@@ -11,7 +11,7 @@ end
 
 I = double(I); % uint32 can not be nan
 
-assert(size(I,3)>1);
+assert(size(I,3)>1, 'The external mask is not 3D\n');
 
 if size(I,3)>1
     fprintf('  Projecting 3D mask to 2D\n');    
@@ -26,11 +26,13 @@ if(sum(m(:)) == 0)
 end
 
 % Check that no mask numbers are skipped
-assert(sum(m(:)==0) > 0); % Should be background
+assert(sum(m(:)==0) > 0, 'There are no background pixels'); % Should be background
 
 u = unique(m(:)); % unique elements, is sorted
-if(~(max(m(:)) +1 == numel(u)))
-    m = interp1(u', 0:numel(u)-1, m, 'nearest');
+if(~(max(m(:)) +1 == numel(u))) % If one or more labels are skipped
+    m = uint16(...
+        interp1(double(u'), double(0:numel(u)-1), double(m), 'nearest')...
+        );
 end
 
 end

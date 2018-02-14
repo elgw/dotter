@@ -2,6 +2,7 @@ function setUserDotsDNA(folder)
 %% function setUserDotsDNA(folder)
 %
 % Purpose:
+% --------
 %  GUI for selection of
 %  userDots : dots for further processing/analysis
 %  userDotsLabels : 0, 1 or 2 depending on the homolog

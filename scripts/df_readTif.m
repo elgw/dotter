@@ -24,7 +24,10 @@ if verbose
 end
 
 imBits = tiffInfo(1).BitsPerSample;
-assert(numel(intersect(imBits, [8,16]))==1);
+if ~(numel(intersect(imBits, [8,16,32]))==1)
+    warning('%d BitsPerSample\n', imBits);
+end
+    
 
 if numel(tiffInfo) == 1
     % use imread to read 2D images
@@ -37,10 +40,10 @@ switch imBits
         typeString = 'uint8';
     case 16
         typeString = 'uint16';
+    case 32
+        typeString = 'uint32';
     otherwise
-        fprintf('Don''t know how to handle %d bit files\n', imBits);
-        V = [];
-        return
+        error('Don''t know how to handle %d bit files\n', imBits);        
 end
 
 V = zeros(tiffInfo(1).Height, tiffInfo(1).Width, numel(tiffInfo), typeString);

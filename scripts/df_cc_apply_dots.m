@@ -38,6 +38,20 @@ end
 
 ifrom = find(strcmpi(cc.channels, from));
 ito = find(strcmpi(cc.channels, to));
+if(numel(ifrom)~=1)    
+    warning('Could not find channel %s in cc file. Not doing anything!\n', from);
+    disp('Available channels:')
+    disp(cc.channels)
+    varargout{1} = D;
+    return;
+end
+if(numel(ito)~=1)    
+    warning('Could not find channel %s in cc file. Not doing anything!\n', from);
+    disp('Available channels:')
+    disp(cc.channels)
+    varargout{1} = D;
+    return;
+end
 
 if s.verbose
     fprintf('cc from %s to %s\n', from, to);

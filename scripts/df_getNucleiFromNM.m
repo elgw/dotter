@@ -4,7 +4,8 @@ function [N, M] = df_getNucleiFromNM(varargin)
 % N{kk}.metaNo says which Meta data that belongs to the nuclei
 % i.e., Nuclei N{1} belongs to field M{N{1}.metaNo}
 
-verbose = 0;
+
+s.verbose = 1;
 N = [];
 M = [];
 
@@ -13,14 +14,15 @@ maxFiles = [];
 nMissingUD = 0; % Count the number of nuclei without userDots, these will not be returned
 
 ccFile = '';
-folder = '';
+folder = [];
+s.recursive = 0;
 
 
 for kk = 1:nargin
     if strcmpi(varargin{kk}, 'folder')
         folder = varargin{kk+1};
-        files = dir([folder '*.NM']);
-        files = df_fileStructToFileList(files);
+        %files = dir([folder '*.NM']);
+        %files = df_fileStructToFileList(files);
     end
     if strcmpi(varargin{kk}, 'maxFiles')
         maxFiles = varargin{kk+1};
@@ -28,9 +30,30 @@ for kk = 1:nargin
     if strcmpi(varargin{kk}, 'ccFile')
         ccFile = varargin{kk+1};
     end
+    if strcmpi(varargin{kk}, 'recursive')
+        s.recursive = 1;
+    end
 end
 
-if numel(folder) == 0
+% Get list of files, either from folder or from gui
+if numel(folder) >0 
+    if s.recursive == 1
+       fldrs = subdir(folder);
+       fldrs{end+1} = folder; % Add base folder as well
+       files = {};
+       folders = {};
+       for kk = 1:numel(fldrs)
+           fo = fldrs{kk};
+           fi = dir([fo filesep() '*.NM']);
+           for ff = 1:numel(fi)
+               folders{end+1} = [fo filesep()];
+               files{end+1} =   [fi(ff).name];
+           end
+       end
+    else
+        files = dir([folder '*.NM']);
+    end    
+else
     folder = df_getConfig('df_getNucleiFromNM', 'folder', pwd);
     files = uipickfiles('FilterSpec', folder, ...
         'Prompt', 'Select NM files(s)', 'REFilter', '.NM$');
@@ -41,9 +64,9 @@ if numel(folder) == 0
     end
     df_setConfig('df_getNucleiFromNM', 'folder', fileparts(files{1}));
     folder = '';
-    fprintf('%d files selected\n', numel(files));
 end
 
+fprintf('%d files selected\n', numel(files));
 
 if numel(maxFiles)>0
     maxFiles = min(maxFiles, numel(files));
@@ -63,7 +86,10 @@ w = waitbar(0, 'Loading files');
 for ff = 1:numel(files)
     waitbar((ff-1)/numel(files), w);
     fname = files{ff};
-    if verbose
+    if numel(folders) == numel(files)
+        folder = folders{ff};
+    end
+    if s.verbose
         fprintf('Loading %s\n', fname);
     end
     D = load([folder fname], '-mat');
@@ -99,11 +125,12 @@ for ff = 1:numel(files)
         disp('Applying CC')
         for nn = 1:numel(D.N)
             for cc = 1:numel(D.M.channels)                
+                
                 D.N{nn}.userDots{cc} = ...
                     df_cc_apply_dots('dots', D.N{nn}.userDots{cc}, ...
                         'from', D.M.channels{cc}, ... % From
                         'to', 'dapi', ... % To
-                        'ccData', ccData);
+                        'ccData', ccData, 'settings', s);
             end
         end
         disp('Done!')
@@ -148,7 +175,7 @@ for nn = 1:numel(N)
         N{nn} = nuc;
         
     else
-        if verbose
+        if s.verbose
             fprintf('no userDotsLabels for nuclei %d in %s\n', nn, nuc.file)
         end
     end
