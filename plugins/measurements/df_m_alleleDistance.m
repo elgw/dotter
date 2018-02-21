@@ -17,7 +17,7 @@ chan = varargin{3};
 
 if ~isfield(M{1}, 'pixelSize')
     warning('Pixel size not specified!')
-    res = [130,130,300]
+    res = [130,130,300];
 else
     res = M{1}.pixelSize;
 end

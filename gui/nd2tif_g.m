@@ -156,6 +156,8 @@ uicontrol('Style', 'pushbutton', ...
     end
 
     function gui_convert(varargin)
+        set(GUI.convert, 'String', 'Wait...');
+        drawnow()
         switch(GUI.focus.Value)
             case 1
                 s.focus_check = 0;
@@ -180,6 +182,8 @@ uicontrol('Style', 'pushbutton', ...
         
         fclose(s.logFile);
         web(s.logFileName, '-browser')
+        set(GUI.convert, 'String', 'Convert');
+        drawnow()
     end
 
     function focusChange(varargin)

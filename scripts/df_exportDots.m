@@ -47,7 +47,7 @@ s.extractUserDots = 0;
 s.calcFWHM = -1;
 s.maxDots = -1; % If positive, restrict the number of dots
 s.fitting = 'none';
-
+s.centroids = 0; % If 1, replace clusters with their centroid
 T = [];
 files = [];
 ccFile = '';
@@ -55,6 +55,9 @@ ccFile = '';
 for kk = 1:numel(varargin)
     if strcmpi(varargin{kk}, 'exportUserDots')
         s.extractUserDots = varargin{kk+1};
+    end
+    if strcmpi(varargin{kk}, 'centroids')
+        s.centroids = varargin{kk+1};
     end
     if strcmpi(varargin{kk}, 'fwhm')
         s.calcFWHM = varargin{kk+1};
@@ -146,6 +149,7 @@ s.logFile = fopen(s.logFileName, 'w');
 fprintf(s.logFile, '\n SETTINGS\n');
 fprintf(s.logFile, ' calcFWHM: %d\n', s.calcFWHM);
 fprintf(s.logFile, ' UserDots: %d\n', s.extractUserDots);
+fprintf(s.logFile, ' Centroids: %d\n', s.centroids);
 fprintf(s.logFile, ' maxDots: %d\n', s.maxDots);
 fprintf(s.logFile, ' nucleiSelection: %d\n', s.nucleiSelection);
 fprintf(s.logFile, '\nCC FILE:\n %s\n', ccFile);
@@ -160,9 +164,9 @@ T = [];
 
 w = waitbar(0, 'Extracting data');
 for kk = 1:numel(files)
-waitbar(kk/(1.1*numel(files)), w);
-fprintf(s.logFile, '\n-> %s\n', files{kk});
-
+    waitbar(kk/(1.1*numel(files)), w);
+    fprintf(s.logFile, '\n-> %s\n', files{kk});
+    
     file = files{kk};
     
     t = load(file, '-mat');
@@ -182,14 +186,20 @@ fprintf(s.logFile, '\n-> %s\n', files{kk});
         else
             imFile = [];
         end
-       
+        
         
         if s.extractUserDots
             TFC = extractUserDotsForChannel(s, cc, M, N, imFile);
+            if s.centroids
+                % Group together the dots in TFC on their cluster label and
+                % replace them by their centroids
+                TFC = replaceByCentroids(TFC);
+            end
         else
             TFC = extractAllDotsForChannel(s, cc, M, N, imFile);
         end
-                
+        
+        
         % file, cname, nuclei, TFC
         
         C = mat2cell(TFC, ones(1, size(TFC,1)), ones(1, size(TFC,2)));
@@ -236,115 +246,96 @@ fclose(s.logFile);
 web(s.logFileName);
 end
 
-    function TFC = extractUserDotsForChannel(s, cc, M, N, imFile)
-        % Take the dots from N{nn}.userDots{cc}
-        TFC = [];
-        nucNum = [];
+function TFC = replaceByCentroids(T)
+% dots(x,y,z,intensity), dfwhm, label
+
+TFC = [];
+if numel(T) ==0
+    return
+end
+
+nuclei = unique(T(:,1));
+
+for nn = 1:numel(nuclei)
+    nuc = nuclei(nn);
+    TN = T(T(:,1) == nuc, :);
         
-        for nn = 1:numel(N)
-            fprintf(s.logFile, 'Nuclei %d, channel %d\n',nn, cc);
-            hasDots = 0;
-            dapiOk = 1;
-            if isfield(N{nn}, 'userDots')
-                if numel(N{nn}.userDots{cc})>3
-                    hasDots = 1;
-                else
-                    fprintf(s.logFile, ' - No dots.\n');
-                end
-            else
-                fprintf(s.logFile, ' - userDots not selected\n');
-            end
-            
-            if s.nucleiSelection == 1 % All
-                dapiOk = 1;
-            end
-            
-            if s.nucleiSelection == 2 % G1
-                if isfield(M, 'dapiTh')
-                if N{nn}.dapisum > M.dapiTh
-                    fprintf(s.logFile, 'Nuclei %d excluded based on DAPI\n', nn);
-                    dapiOk = 0;
-                end
-            else
-                warning('No DAPI threshold for this field');
-                end
-            end
-            
-            if s.nucleiSelection == 3 % > G1
-                if isfield(M, 'dapiTh')
-                if N{nn}.dapisum < M.dapiTh
-                    fprintf(s.logFile, 'Nuclei %d excluded based on DAPI\n', nn);
-                    dapiOk = 0;
-                end
-            else
-                warning('No DAPI threshold for this field');
-                end
-            end
-            
-            if hasDots && dapiOk
-                dots = N{nn}.userDots{cc}(:,1:4);
-                
-                if s.calcFWHM
-                    fprintf(s.logFile, ' + Calculating FWHM\n');
-                    dfwhm = df_fwhm(imFile, dots(:,1:3));
-                else
-                    dfwhm = -2*ones(size(dots,1), 1);
-                end
-                
-                if strcmpi(s.fitting, 'com3w');
-                    fprintf(s.logFile, ' + Fitting with com3w\n');
-                    dots(:,1:3) = df_com3(imFile, dots(:,1:3)', 1)';
-                end
-                
-                if strcmpi(s.fitting, 'dotFitting');
-                    fprintf(s.logFile, ' + Fitting with dotFitting\n');
-                    dotFittingSettings = dotFitting();
-                    lambda = df_getEmission(M.channels{cc});
-                    dotFittingSettings.sigmaXY = 1.2*lambda/M.pixelSize(1);
-                    dotFittingSettings.sigmaZ = 1.2*lambda/M.pixelSize(3);                    
-                    dotFittingSettings.sigmaXY = df_getEmission(M.channels{cc});                    
-                    F=dotFitting(imFile, dots(:,1:3), dotFittingSettings);
-                    dots(:,1:3) = F(:,1:3);
-                end
-                
-                
-                %% Apply cc-correction
-                if isfield(s, 'ccData')
-                    fprintf(s.logFile, ' + Applying cc\n');
-                    dots(:,1:3) = ...
-                        df_cc_apply_dots('dots', dots(:,1:3), ...
-                        'from', M.channels{cc}, ... % From
-                        'to', 'dapi', ... % To
-                        'ccData', s.ccData);
-                    
-                end
-                
-                TFC = [TFC; dots, dfwhm, N{nn}.userDotsLabels{cc}(:)];
-                nucNum = [nucNum; nn*ones(size(dots,1),1)];                
-            end
+    
+labels = unique(TN(:, end));
+
+for ll = 1:numel(labels)
+    L = labels(ll);
+    if(L>0) % Only label 1, 2, ...
+        TL = TN(TN(:,end) == L, :);
+        
+        for dd = 2:6
+            TL(1,dd) = mean(TL(:,dd));
         end
-        % At last, combine 
-        TFC = [nucNum, TFC];
+        
+        TFC = [TFC; TL(1,:)];
     end
+end
+end
+end
 
+function TFC = extractUserDotsForChannel(s, cc, M, N, imFile)
+% Take the dots from N{nn}.userDots{cc}
+TFC = [];
+nucNum = [];
 
-    function TFC = extractAllDotsForChannel(s, cc, M, N, imFile)
-        % Take the dots from M.dots{cc}
-        TFC = M.dots{cc}(:, 1:4);
-        
-        if s.maxDots > 0
-            TFC = TFC(1:min(s.maxDots, size(TFC,1)), :);
+for nn = 1:numel(N)
+    fprintf(s.logFile, 'Nuclei %d, channel %d\n',nn, cc);
+    hasDots = 0;
+    dapiOk = 1;
+    if isfield(N{nn}, 'userDots')
+        if numel(N{nn}.userDots{cc})>3
+            hasDots = 1;
+        else
+            fprintf(s.logFile, ' - No dots.\n');
         end
+    else
+        fprintf(s.logFile, ' - userDots not selected\n');
+    end
+    
+    if s.nucleiSelection == 1 % All
+        dapiOk = 1;
+    end
+    
+    if s.nucleiSelection == 2 % G1
+        if isfield(M, 'dapiTh')
+            if N{nn}.dapisum > M.dapiTh
+                fprintf(s.logFile, 'Nuclei %d excluded based on DAPI\n', nn);
+                dapiOk = 0;
+            end
+        else
+            warning('No DAPI threshold for this field');
+        end
+    end
+    
+    if s.nucleiSelection == 3 % > G1
+        if isfield(M, 'dapiTh')
+            if N{nn}.dapisum < M.dapiTh
+                fprintf(s.logFile, 'Nuclei %d excluded based on DAPI\n', nn);
+                dapiOk = 0;
+            end
+        else
+            warning('No DAPI threshold for this field');
+        end
+    end
+    
+    if hasDots && dapiOk
+        dots = N{nn}.userDots{cc}(:,1:4);
         
         if s.calcFWHM
-            dfwhm = df_fwhm(imFile, TFC(:,1:3));
+            fprintf(s.logFile, ' + Calculating FWHM\n');
+            dfwhm = df_fwhm(imFile, dots(:,1:3));
         else
-            dfwhm = -2*ones(size(TFC,1),1);
+            dfwhm = -2*ones(size(dots,1), 1);
         end
         
         if strcmpi(s.fitting, 'com3w');
-            fprintf(s.logFile, ' + Fitting with com3\n');
-            TFC(:,1:3) = df_com3(imFile, TFC(:,1:3)', 1)';
+            fprintf(s.logFile, ' + Fitting with com3w\n');
+            dots(:,1:3) = df_com3(imFile, dots(:,1:3)', 1)';
         end
         
         if strcmpi(s.fitting, 'dotFitting');
@@ -354,12 +345,63 @@ end
             dotFittingSettings.sigmaXY = 1.2*lambda/M.pixelSize(1);
             dotFittingSettings.sigmaZ = 1.2*lambda/M.pixelSize(3);
             dotFittingSettings.sigmaXY = df_getEmission(M.channels{cc});
-            F=dotFitting(imFile, TFC(:,1:3), dotFittingSettings);
-            TFC(:,1:3) = F(:,1:3);
+            F=dotFitting(imFile, dots(:,1:3), dotFittingSettings);
+            dots(:,1:3) = F(:,1:3);
         end
         
-        TFC = [TFC, dfwhm, zeros(size(TFC,1),1)];
-        [~, nucNum] = associate_dots_to_nuclei(N, M.mask, TFC, cc);
-        TFC = [nucNum, TFC];
+        
+        %% Apply cc-correction
+        if isfield(s, 'ccData')
+            fprintf(s.logFile, ' + Applying cc\n');
+            dots(:,1:3) = ...
+                df_cc_apply_dots('dots', dots(:,1:3), ...
+                'from', M.channels{cc}, ... % From
+                'to', 'dapi', ... % To
+                'ccData', s.ccData);
+            
+        end
+        
+        TFC = [TFC; dots, dfwhm, N{nn}.userDotsLabels{cc}(:)];
+        nucNum = [nucNum; nn*ones(size(dots,1),1)];
     end
+end
+% At last, combine
+TFC = [nucNum, TFC];
+end
+
+
+function TFC = extractAllDotsForChannel(s, cc, M, N, imFile)
+% Take the dots from M.dots{cc}
+TFC = M.dots{cc}(:, 1:4);
+
+if s.maxDots > 0
+    TFC = TFC(1:min(s.maxDots, size(TFC,1)), :);
+end
+
+if s.calcFWHM
+    dfwhm = df_fwhm(imFile, TFC(:,1:3));
+else
+    dfwhm = -2*ones(size(TFC,1),1);
+end
+
+if strcmpi(s.fitting, 'com3w');
+    fprintf(s.logFile, ' + Fitting with com3\n');
+    TFC(:,1:3) = df_com3(imFile, TFC(:,1:3)', 1)';
+end
+
+if strcmpi(s.fitting, 'dotFitting');
+    fprintf(s.logFile, ' + Fitting with dotFitting\n');
+    dotFittingSettings = dotFitting();
+    lambda = df_getEmission(M.channels{cc});
+    dotFittingSettings.sigmaXY = 1.2*lambda/M.pixelSize(1);
+    dotFittingSettings.sigmaZ = 1.2*lambda/M.pixelSize(3);
+    dotFittingSettings.sigmaXY = df_getEmission(M.channels{cc});
+    F=dotFitting(imFile, TFC(:,1:3), dotFittingSettings);
+    TFC(:,1:3) = F(:,1:3);
+end
+
+TFC = [TFC, dfwhm, zeros(size(TFC,1),1)];
+[~, nucNum] = associate_dots_to_nuclei(N, M.mask, TFC, cc);
+TFC = [nucNum, TFC];
+end
 

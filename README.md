@@ -8,6 +8,18 @@
 
 # Changes to DOTTER 
 
+## 0.502
+ * `df_plot` batch processing improvements:
+   * scans subdirectories for `.cc` files and applies corrections
+     without any more interaction.
+   * log files produced with date, DOTTER version, etc..
+   * nuclei filters are applied (they were not initially).
+
+## 0.500
+ * Can now read nd2 files stored both in XYZ and XYT format. Reason:
+   one of the nd2 files that Quim got from the scope was in XYT
+format.
+
 ## 0.495
  * K-means clustering does now support auto detection of the number of
    clusters as well as constraints on the maximum number of dots per

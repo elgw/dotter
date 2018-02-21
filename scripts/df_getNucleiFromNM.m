@@ -1,22 +1,21 @@
 function [N, M] = df_getNucleiFromNM(varargin)
 % function [N, M] = df_getNucleiFromNM()
+%
 % Extract all nuclei from selected NM files
 % N{kk}.metaNo says which Meta data that belongs to the nuclei
 % i.e., Nuclei N{1} belongs to field M{N{1}.metaNo}
-
+% If one or more folders are selected, all NM files in the subdirectories
+% are loaded. ONE .cc file per folder is also loaded.
 
 s.verbose = 1;
-N = [];
-M = [];
-
 maxFiles = [];
-
 nMissingUD = 0; % Count the number of nuclei without userDots, these will not be returned
-
-ccFile = '';
+ccFile = ''; % If only one cc file
+ccFiles = {}; %
 folder = [];
-s.recursive = 0;
-
+files = {};
+folders = {};
+s.recursive = 1;
 
 for kk = 1:nargin
     if strcmpi(varargin{kk}, 'folder')
@@ -35,25 +34,12 @@ for kk = 1:nargin
     end
 end
 
+% to be returned
+N = [];
+M = [];
+
 % Get list of files, either from folder or from gui
-if numel(folder) >0 
-    if s.recursive == 1
-       fldrs = subdir(folder);
-       fldrs{end+1} = folder; % Add base folder as well
-       files = {};
-       folders = {};
-       for kk = 1:numel(fldrs)
-           fo = fldrs{kk};
-           fi = dir([fo filesep() '*.NM']);
-           for ff = 1:numel(fi)
-               folders{end+1} = [fo filesep()];
-               files{end+1} =   [fi(ff).name];
-           end
-       end
-    else
-        files = dir([folder '*.NM']);
-    end    
-else
+if numel(folder) == 0
     folder = df_getConfig('df_getNucleiFromNM', 'folder', pwd);
     files = uipickfiles('FilterSpec', folder, ...
         'Prompt', 'Select NM files(s)', 'REFilter', '.NM$');
@@ -66,6 +52,51 @@ else
     folder = '';
 end
 
+if(isdir(files{1}))
+    disp('Got directories')
+    dirs = files;
+    files = {};
+    
+    hasCC = 0;
+    for ff = 1:numel(dirs)
+        folder = [dirs{ff} filesep()];
+        
+        if s.recursive == 1
+            fldrs = subdir(folder);
+            fldrs{end+1} = folder; % Add base folder as well
+            
+            %keyboard
+            % Is there a .cc2 files in any of the folders?
+            ccFile = '';
+            for kk = 1:numel(fldrs)
+                fo = fldrs{kk};
+                fi = dir([fo filesep() '*.cc']);
+                if numel(fi) == 1
+                    ccFile= [fo filesep() fi(1).name];
+                    if hasCC == 1
+                        errordlg(sprintf('More than one .cc file below %s', folder));
+                        return
+                    end
+                    hasCC = 1;
+                    fprintf('Found cc file: %s\n', ccFile);
+                end
+            end
+            
+            for kk = 1:numel(fldrs)
+                fo = fldrs{kk};
+                fi = dir([fo filesep() '*.NM']);
+                for ff = 1:numel(fi)
+                    ccFiles{end+1} = ccFile;
+                    folders{end+1} = [fo filesep()];
+                    files{end+1} =   [fi(ff).name];
+                end
+            end
+        else
+            files = dir([folder '*.NM']);
+        end
+    end
+end
+
 fprintf('%d files selected\n', numel(files));
 
 if numel(maxFiles)>0
@@ -74,7 +105,7 @@ if numel(maxFiles)>0
 end
 
 if numel(files) == 0
-    error('No NM files to read\n');        
+    error('No NM files to read\n');
 end
 
 N = {};
@@ -86,33 +117,42 @@ w = waitbar(0, 'Loading files');
 for ff = 1:numel(files)
     waitbar((ff-1)/numel(files), w);
     fname = files{ff};
+    
     if numel(folders) == numel(files)
         folder = folders{ff};
     end
+    if(numel(ccFiles) == numel(files))
+        ccFile = ccFiles{ff};
+    end
+    
+    if numel(ccFile) == 0
+        warning('no cc file!');
+    end
+    
     if s.verbose
         fprintf('Loading %s\n', fname);
     end
     D = load([folder fname], '-mat');
     
     if(isfield(D.M, 'channels') == 0)
-           errordlg(sprintf('Can not load the NM. No channels specified in %s', fname));           
-           M = {};
-           N = {};
-           return
-    end    
+        errordlg(sprintf('Can not load the NM. No channels specified in %s', fname));
+        M = {};
+        N = {};
+        return
+    end
     
     if(ff==1)
         channels = D.M.channels;
     else
-       if ~isequal(channels, D.M.channels)           
-           errordlg('Can not load the NM files since the channels does not match!');           
-           M = {};
-           N = {};
-           return;
-       end       
+        if ~isequal(channels, D.M.channels)
+            errordlg('Can not load the NM files since the channels does not match!');
+            M = {};
+            N = {};
+            return;
+        end
     end
     
-    M{ff} = D.M;    
+    M{ff} = D.M;
     
     for nn = 1:numel(D.N)
         D.N{nn}.file = fname;
@@ -124,25 +164,26 @@ for ff = 1:numel(files)
         ccData = load(ccFile, '-mat');
         disp('Applying CC')
         for nn = 1:numel(D.N)
-            for cc = 1:numel(D.M.channels)                
+            for cc = 1:numel(D.M.channels)
                 
                 D.N{nn}.userDots{cc} = ...
                     df_cc_apply_dots('dots', D.N{nn}.userDots{cc}, ...
-                        'from', D.M.channels{cc}, ... % From
-                        'to', 'dapi', ... % To
-                        'ccData', ccData, 'settings', s);
+                    'from', D.M.channels{cc}, ... % From
+                    'to', 'dapi', ... % To
+                    'ccData', ccData, 'settings', s);
             end
         end
         disp('Done!')
     end
     
     % If the first nuclei has userDots, all have
-    if isfield(D.N{nn}, 'userDots')
-        N = [N D.N];
-    else
-        nMissingUD = nMissingUD +numel(D.N);
+    if numel(D.N)>0
+        if isfield(D.N{nn}, 'userDots')
+            N = [N D.N];
+        else
+            nMissingUD = nMissingUD +numel(D.N);
+        end
     end
-    
     
 end
 close(w);

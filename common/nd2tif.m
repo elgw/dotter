@@ -83,9 +83,10 @@ end
 
 fprintf(s.logFile, 'Dimension order: %s\n', char(reader.getDimensionOrder()));
 fprintf(s.logFile, 'Number of series: %d\n', char(reader.getSeriesCount));
-fprintf(s.logFile, 'XYZ: [%d, %d, %d]\nChannels %d \n', ...
+fprintf(s.logFile, 'XYZT: [%d, %d, %d %d]\nChannels %d \n', ...
     reader.getSizeX(), reader.getSizeY(), ...
-    reader.getSizeZ(), reader.getSizeC());
+    reader.getSizeZ(), reader.getSizeT(), ...
+    reader.getSizeC());
 
 % For meta data of the nd2 file format:
 % https://www.openmicroscopy.org/site/support/bio-formats5.1/formats/nikon-nis-elements-nd2-metadata.html
@@ -123,15 +124,33 @@ for kk = 1:nSeries
     if dapiFound ~= 1
         fprintf(s.logFile, 'WARNING: No dapi channel found\n');
     end
+
+    % iPlane = reader.getIndex(iZ - 1, iC -1, iT - 1) + 1;
     
     save_fov = 1;
     for cc = 1:channelOrder
         if save_fov == 1
-            V = zeros(reader.getSizeX(), reader.getSizeY(), reader.getSizeZ(), 'uint16');
+            assert(min(reader.getSizeZ(), reader.getSizeT()) == 1);
             
-            for ll = 1:reader.getSizeZ()
+            if reader.getSizeT()==1                
+                nSlices = reader.getSizeZ();
+                slice_mode = 1;
+            else
+                nSlices = reader.getSizeT();
+                slice_mode = 2;
+            end
+            
+            V = zeros(reader.getSizeX(), reader.getSizeY(), nSlices, 'uint16');
+                            
+            for ll = 1:nSlices
                 % getSeries(z,c,t);
-                plane = reader.getIndex(ll-1,cc-1,0)+1;
+                if slice_mode == 1
+                    plane = reader.getIndex(ll-1,cc-1,0)+1;
+                end
+                if slice_mode == 2
+                    plane = reader.getIndex(0,cc-1,ll-1)+1;
+                end                    
+                
                 if size(V,3)==1
                     V = bfGetPlane(reader, plane);
                 else

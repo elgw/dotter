@@ -1,12 +1,10 @@
 function df_plot(varargin)
-%% Plot this vs that for NM files
+%% Plot this vs that for NM files and export data
 
 % Ideas:
-% - Extend the plot windows with an export option
 % - Drawings and descriptions to explain the properties
-% - Plugin sepecification, i.e., place files in specific folder, define
-%   io, ...
 
+%% Parse input arguments
 f = [];
 tab = [];
 BQ = {}; % Queue for batch processing
@@ -20,9 +18,9 @@ for kk = 1:numel(varargin)
     end
 end
 
-if numel(tab) == 0
-    %% Create GUI components
-    f = figure('Position', [0,200,400,600], 'Menubar', 'none', ...
+%% Create Window and tab if not provided
+if numel(tab) == 0    
+    f = figure('Position', [0,200,600,600], 'Menubar', 'none', ...
         'NumberTitle','off', ...
         'Name', 'nd2 tif conversion');
     tabs = uitabgroup();
@@ -32,7 +30,7 @@ else
     f = tab.Parent;
 end
 
-% Set up variables
+%% Set up variables
 D.inputFiles = [];
 D.readDir = df_getConfig('nd2tif_g', 'readDir', '~/Desktop/');
 D.outputDir = df_getConfig('nd2tif_g', 'outputDir', '~/Desktop/');
@@ -49,7 +47,7 @@ end
 
 addpath([getenv('DOTTER_PATH') '/addons/structdlg/'])
 
-%% Global data
+% Global data
 N = [];
 M = [];
 d = [];
@@ -81,7 +79,7 @@ t = [];
 % 2N number of clusters
 % D number of dots
 
-% Load measurement plugins
+%% Load measurement plugins
 pluginPath = [getenv('DOTTER_PATH') 'plugins/measurements/'];
 plugins = dir([pluginPath 'df_m_*.m']);
 addpath(pluginPath)
@@ -100,7 +98,6 @@ for kk = 1:numel(plugins)
     t.fun = fs;
     d.nucProps(kk) = t;
 end
-
 
 % Sort by string
 strings = {d.nucProps.string};
@@ -136,20 +133,11 @@ d.channels = {};
 d.resolution = [1,1,1];
 
 %% Gui components
-%gui.win = figure('Position', [300,200,450,800], 'Menubar', 'none', ...
-%    'NumberTitle','off', ...
-%    'Name', 'DOTTER plot tool', ...
-%    'Resize', 'On', ...
-%    'WindowKeyPressFcn', @shortcuts);
 
+% Tabs
 gui.tabg = uitabgroup(tab,'Position',[0 0 1 1]); %, 'SelectionChangedFcn', @readsettings);
-%gui.tabg = uitabgroup(gui.win,'Position',[0 0 1 1]); %, 'SelectionChangedFcn', @readsettings);
-
 gui.tabExp =   uitab(gui.tabg, 'Title', 'NM files');
-%gui.tabDot =   uitab(gui.tabg, 'Title', 'Per Dot');
-%gui.tabAl  =   uitab(gui.tabg, 'Title', 'Per Cluster');
 gui.tabNuc =   uitab(gui.tabg, 'Title', 'Properties');
-%gui.tabField = uitab(gui.tabg, 'Title', 'Per Field');
 
 % NM Files
 gui.dataPanel  = uipanel(gui.tabExp, 'Position', [0, .1, 1, .9], 'Title', 'Data Info');
@@ -159,14 +147,13 @@ gui.DataInfo = uicontrol(gui.dataPanel, 'Style','text',...
     'Position', [0, 0, 1, 1], ...
     'HorizontalAlignment','left', ...
     'FontName', get(0,'FixedWidthFontName'));
-
 gui.loadData = uicontrol(gui.tabExp, ...
     'Style', 'Pushbutton', ...
     'Units', 'Normalized', ...
     'Position', [.5, 0, .5, .1], ...
     'String', '2. Load NM files', ...
     'Callback', @loadNMfiles);
-
+    
 gui.cc = uicontrol(gui.tabExp, ...
     'Style', 'Pushbutton', ...
     'Units', 'Normalized', ...
@@ -175,23 +162,13 @@ gui.cc = uicontrol(gui.tabExp, ...
     'Enable', 'on', ...
     'Callback', @loadCCfile);
 
-
-% Per nuclei - gui.tabNuc
-
-
-%uicontrol('Style', 'Text', ...
-%    'String', 'vs', ...
-%    'Units', 'Normalized', ...
-%    'Position', [.01, .62, .9, .1], ...
-%        'Parent', gui.tabNuc);
-
 gui.nucA = uicontrol('Style', 'listbox', 'String', {d.nucProps(:).string}, ...
     'Units', 'Normalized', ...
     'Position', [.01,.67,.49,.3], ...
     'Value', 2, ...
     'Min', 1, ...
     'Parent', gui.tabNuc, ...
-    'Callback', @nucChangeSelection);
+    'Callback', @nucChangeSelection, 'KeyPressFcn', @keyPress);
 
 cA = uicontextmenu('Parent', tab.Parent.Parent);
 gui.nucA.UIContextMenu = cA;
@@ -205,7 +182,7 @@ gui.nucChanA = uicontrol('Style', 'listbox', 'String', d.channels, ...
     'Value', 1, ...
     'Max', 100, ...
     'Min', 1, ...
-    'Parent', gui.tabNuc);
+    'Parent', gui.tabNuc, 'KeyPressFcn', @keyPress);
 
 gui.nucChanA2 = uicontrol('Style', 'listbox', 'String', d.channels, ...
     'Units', 'Normalized', ...
@@ -213,7 +190,7 @@ gui.nucChanA2 = uicontrol('Style', 'listbox', 'String', d.channels, ...
     'Value', 1, ...
     'Max', 100, ...
     'Min', 1, ...
-    'Parent', gui.tabNuc);
+    'Parent', gui.tabNuc, 'KeyPressFcn', @keyPress);
 
 
 gui.nucB = uicontrol('Style', 'listbox', 'String', {d.nucProps(:).string}, ...
@@ -267,24 +244,30 @@ gui.ExportNuc = uicontrol('Style', 'Pushbutton', ...
 
 gui.bpanel = uipanel(...
     'Title', 'Batch processing', ...
-    'Position', [.0 ,0,.5,.12], ...
+    'Position', [.0 ,0,.6,.12], ...
 'Parent', gui.tabNuc);
 gui.ExportNuc = uicontrol('Style', 'Pushbutton', ...
     'String', 'Add', ...
     'Units', 'Normalized', ...
-    'Position', [.0 ,0,1/3,1], ...
+    'Position', [.0 ,0,.25,1], ...
     'Parent', gui.bpanel, ...
     'Callback', @batchq_insert);
 gui.ExportNuc = uicontrol('Style', 'Pushbutton', ...
+    'String', 'Show', ...
+    'Units', 'Normalized', ...
+    'Position', [.25 ,0,.25,1], ...
+    'Parent', gui.bpanel, ...
+    'Callback', @batchq_show);
+gui.ExportNuc = uicontrol('Style', 'Pushbutton', ...
     'String', 'Reset', ...
     'Units', 'Normalized', ...
-    'Position', [1/3,0,1/3,1], ...
+    'Position', [.5,0,.25,1], ...
     'Parent', gui.bpanel, ...
     'Callback', @batchq_reset);
 gui.ExportNuc = uicontrol('Style', 'Pushbutton', ...
     'String', 'Run', ...
     'Units', 'Normalized', ...
-    'Position', [2/3,0,1/3,1], ...
+    'Position', [.75,0,.25,1], ...
     'Parent', gui.bpanel, ...
     'Callback', @batchq_run);
 
@@ -310,8 +293,6 @@ nucChangeSelection();
     end
 
 %% GUI functions
-
-
     function loadFolder(folder)
         [N, M] = df_getNucleiFromNM('folder', folder);
         if isfield(M{1}, 'pixelSize')
@@ -356,8 +337,9 @@ nucChangeSelection();
 
     function updateGUI(varargin)
         if numel(N) == 0 % No nuclei available
-            gui.DataInfo.String = 'No data loaded';
-            gui.DataInfo.ForegroundColor = [1, 0, 0];
+            gui.DataInfo.String = 'Load NM files or folders with NM files. Each folder should contain ONE .cc file specifying how to correct for shifts and chromatic aberrations.';
+            %gui.DataInfo.ForegroundColor = [0, .2, 0];
+            gui.DataInfo.FontSize = 14;
         else
             d.nNuclei = numel(N);
             d.nFields = numel(M);
@@ -490,9 +472,13 @@ nucChangeSelection();
                 %keyboard
                 T = array2table([A, B]);
                 T.Properties.VariableNames = {d.nucProps(m1).xstring, d.nucProps(m2).xstring};
-                [folder, name] = uiputfile('.csv');
+                
+                sfolder = df_getConfig('df_plot', 'sfolder', pwd());
+                [name, folder] = uiputfile(sfolder, '.csv');
+                                
                 if ~isnumeric(name)
-                    fname = [name folder];
+                    df_setConfig('df_plot', 'sfolder', folder);
+                    fname = [folder name];
                     fprintf('Writing to %s\n', fname);
                     writetable(T, fname);
                 end
@@ -552,7 +538,7 @@ nucChangeSelection();
             if s.export
                 %keyboard
                 T = array2table(A);
-                T.Properties.VariableNames = {d.nucProps(prop).xstring};
+                T.Properties.VariableNames = {d.nucProps(prop).xstring};                
                 [folder, name] = uiputfile('.csv');
                 if ~isnumeric(name)
                     fname = [name folder];
@@ -693,6 +679,14 @@ nucChangeSelection();
         
     end
 
+    function batchq_show(varargin)
+        for kk = 1:numel(BQ)
+            fprintf('%s\n', BQ{kk}.colName);
+        end
+        
+    end
+
+
     function batchq_insert(varargin)
         % Att things to the batch queue, BQ
         % Always includes all nuclei regardless of DAPI
@@ -709,9 +703,7 @@ nucChangeSelection();
                 return;
             end
         end
-        
-        
-        
+                        
         BQ{pos}.measurement = m1;
         BQ{pos}.string = d.nucProps(m1).string;
         BQ{pos}.function = d.nucProps(m1).fun;
@@ -748,10 +740,21 @@ nucChangeSelection();
         % Select an output file name
         tFileName = [];
         
-        fn = uiputfile({'*.tsv', 'Tab separated table'}, 'Select output file');
-        if ~isnumeric(fn)
-            tFileName = fn;
+        sfolder = df_getConfig('df_plot', 'sfolder', pwd());
+                                                                
+        [name, folder] = uiputfile({'*.csv', 'Comma separated values, .csv'}, 'Select output file', [sfolder, 'mydata.csv']);
+        
+        if ~isnumeric(name)
+            df_setConfig('df_plot', 'sfolder', folder);
+            tFileName = [folder, name];
+            lFileName = [folder, name(1:end-4) '_log.txt'];
         end
+        
+        logFile = fopen(lFileName, 'w');
+        fprintf(logFile, 'DOTTER_version, %s\n', df_version());
+        fprintf(logFile, 'created_yyyymmdd, %s\n', datestr(now, 'yyyymmdd'));
+        fprintf(logFile, 'user, %s\n', getenv('USER'));
+        
         T = {};
         ColNames = {};
             
@@ -761,41 +764,54 @@ nucChangeSelection();
         % D: one per dot
         
         features = d.nucProps(BQ{1}.measurement).features;
-        
-        if strcmpi(features, 'N')==1
-            % If the number of output is N, create columns:
-            % File, Nuclei
-        
-            for(kk = 1:numel(N))
-                T{kk,1} = N{kk}.file;
-                T{kk,2} = N{kk}.nucleiNr;
+                       
+        funF = d.nucFilters(gui.nucFilters.Value).fun;
+        fprintf(logFile, 'Nuclei_selection_function, %s\n', func2str(funF));
+        fprintf(logFile, 'number_of_nuclei, %d\n', numel(N));
+        Nselect = {};
+        for kk = 1:numel(N)
+            if funF(M,N{kk})
+                Nselect{end+1} = N{kk};
             end
-            ColNames = {'File', 'Nuclei'};
+        end
+        fprintf(logFile, 'selected_nuclei, %d\n', numel(Nselect));
+        
+                if strcmpi(features, 'N')==1 % one row per nuclei
+            
+            for kk = 1:numel(Nselect)                
+                T{kk,1} = M{Nselect{kk}.metaNo}.dapifile;
+                T{kk,2} = Nselect{kk}.file;
+                T{kk,3} = Nselect{kk}.nucleiNr;
+            end
+            
+            ColNames = {'Image', 'File', 'Nuclei'};
         end
         
         if strcmpi(features, 'D')==1
-            % File, nuclei, channel, cluster
-        
+            % File, nuclei, channel, cluster        
         end
         
-        if strcmpi(features, 'C')==1
-            % File, nuclei, cluster
+        if strcmpi(features, 'C')==1 % One row per cluster                                   
             pos = 1;            
-            for kk = 1:numel(N)                
-                for cc = 1:numel(N{kk}.clusters)
-                    T{pos,1} = N{kk}.file;
-                    T{pos,2} = N{kk}.nucleiNr;
-                    T{pos,3} = cc;
+            for kk = 1:numel(Nselect)                
+                for cc = 1:numel(Nselect{kk}.clusters)
+                    T{pos,1} = M{N{kk}.metaNo}.dapifile;
+                    T{pos,2} = Nselect{kk}.file;
+                    T{pos,3} = Nselect{kk}.nucleiNr;
+                    T{pos,4} = cc;
                     pos = pos+1;
                 end
             end
-            ColNames = {'File', 'Nuclei', 'Cluster'};
+            ColNames = {'Image', 'File', 'Nuclei', 'Cluster'};
         end
         
+        
         for kk = 1:numel(BQ)
-            m = BQ{kk}.function(M, N, BQ{kk}.chanA, BQ{kk}.chanB, BQ{kk}.settings);
+            m = BQ{kk}.function(M, Nselect, BQ{kk}.chanA, BQ{kk}.chanB, BQ{kk}.settings);            
             T = [T mat2cell(m, ones(numel(m),1), 1)];
             ColNames = [ColNames BQ{kk}.colName];
+            
+            fprintf(logFile, 'measurement_%d, %s\n', kk, func2str(BQ{kk}.function));
         end
         
         TT = cell2table(T);
@@ -803,7 +819,9 @@ nucChangeSelection();
         
         % Write table to disk
         if numel(tFileName) > 0
-            writeTable(TT, tFileName, 'Delimiter', 'tab');
+            writetable(TT, tFileName);
+            fprintf(logFile, 'Ouput_file, %s\n', tFileName);
+            fclose(logFile);
         else
             TT
         end
@@ -812,6 +830,16 @@ nucChangeSelection();
 
     function batchq_reset(varargin)
         BQ = {};
+    end
+
+    function keyPress(varargin)
+        
+        switch(varargin{2}.Key)            
+            case 'space'                
+                batchq_insert()
+                fprintf('%d in queue\n', numel(BQ));
+        end
+        
     end
 
 end
