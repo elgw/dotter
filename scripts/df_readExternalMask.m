@@ -35,4 +35,9 @@ if(~(max(m(:)) +1 == numel(u))) % If one or more labels are skipped
         );
 end
 
+% If the nuclei are not labelled, label them
+if max(m(:)) == 1
+    m = uint16(bwlabeln(m));
+end
+
 end

@@ -1,5 +1,7 @@
 function D = df_m_alleleDistance(varargin)
-% Returns all pairwise distances from all alleles
+% For each nuclei
+%  For each cluster
+%   Grab all pairwise distances
 
 if numel(varargin)==1
     if strcmpi(varargin{1}, 'getSettings')

@@ -10,18 +10,34 @@ w = 10; % target paper size
 h = 10;
 
 fig = gcf;
+driver = '-dpdf';
 
 for kk = 1:numel(varargin)
-    if strcmp(varargin{kk}, 'w')
+    if strcmpi(varargin{kk}, 'w')
         w = varargin{kk+1};
     end
-    if strcmp(varargin{kk}, 'h')
+    if strcmpi(varargin{kk}, 'h')
         h = varargin{kk+1};
     end
-    if strcmp(varargin{kk}, 'fig')
+    if strcmpi(varargin{kk}, 'fig')
         fig = varargin{kk+1};
     end
+    if strcmpi(varargin{kk}, 'driver')
+        driver = varargin{kk+1};
+    end
 end
+
+drivers = {'-depsc', '-dpdf'};
+
+driverFound = 0;
+for kk = 1:numel(drivers)
+    if strcmp(driver, drivers{kk})
+        driverFound = 1;
+    end
+end
+assert(driverFound==1);
+
+
 
 set(fig,'Units','centimeters',...
     'PaperUnits', 'centimeters', ...
@@ -32,5 +48,5 @@ set(fig,'Units','centimeters',...
 drawnow
 pause(0.1)
 
-print('-dpdf', sprintf('-f%d', fig.Number), filename)
+print(driver, sprintf('-f%d', fig.Number), filename)
 

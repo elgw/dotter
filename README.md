@@ -8,6 +8,9 @@
 
 # Changes to DOTTER 
 
+## 0.503
+ * Can import segmentations that are binarized and compressed.
+
 ## 0.502
  * `df_plot` batch processing improvements:
    * scans subdirectories for `.cc` files and applies corrections

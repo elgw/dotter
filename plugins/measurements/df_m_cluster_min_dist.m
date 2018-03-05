@@ -43,8 +43,7 @@ for kk = 1:numel(N)
         if size(A,1) == 0
             fprintf('No dots in %s\n', channelsS)
             md = NaN;
-        else
-            whos
+        else            
             for cc = 1:3
                 A(:,cc) = A(:,cc)*d.resolution(cc);
             end

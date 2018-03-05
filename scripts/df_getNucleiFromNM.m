@@ -19,7 +19,7 @@ s.recursive = 1;
 
 for kk = 1:nargin
     if strcmpi(varargin{kk}, 'folder')
-        folder = varargin{kk+1};
+        files = varargin{kk+1};
         %files = dir([folder '*.NM']);
         %files = df_fileStructToFileList(files);
     end
@@ -39,7 +39,7 @@ N = [];
 M = [];
 
 % Get list of files, either from folder or from gui
-if numel(folder) == 0
+if numel(files) == 0
     folder = df_getConfig('df_getNucleiFromNM', 'folder', pwd);
     files = uipickfiles('FilterSpec', folder, ...
         'Prompt', 'Select NM files(s)', 'REFilter', '.NM$');

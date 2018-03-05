@@ -382,7 +382,7 @@ nucChangeSelection();
             if numel(ccFile)>0
                 istring = [istring, sprintf('\nCorrection file:\n%s\n', ccFile)];
             else
-                istring = [istring, sprintf('\nNo corrections loaded')];
+                %istring = [istring, sprintf('\nNo corrections loaded')];
             end
             
             gui.DataInfo.String = istring;
@@ -736,7 +736,9 @@ nucChangeSelection();
         if(numel(BQ) == 0) % Nothing to do
             return;
         end
-                
+        gui.ExportNuc.String = 'wait...';
+        drawnow()
+        
         % Select an output file name
         tFileName = [];
         
@@ -825,7 +827,7 @@ nucChangeSelection();
         else
             TT
         end
-        
+        gui.ExportNuc.String = 'Run';
     end
 
     function batchq_reset(varargin)
