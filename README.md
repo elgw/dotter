@@ -8,6 +8,10 @@
 
 # Changes to DOTTER 
 
+## 0.504
+ * Fixed an issue where it was not possible to change threshold for
+   some images.
+
 ## 0.503
  * Can import segmentations that are binarized and compressed.
 

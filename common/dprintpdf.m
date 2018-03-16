@@ -27,7 +27,7 @@ for kk = 1:numel(varargin)
     end
 end
 
-drivers = {'-depsc', '-dpdf'};
+drivers = {'-depsc', '-dpdf', '-dpng'};
 
 driverFound = 0;
 for kk = 1:numel(drivers)

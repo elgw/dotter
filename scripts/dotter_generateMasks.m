@@ -24,13 +24,13 @@ end
 dEdge = dmin-dminIn-+1*(dminIn>0);
 
 minD = repmat(min(D,[],3), [1,1,size(D,3)]);
-D2 = D==minD;
+D2 = double(D==minD);
 
-mask1 = mask;
+mask1 = double(mask);
 
 mask3 = 0*mask1;
 for kk = 1:size(D2,3)
-    mask3 = max(mask3, D2(:,:,kk)*cellNo(kk));
+    mask3 = max(mask3, D2(:,:,kk)*double(cellNo(kk)));
 end
 
 mask2 = mask3.*(dmin<d0);
