@@ -8,6 +8,9 @@
 
 # Changes to DOTTER 
 
+## 0.505
+ * Updated documentation for basic plot: Pixel values. Also fixed a but that would make it crash sometimes.
+
 ## 0.504
  * Fixed an issue where it was not possible to change threshold for
    some images.

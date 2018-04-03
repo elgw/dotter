@@ -1,5 +1,5 @@
 function V = df_m_dotPV(varargin)
-% Pixel values for each dot in allele 1 or 2
+% Pixel values for clustered dots.
 
 if numel(varargin)==1
     if strcmpi(varargin{1}, 'getSettings')
@@ -19,7 +19,7 @@ chan = varargin{3};
 lastMeta = -1;
 
 V = [];
-for nn = 1:numel(N)    
+for nn = 1:numel(N)
     % If this nuclei belongs to another M than the last one, load images
     % from all channels
     if lastMeta ~= N{nn}.metaNo
@@ -31,17 +31,20 @@ for nn = 1:numel(N)
         end
     end
     
-        for aa = 1:2
-            dots = [];
-            for cc = chan
-                dots = N{nn}.clusters{aa}.dots{cc};
-                % interpn                
+    for aa = 1:numel(N{nn}.clusters)
+        dots = [];
+        for cc = chan
+            dots = N{nn}.clusters{aa}.dots{cc};
+            % interpn
+            %keyboard
+            if numel(dots)>0
                 dots = double(dots);
                 vv = interpn(double(I{cc}), dots(:,1), dots(:,2), dots(:,3));
                 V = [V; vv];
             end
-        end        
-          
+        end
+    end
+    
 end
 
 % Follow the conventions and set nan for non-calculatable properties.

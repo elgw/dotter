@@ -35,7 +35,13 @@ s.showLabels = 1;
 if nargin == 0
     
     if 1
-        I = df_readTif('/data/current_images/iJC/iJC810_20170906_001/dapi_001.tif');
+        testFolder = df_getConfig('DOTTER', 'testFolder', '');
+        if numel(testFolder) == 0
+            warning('no testFolder set');
+            return
+        end
+        testImage = [testFolder '/dapi_001.tif'];
+        I = df_readTif(testImage);
         I = max(I,[], 3);
     end
     
@@ -84,9 +90,9 @@ if exist('mask', 'var')
         cells{nn}.yy = C(:,1);
         cells{nn}.sLabel = nn;
         %keyboard
-    end    
+    end
 else
-    S = zeros(size(I));    
+    S = zeros(size(I));
 end
 
 if hasI
@@ -99,10 +105,10 @@ end
 
 uicontrol('Style', 'pushbutton', ...
     'String', 'Ok', ...
-'Units', 'Normalized', ...
-'Position', [.9, 0, .1, .05], ...
-'Callback', @done, ...
-'Parent', f);
+    'Units', 'Normalized', ...
+    'Position', [.9, 0, .1, .05], ...
+    'Callback', @done, ...
+    'Parent', f);
 
 set(f, 'Pointer', 'Cross'); % To show that some input is expected
 
@@ -156,7 +162,7 @@ close(f);
         end
         
         if strcmpi(key, 'V')
-            verbose = mod(verbose+1,2);            
+            verbose = mod(verbose+1,2);
             fprintf('Verbose = %d\n', verbose);
         end
         
@@ -184,11 +190,11 @@ close(f);
             clearCurrentMarkers();
         end
         if strcmpi(key, 'backspace')
-                clearCurrentMarkers();
+            clearCurrentMarkers();
         end
         
         if strcmp(key, 'return')
-            done();            
+            done();
         end
     end
 
@@ -371,12 +377,12 @@ close(f);
                         Markers = [Markers h];
                     end
                     updateLine;
-                end                                                         
+                end
                 
                 if snapType == 2; % Distance to closest line used, the most intuitive that I know of
                     
                     nMarkers = numel(Markers);
-                  
+                    
                     if nMarkers == 0
                         Markers = h;
                         updateLine
@@ -674,38 +680,38 @@ close(f);
         Markers = [];
         updateLine();
     end
-    
+
     function done(varargin)
         % When done. This will create the 2D pixel map, mask,
-            % and then end the GUI
-            
-            % Reset the mask
-            mask = 0*S;
-            
-            label = 1;
-            for kk = 1:numel(cells)
-                if numel(cells{kk}.xx)>0
-                    %keyboard
-                    
-                    if cells{kk}.sLabel > 0
-                        % Use mask if exist since mask->contour->poly2mask
-                        % is not perfectly invertible.
-                        mask(S==cells{kk}.sLabel) = kk;
-                        label = label + 1;
+        % and then end the GUI
+        
+        % Reset the mask
+        mask = 0*S;
+        
+        label = 1;
+        for kk = 1:numel(cells)
+            if numel(cells{kk}.xx)>0
+                %keyboard
+                
+                if cells{kk}.sLabel > 0
+                    % Use mask if exist since mask->contour->poly2mask
+                    % is not perfectly invertible.
+                    mask(S==cells{kk}.sLabel) = kk;
+                    label = label + 1;
+                else
+                    T = poly2mask(round(cells{kk}.xx), round(cells{kk}.yy), size(mask,1), size(mask,2));
+                    [~, N] = bwlabeln(T, 8);
+                    mask(T==1) = kk;
+                    if(N~=1)
+                        warning('Wrong number of regions for cell %d. Will be excluded', kk);
                     else
-                        T = poly2mask(round(cells{kk}.xx), round(cells{kk}.yy), size(mask,1), size(mask,2));
-                        [~, N] = bwlabeln(T, 8);
-                        mask(T==1) = kk;
-                        if(N~=1)
-                            warning('Wrong number of regions for cell %d. Will be excluded', kk);
-                        else
-                            label = label+1;
-                        end
+                        label = label+1;
                     end
-                    
                 end
+                
             end
-            uiresume(f);
+        end
+        uiresume(f);
     end
 
 end
