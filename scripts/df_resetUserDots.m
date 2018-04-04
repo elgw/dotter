@@ -126,12 +126,12 @@ for cc = channels
     for nn = 1:numel(N)
                         
         D0n = D0;
-        inside = interpn(M.xmask{cc}, D0(:,1), D0(:,2));
+        inside = interpn(double(M.xmask{cc}), D0(:,1), D0(:,2));
         D0n = D0n(inside==nn, :);
         
         D1n = D1;
-        whos
-        inside = interpn(M.xmask{cc}, D1(:,1), D1(:,2));
+        
+        inside = interpn(double(M.xmask{cc}), D1(:,1), D1(:,2));
         D1n = D1n(inside==nn, :);
         
         if isfinite(md)
