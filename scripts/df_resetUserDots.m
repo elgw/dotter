@@ -130,6 +130,7 @@ for cc = channels
         D0n = D0n(inside==nn, :);
         
         D1n = D1;
+        whos
         inside = interpn(M.xmask{cc}, D1(:,1), D1(:,2));
         D1n = D1n(inside==nn, :);
         
