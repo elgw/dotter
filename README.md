@@ -8,6 +8,9 @@
 
 # Changes to DOTTER 
 
+## 0.506
+ * Blob detector available as an alternative to detecting diffraction limited dots. Run manually with `df_blobsAsDots`.
+
 ## 0.505
  * Updated documentation for basic plot: Pixel values. Also fixed a but that would make it crash sometimes.
 
