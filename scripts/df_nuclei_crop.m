@@ -1,7 +1,9 @@
-function [C, X, Y] = df_nuclei_crop(N, I, varargin)
+function [C, delta, X, Y] = df_nuclei_crop(N, I, varargin)
 % Crop image to show nuclei
 % c = df_nuclei_crop(N, I, 'pad', 4);
 % default padding: 0
+% delta: coordinate offset
+% X, Y, actual image coordinates
 
 padding=0;
 for kk = 1:numel(varargin)
@@ -17,5 +19,7 @@ bbx = N.bbx;
 for zz = 1:size(I,3)
     C(:,:,zz) = interpn(double(I(:,:,zz)), X, Y);
 end
+
+delta = [bbx([1,3])-1, 0];
 
 end

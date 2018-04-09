@@ -1401,9 +1401,11 @@ fig_menu_delete()
             end
             
             style = s.dotMarkers{1};
+            if numel(d)>0
             DH{1} = plot(d(:,2), d(:,1), ...
                 style.shape, 'Color', style.color, 'MarkerSize', style.size, 'ButtonDownFcn', @gui_dotClick, ...
                 'Visible', style.visible);
+            end
             
             % Color depending on userDotsLabels
             homolog = N{s.nuclei}.userDotsLabels{s.channel};
@@ -1431,11 +1433,13 @@ fig_menu_delete()
             %% If all nuclei are shown at the same time
             
             % Extra dots
-            d = [];
+            d = zeros(0,3);
             for kk = 1:numel(N)
                 dd = N{kk}.userDotsExtra{s.channel};
                 nx = min(size(d,1), s.nxshow);
-                d = [dd(1:nx, 1:3); d];
+                if numel(dd)>0
+                    d = [dd(1:nx, 1:3); d];
+                end
             end
             style = s.dotMarkers{1};
             DH{1} = plot(d(:,2), d(:,1), ...
@@ -2081,8 +2085,14 @@ else
     s.dilationRadius = 5*ones(1, numel(M.channels));
 end
 
-s.dots.th = M.th;
-s.dots.th0 = M.th0;
+if isfield(M, 'th')
+    s.dots.th = M.th;
+    s.dots.th0 = M.th0;
+else
+    warning('No threshold available!');
+    s.dots.th = mat2cell(zeros(1, numel(M.channels)), 1, ones(1,numel(M.channels)));
+    s.dots.th0 = mat2cell(zeros(1, numel(M.channels)), 1, ones(1,numel(M.channels)));    
+end
 
 end
 

@@ -324,7 +324,15 @@ for nn = 1:numel(N)
     end
     
     if hasDots && dapiOk
-        dots = N{nn}.userDots{cc}(:,1:4);
+        dots = N{nn}.userDots{cc};
+        if size(dots, 2)>4
+            dots = dots(:,1:4);
+        end
+        % Handle missing intensity values by setting to zero
+        if size(dots,2)==3
+            dots = [dots, zeros(size(dots,1),1)];
+        end            
+        
         
         if s.calcFWHM
             fprintf(s.logFile, ' + Calculating FWHM\n');
