@@ -1,38 +1,88 @@
-%% Look at a set of nuclei and figure out which are outliers based on the 
+function TH = df_exp_nucSim(varargin)
+%% Look at a set of nuclei and figure out which are outliers based on the
 % dot profiles, consisting of the 20 strongest dots.
+% Returns the nuclei that are ok
+%
+% [M,N] = df_exp_nucSim('M', M, 'N', N);
+%
 
-folder = '/data/current_images/iJC766_20170720_002_calc/';
-folder = uigetdir('/data/current_images/');
+close all
 
-[N, M] = df_getNucleiFromNM('folder', {folder}, 'noClusters');
 
-nChan = numel(M{1}.channels);
-nDots = 10;
-
-for cc = 1:nChan
-    P{cc} = [];
-end
-
-figure
-for kk = 1:numel(N)
-    for cc = 1:nChan
-        subplot(1, nChan, cc)
-        D = N{kk}.dots{cc};
-        if(size(D,1)>nDots)
-            D = D(1:nDots,:);
-        end
-        hold on
-        plot(D(:,4));
-        if(size(D,1)>=nDots)
-            P{cc} = [P{cc}; D(:,4)'];
-        end
+for kk = 1:numel(varargin)
+    if strcmpi(varargin{kk}, 'M')
+        M = varargin{kk+1};
+    end
+    if strcmpi(varargin{kk}, 'M')
+        N = varargin{kk+1};
     end
 end
+
+if ~exist('M', 'var')
+    %folder = '/data/current_images/iJC766_20170720_002_calc/';
+    folder = uigetdir('/data/current_images/iAM/');
+    
+    [N, M] = df_getNucleiFromNM('folder', {folder}, 'noClusters');
+end
+
+fprintf('%d nuclei loaded\n', numel(N));
+[M,N] = df_exp_onlyG1(M,N);
+fprintf('Keeping %d G1\n', numel(N));
+
+%% Settings
+s.nTrue = 2;
+s.nDots = 5*s.nTrue; % Dots to extract per nuclei
+s.nChan = numel(M{1}.channels);
+s.plot = 1;
+s.nThresholds = 1024;
+s.curve_max_dist = 1.1;
+
+s = StructDlg(s);
+
+%% Extract dots
+P = extractDots(N, s);
+
+%% Select nuclei for threshold analysis
+PS = select_curves(P, s);
+[TH, THS, Q, B] = get_thresholds(PS, s);
+
+%% Plot what we got
+
+if s.plot
+    fw = 200;
+    f = figure;
+    pos = f.Position;
+    pos(3) = 5*fw;
+    pos(4) = s.nChan*fw;
+    f.Position = pos;
+    
+    for cc = 1:s.nChan
         
-for cc = 1:nChan
-        subplot(1, nChan, cc)
-        title(M{1}.channels{cc})
-        plot(mean(P{cc}), 'k-', 'LineWidth', 2);
+        subplot(s.nChan, 4, cc*4-4+1)
+        plot(P{cc}')
+        title('All nuclei')
+        h = text(-5, 2, M{1}.channels{cc})
+        set(h, 'rotation', 90);
+        subplot(s.nChan, 4, cc*4-4+2)
+        plot(PS{cc}')
+        title('Selected nuclei')
+        subplot(s.nChan, 4, cc*4-4+3)
+        plot(THS{cc}, Q{cc})
+        a = axis();
+        hold on
+        plot([TH(cc), TH(cc)], [a(3), a(4)], '--k');
+        xlabel('Threshold')
+        ylabel('Quality');
+        title('Threshold finding')
+        
+        subplot(s.nChan, 4, cc*4-4+4)
+        bar(0:s.nDots,B{cc})
+        title('At best threshold')
+        xlabel('Dots')
+        ylabel('#')
+        
+        %plot(THS{cc}, Q{cc});
+    end
 end
 
 %dprintpdf('/home/erikw/profiles_iEG458.pdf', 'w', 45, 'h', 10);
@@ -41,12 +91,97 @@ end
 %dprintpdf('/home/erikw/profiles_iJC1041.pdf', 'w', nChan*10, 'h', 10);
 %dprintpdf('/home/erikw/profiles_iJC1024.pdf', 'w', nChan*10, 'h', 10);
 
+end
 
+function P = extractDots(N, s)
 
+for cc = 1:s.nChan
+    P{cc} = [];
+end
 
+for kk = 1:numel(N)
+    for cc = 1:s.nChan
+        D = N{kk}.dots{cc};
+        if(size(D,1)>s.nDots)
+            D = D(1:s.nDots,:);
+        end
+        if(size(D,1)>=s.nDots)
+            P{cc} = [P{cc}; D(:,4)'];
+        end
+    end
+end
+end
 
+function PS = select_curves(P, s)
 
+for cc = 1:s.nChan
+    Q = P{cc};
+    w = sqrt(mean(Q)+1);
+    for kk = 1:size(Q,1)
+        Q(kk,:) = Q(kk,:)./w;
+    end
+    m = mean(Q);
+    nm = norm(m);
+    m = m/nm;
+    d = zeros(size(Q,1),1);
+    for kk = 1:size(Q,1)
+        d(kk) = abs(m*Q(kk,:)')/nm;
+    end
+    
+    C = P{cc}(d<s.curve_max_dist,:);
+    PS{cc} = C;
+end
 
+end
 
+function [TH, THS, Q, B] = get_thresholds(PS, s)
+% Return best thresholds in TH
+% Threshold that were tried in THS
+% Q: quality for each threshold
+% B: "bars" for the best threshold
 
+for cc = 1:s.nChan
+    C = PS{cc};
+    % Set threshold to try
+    maxThres = max(max(C(s.nTrue:end, :)));
+    ths = linspace(min(C(:)), maxThres, s.nThresholds);
+    %keyboard
+    for tt = 1:numel(ths)
+        CT = C>ths(tt);
+        CT = sum(CT,2);
+        nCT = histo16(uint16(CT));
+        nCT = double(nCT(1:s.nDots+1));
+        thsq(tt) = histQuality(nCT, s);
+        %figure(3)
+        %bar(0:s.nDots, nCT)
+        %title(sprintf('%f', ths(tt)));
+        %pause
+    end
+    
+    thpos = find(thsq==max(thsq));
+    thpos = thpos(1);
+    thbest = ths(thpos);
+    
+    CT = C>thbest;
+    CT = sum(CT,2);
+    nCT = histo16(uint16(CT));
+    nCT = double(nCT(1:s.nDots+1));
+    
+    Q{cc} = thsq;
+    TH(cc) = thbest;
+    THS{cc} = ths;
+    B{cc} = nCT;
+end
 
+end
+
+function q = histQuality(C, s)
+% Quality of histogram
+%C(1): n nuclei with 0 dots
+%C(2): n nuclei with 1 dot 
+% ...
+%keyboard
+
+q = C(s.nTrue+1)/sum(C'.*(((0:s.nDots)-s.nTrue).^2).^(1/2));
+
+end
