@@ -62,8 +62,8 @@ end
 dpn = {};
 dpn_all = {};
 for kk = 1:numel(P)
-    dpn{kk} = histo16(uint16(sum(PS{kk}>TH(kk),2)));
-    dpn_all{kk}= histo16(uint16(sum(P{kk}>TH(kk),2)));
+    dpn{kk} = df_histo16(uint16(sum(PS{kk}>TH(kk),2)));
+    dpn_all{kk}= df_histo16(uint16(sum(P{kk}>TH(kk),2)));
 end
 
 %% Plot what we got
