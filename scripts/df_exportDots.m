@@ -115,8 +115,9 @@ if exist('ccFile', 'var')
 end
 
 
-fprintf('Files: \n')
-fprintf('%s\n...\n', files{1});
+fprintf('%d Files: \n, numel(files)')
+fprintf('%s ... \n', files{1});
+
 
 if s.calcFWHM < 0 % if not set;
     a = questdlg('Calculate FWHM from at the dot locations in the images? That will take a lot of time','FWHM', 'Yes', 'No', 'No');
@@ -169,11 +170,11 @@ for kk = 1:numel(files)
     
     file = files{kk};
     
-    t = load(file, '-mat');
-    M = t.M;
-    N = t.N;
+    [M,N] = df_nm_load(file);        
+    M = M{1};
     
     assert(isfield(M, 'mask'));
+    
     
     % For each channel
     for cc = 1:numel(M.channels)
@@ -186,8 +187,7 @@ for kk = 1:numel(files)
         else
             imFile = [];
         end
-        
-        
+                
         if s.extractUserDots
             TFC = extractUserDotsForChannel(s, cc, M, N, imFile);
             if s.centroids
@@ -197,11 +197,12 @@ for kk = 1:numel(files)
             end
         else
             TFC = extractAllDotsForChannel(s, cc, M, N, imFile);
+            
         end
         
         
         % file, cname, nuclei, TFC
-        
+        %keyboard
         C = mat2cell(TFC, ones(1, size(TFC,1)), ones(1, size(TFC,2)));
         C = [repmat({file}, size(C,1),1) repmat(cname, size(C,1),1) C];
         
@@ -216,6 +217,12 @@ end
 
 disp('data extraction done ...')
 whos T
+
+if numel(T) == 0
+    close(w);
+    warndlg('Nothing to export! No userDots?')
+    return
+end
 
 Table = cell2table(T);
 Table.Properties.VariableNames = {'File', 'Channel', 'Nuclei', 'x', 'y', 'z', 'Value','FWHM', 'Label'};

@@ -1,4 +1,4 @@
-function TH = df_exp_nucSim(varargin)
+function [TH, dpn, dpn_all] = df_exp_nucSim(varargin)
 %% Look at a set of nuclei and figure out which are outliers based on the
 % dot profiles, consisting of the 20 strongest dots.
 % Returns the nuclei that are ok
@@ -6,15 +6,28 @@ function TH = df_exp_nucSim(varargin)
 % [M,N] = df_exp_nucSim('M', M, 'N', N);
 %
 
-close all
+%% Settings
+s.nTrue = 2;
+s.nDots = 5*s.nTrue; % Dots to extract per nuclei
+
+s.plot = 1;
+s.nThresholds = 1024;
+s.curve_max_dist = 1.1;
 
 
+s.query = 1;
 for kk = 1:numel(varargin)
     if strcmpi(varargin{kk}, 'M')
         M = varargin{kk+1};
     end
-    if strcmpi(varargin{kk}, 'M')
+    if strcmpi(varargin{kk}, 'N')
         N = varargin{kk+1};
+    end
+    if strcmpi(varargin{kk}, 'noquery')
+        s.query = 0;
+    end
+    if strcmpi(varargin{kk}, 'noplot')
+        s.plot = 0;
     end
 end
 
@@ -29,22 +42,29 @@ fprintf('%d nuclei loaded\n', numel(N));
 [M,N] = df_exp_onlyG1(M,N);
 fprintf('Keeping %d G1\n', numel(N));
 
-%% Settings
-s.nTrue = 2;
-s.nDots = 5*s.nTrue; % Dots to extract per nuclei
 s.nChan = numel(M{1}.channels);
-s.plot = 1;
-s.nThresholds = 1024;
-s.curve_max_dist = 1.1;
 
-s = StructDlg(s);
+if s.query
+    s = StructDlg(s);
+end
 
 %% Extract dots
 P = extractDots(N, s);
 
 %% Select nuclei for threshold analysis
 PS = select_curves(P, s);
+for cc = 1:numel(PS)
+    fprintf('%d of %d nuclei used\n', size(PS{cc},1), size(P{cc},1));
+end
+
 [TH, THS, Q, B] = get_thresholds(PS, s);
+
+dpn = {};
+dpn_all = {};
+for kk = 1:numel(P)
+    dpn{kk} = histo16(uint16(sum(PS{kk}>TH(kk),2)));
+    dpn_all{kk}= histo16(uint16(sum(P{kk}>TH(kk),2)));
+end
 
 %% Plot what we got
 
@@ -120,7 +140,7 @@ for cc = 1:s.nChan
     for kk = 1:size(Q,1)
         Q(kk,:) = Q(kk,:)./w;
     end
-    m = mean(Q);
+    m = mean(Q,1);
     nm = norm(m);
     m = m/nm;
     d = zeros(size(Q,1),1);
@@ -143,7 +163,7 @@ function [TH, THS, Q, B] = get_thresholds(PS, s)
 for cc = 1:s.nChan
     C = PS{cc};
     % Set threshold to try
-    maxThres = max(max(C(s.nTrue:end, :)));
+    maxThres = max(max(C(:,s.nTrue:end)));
     ths = linspace(min(C(:)), maxThres, s.nThresholds);
     %keyboard
     for tt = 1:numel(ths)
@@ -178,10 +198,28 @@ end
 function q = histQuality(C, s)
 % Quality of histogram
 %C(1): n nuclei with 0 dots
-%C(2): n nuclei with 1 dot 
+%C(2): n nuclei with 1 dot
 % ...
-%keyboard
 
-q = C(s.nTrue+1)/sum(C'.*(((0:s.nDots)-s.nTrue).^2).^(1/2));
+
+weight = (((0:s.nDots)-s.nTrue).^2).^(1/2);
+weight = sqrt(weight+1);
+weight(1:s.nTrue+1) = 0*weight(1:s.nTrue+1)*0.8;
+weight = -weight;
+weight = weight*0; % EXPERIMENTAL
+weight(s.nTrue+1) = 1;
+
+%keyboard
+if 0
+    plot(0:numel(weight)-1, weight, 'k')
+    hold on
+    plot(s.nTrue*[1,1], [min(weight), max(weight)], 'k--');
+    legend('Weight Curve', 'nDots')
+    xlabel('Number of dots')
+    ylabel('Weight')
+    
+end
+%keyboard
+q = sum(C'.*weight);
 
 end

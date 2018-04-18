@@ -8,6 +8,7 @@ function [N, M] = df_getNucleiFromNM(varargin)
 % are loaded. ONE .cc file per folder is also loaded.
 
 s.verbose = 1;
+s.noclusters = 0;
 maxFiles = [];
 nMissingUD = 0; % Count the number of nuclei without userDots, these will not be returned
 ccFile = ''; % If only one cc file
@@ -25,6 +26,9 @@ for kk = 1:nargin
     end
     if strcmpi(varargin{kk}, 'maxFiles')
         maxFiles = varargin{kk+1};
+    end
+    if strcmpi(varargin{kk}, 'noClusters')
+        s.noclusters = 1;
     end
     if strcmpi(varargin{kk}, 'ccFile')
         ccFile = varargin{kk+1};
@@ -113,6 +117,7 @@ M = {};
 
 channels = [];
 w = waitbar(0, 'Loading files');
+drawnow()
 
 for ff = 1:numel(files)
     waitbar((ff-1)/numel(files), w);
@@ -181,10 +186,14 @@ for ff = 1:numel(files)
         if isfield(D.N{nn}, 'userDots')
             N = [N D.N];
         else
+            if s.noclusters
+                N = [N D.N];
+            else
             nMissingUD = nMissingUD +numel(D.N);
         end
     end
     
+    end
 end
 close(w);
 

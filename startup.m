@@ -9,6 +9,7 @@ setenv('DOTTER_PATH', codedir);
 addpath(codedir);
 addpath([codedir 'plugins/clustering'])
 addpath([codedir 'addons/bfmatlab/'])
+addpath([codedir 'addons/structdlg/'])
 addpath([codedir 'common/'])
 addpath([codedir 'common/mex/'])
 addpath([codedir 'common/localization/'])
