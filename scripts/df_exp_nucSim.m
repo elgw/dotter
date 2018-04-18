@@ -169,7 +169,7 @@ for cc = 1:s.nChan
     for tt = 1:numel(ths)
         CT = C>ths(tt);
         CT = sum(CT,2);
-        nCT = histo16(uint16(CT));
+        nCT = df_histo16(uint16(CT));
         nCT = double(nCT(1:s.nDots+1));
         thsq(tt) = histQuality(nCT, s);
         %figure(3)
