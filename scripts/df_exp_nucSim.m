@@ -184,7 +184,7 @@ for cc = 1:s.nChan
     
     CT = C>thbest;
     CT = sum(CT,2);
-    nCT = histo16(uint16(CT));
+    nCT = df_histo16(uint16(CT));
     nCT = double(nCT(1:s.nDots+1));
     
     Q{cc} = thsq;
