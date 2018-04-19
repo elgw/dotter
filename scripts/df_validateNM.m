@@ -1,23 +1,28 @@
 function okFiles = df_validateNM(folder, files)
 % function okFiles = df_validateNM(folder, files)
 %
-% Purpose: 
+% Purpose:
 %  See that NM files look all right, i.e. detect abnormalities
 %
 % To do:
 %  IF ERRORS, open log
 %  - Fix interface
-%  - Progressbar 
+%  - Progressbar
 
 s.folder = folder;
 
-fprintf('Validating Files... ')
+
 
 ok = 1;
 missingFiles = 0;
 missingDots = 0;
 
 okFiles = zeros(numel(files),1);
+
+logFileName = [tempdir() 'df_validateNM.log'];
+logFile = fopen(logFileName, 'w');
+
+fprintf(logFile, 'Validating Files with df_validateNM... \n');
 
 for kk = 1:numel(files)
     fileOk = 1;
@@ -28,7 +33,7 @@ for kk = 1:numel(files)
     %% See if the TIF files are available, otherwise suggest a
     % relocation
     if ~exist(F.M.dapifile, 'file')
-        fprintf('Can not find: %s\n', F.M.dapifile);
+        fprintf(logFile, 'Can not find: %s\n', F.M.dapifile);
         ok = 0;
         missingFiles = 1;
         fileOk = 0;
@@ -38,13 +43,13 @@ for kk = 1:numel(files)
     N = F.N;
     
     if numel(N) == 0
-        fprintf('No nuclei!')
+        fprintf(logFile, 'No nuclei!\n')
         fileOk = 0;
     end
     
     
     if ~isfield(M, 'dots')
-        fprintf('No dots in %s.\n', files(kk).name);
+        fprintf(logFile, 'No dots in %s.\n', files(kk).name);
         missingDots =1;
         fileOk = 0;
     else
@@ -56,40 +61,48 @@ for kk = 1:numel(files)
             mid = round(mid);
             if numel(size(M.mask))==2
                 if M.mask(mid(1), mid(2)) ~= nn
-                    fprintf('%s Nuclei %d, centre of bbx marked %d\n', filename, nn, M.mask(mid(1), mid(2)));
+                    fprintf(logFile, '%s Nuclei %d, centre of bbx marked %d\n', filename, nn, M.mask(mid(1), mid(2)));
                     maskError = 1;
                     ok = 1;
                 end
             end
             
             %% See if the userDots fall into the bbx
-                    
+            
         end
         
     end
     
     if maskError
-        t = warndlg(['Warning, strange mask for ' filename]);
-        uiwait(t)
+        ok = 0;
+        fprintf(logFile, 'Warning, strange mask for %s\n', filename);
     end
     
     okFiles(kk) = fileOk;
 end
 
 if ~ok
-    warn = sprintf('Validation errors:\n\n');
+    warn = fprintf(logFile, 'Validation errors:\n\n');
     if missingFiles
-        warn = [warn sprintf(' - TIF files could not be found, misc->relocate?\n')];
+        fprintf(logFile, ' - TIF files could not be found, misc->relocate?\n');
     end
     if missingDots
-        warn = [warn sprintf(' - Dots missing in NM files, cells->Find nuclei...?\n')];
+        fprintf(logfile, ' - Dots missing in NM files, cells->Find nuclei...?\n');
     end
     if maskError
-        warn = [warn sprintf(' - Problems with the mask, misc->fixMasks?\n')];
+        fprintf(logFile, ' - Problems with the mask, misc->fixMasks?\n');
     end
-    warn = [warn sprintf('\nSee output in command window for details\n')];
-    warn = [warn sprintf('Fix the errors and run again\n')];
-    warndlg(warn);
+end
+
+fclose(logFile);
+
+if ~ok
+    a = questdlg('There were some errors or warnings, do you want to see then?', 'Problems identified');
+    if numel(a)>0
+        if strcmp(a, 'Yes')
+            web(logFileName);
+        end
+    end
 end
 
 end

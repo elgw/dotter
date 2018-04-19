@@ -1238,11 +1238,13 @@ fig_menu_delete()
         foundMatch = 0; % Used to abort
         
         %% Find closest dot
-        
-        d1 = eudist(xy, D0(:,1:2));
-        if numel(d1)==0
+                
+        if size(D0,1)==0
             d1 = Inf;
+        else
+            d1 = eudist(xy, D0(:,1:2));
         end
+        
         d2 = eudist(xy, D1(:,1:2));
         if numel(d2)==0
             d2 = Inf;

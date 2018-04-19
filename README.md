@@ -8,6 +8,10 @@
 
 # Changes to DOTTER 
 
+# 0.514
+ * Collected error messages into log file for `df_validateNM`
+ * It is now possible to remove blobs in `setUserDotsDNA`.
+
 ## 0.506
  * Blob detector available as an alternative to detecting diffraction limited dots. Run manually with `df_blobsAsDots`.
 

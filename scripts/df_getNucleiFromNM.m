@@ -150,7 +150,7 @@ for ff = 1:numel(files)
         channels = D.M.channels;
     else
         if ~isequal(channels, D.M.channels)
-            errordlg('Can not load the NM files since the channels does not match!');
+            errordlg('Can not load the NM files since the channels does not match! %s %s', folder, fname);
             M = {};
             N = {};
             return;
