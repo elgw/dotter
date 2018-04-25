@@ -79,7 +79,7 @@ end
 
 gui.win = figure('Position', pos, 'Menubar', 'none', ...
     'NumberTitle','off', ...
-    'Name', 'DOTTER BiCroLabs 2015-2017', ...
+    'Name', 'DOTTER BiCroLabs 2015-2018', ...
     'MenuBar', 'None', ...
     'Color', [1,1,1], ...
     'Resize', 'Off', ...
@@ -136,7 +136,7 @@ uimenu(mCells, 'Label', 'Find nuclei and dots (image -> calc)', 'Callback', @run
 %    'Separator','on');
 %uimenu(mCells, 'Label', 'Integral Intensity in nuclei -- all channels', 'Callback', @integralIntensity);
 uimenu(mCells, 'Label', 'Add missing dapiTh and pixelSize for calc folder', 'Callback', @setDapiThFolder);
-
+uimenu(mCells, 'Label', 'Get threshold suggestion', 'Callback', @run_dotThreshold);
 
 mDots = uimenu(gui.win, 'Label', 'Select');
 uimenu(mDots, 'Label', 'View/Select DNA-FISH dots by threshold (->UD)', 'Callback', @run_setUserDots, ...
@@ -190,7 +190,7 @@ uimenu(mDNA, 'Label', 'Export dots', 'Callback', @run_exportDots, ...
 
     function tests(varargin)
         set(gui.win, 'Pointer', 'watch');
-        opts.outputDir = tempdir;        
+        opts.outputDir = tempdir;
         opts.showCode = false;
         rfile = publish('df_unittest.m', opts);
         web(rfile, '-browser');
@@ -210,11 +210,11 @@ uimenu(mDNA, 'Label', 'Export dots', 'Callback', @run_exportDots, ...
         assignin('base', 'D', D);
         disp('Data is also in the variable D')
     end
-    
-    function run_exportDots(varargin)        
-        gui_tabs_enable();        
+
+    function run_exportDots(varargin)
+        gui_tabs_enable();
         t = uitab(gui.tabs, 'Title', 'Export Dots');
-        df_exportDots_ui('tab', t, 'closefun', @gui_tabs_update);        
+        df_exportDots_ui('tab', t, 'closefun', @gui_tabs_update);
     end
 
     function relocate(varargin)
@@ -267,6 +267,17 @@ uimenu(mDNA, 'Label', 'Export dots', 'Callback', @run_exportDots, ...
         if ~isnumeric(folder)
             DNA_ChannelOverlapAnalysis(folder)
         end
+    end
+
+    function run_dotThreshold(varargin)
+        TH = df_dotThreshold()
+        if exist('TH', 'var')
+            fprintf('Suggested thresholds:\n');
+            for kk = 1:numel(TH)
+                fprintf('%f\n', TH(kk));
+            end
+        end
+        
     end
 
     function run_setNUserDots(varargin)
@@ -412,9 +423,9 @@ uimenu(mDNA, 'Label', 'Export dots', 'Callback', @run_exportDots, ...
     end
 
     function convert_nd2(varargin)
-        gui_tabs_enable();        
+        gui_tabs_enable();
         t = uitab(gui.tabs, 'Title', 'Bioformats to tif');
-        nd2tif_g('tab', t, 'closefun', @gui_tabs_update);                        
+        nd2tif_g('tab', t, 'closefun', @gui_tabs_update);
     end
 
     function openChangelog(varargin)
@@ -574,9 +585,9 @@ uimenu(mDNA, 'Label', 'Export dots', 'Callback', @run_exportDots, ...
 
     function run_plot(varargin)
         % Open the plotting gui
-        gui_tabs_enable();        
+        gui_tabs_enable();
         t = uitab(gui.tabs, 'Title', 'Plot tool');
-        df_plot('tab', t, 'closefun', @gui_tabs_update);             
+        df_plot('tab', t, 'closefun', @gui_tabs_update);
     end
 
     function shortcuts(varargin)
@@ -630,7 +641,7 @@ uimenu(mDNA, 'Label', 'Export dots', 'Callback', @run_exportDots, ...
         gui.win.Resize = 'On';
         pos =  gui.win.Position;
         pos(3:4) = [700, 600];
-        gui.win.Position = pos;        
+        gui.win.Position = pos;
     end
 
     function gui_tabs_disable()

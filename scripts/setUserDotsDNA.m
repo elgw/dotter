@@ -211,7 +211,7 @@ fig_image = figure('KeyPressFcn', @gui_keyPress, ...
 
 gui.plotInfo = uicontrol('Style', 'Text', ...
     'Units', 'Normalized', ...
-    'Position', [0,0,1, .05], ...    
+    'Position', [0,0,1, .05], ...
     'String', 'Info goes here', ...
     'Background', 'w', ...
     'HorizontalAlignment', 'left');
@@ -377,6 +377,7 @@ fig_menu_delete()
             'Callback', @plotFWHM,...
             'Parent', gui.toolsPanel);
         
+        if 0
         ctrl.threshold = uicontrol('Style', 'pushbutton', ...
             'String', 'reset thresholds', ...
             'Units', 'Normalized', ...
@@ -384,6 +385,7 @@ fig_menu_delete()
             'Callback', @gui_resetThresholds,...
             'ForegroundColor', [1,0,0], ...
             'Parent', gui.toolsPanel);
+        end
         
         uicontrol('Style', 'pushbutton', ...
             'String', 'Dots per nuclei', ...
@@ -676,18 +678,36 @@ fig_menu_delete()
     end
 
     function plotTH(varargin)
-        for cc = 1:numel(M.channels)
-            dotThreshold(M.dots{cc}(:,4), 'interactive', 'title', M.channels{cc});
+        TH = df_dotThreshold('folder', s.folder);
+        
+        if exist('TH', 'var')
+            
+            a = questdlg('Do you want to use these thresholds?');
+            if isequal(a, 'Yes')
+                
+                for kk = 1:numel(TH)
+                    s.dots.th{kk} = TH(kk);
+                    s.dots.th0{kk} = TH(kk)/2;
+                end
+                
+                [M, N, s] = df_resetUserDots(M, N, s);
+                s.updateDots = 1;
+                gui_update()
+            end
         end
+        
+        %for cc = 1:numel(M.channels)
+        %    dotThreshold(M.dots{cc}(:,4), 'interactive', 'title', M.channels{cc});
+        %end
     end
 
     function plotDotsPerNuclei(varargin)
         % Plot dots per nuclei and channel
         
-        figure('Name', 'Dots Per Nuclei')
+        figure('Name', 'Dots Per Nuclei for current field')
         
         w = numel(M.channels); h = 1;
-        
+        addpath([getenv('DOTTER_PATH') , '/plugins/measurements/']);
         for cc = 1:numel(M.channels)
             handles(cc) = subplot(h, w, cc);
             dpa = df_m_nucpNdots([], N, cc);
@@ -1238,7 +1258,7 @@ fig_menu_delete()
         foundMatch = 0; % Used to abort
         
         %% Find closest dot
-                
+        
         if size(D0,1)==0
             d1 = Inf;
         else
@@ -1404,9 +1424,9 @@ fig_menu_delete()
             
             style = s.dotMarkers{1};
             if numel(d)>0
-            DH{1} = plot(d(:,2), d(:,1), ...
-                style.shape, 'Color', style.color, 'MarkerSize', style.size, 'ButtonDownFcn', @gui_dotClick, ...
-                'Visible', style.visible);
+                DH{1} = plot(d(:,2), d(:,1), ...
+                    style.shape, 'Color', style.color, 'MarkerSize', style.size, 'ButtonDownFcn', @gui_dotClick, ...
+                    'Visible', style.visible);
             end
             
             % Color depending on userDotsLabels
@@ -1415,7 +1435,7 @@ fig_menu_delete()
             for kk = 2:numel(s.dotMarkers)
                 style = s.dotMarkers{kk};
                 if numel(N{s.nuclei}.userDots{s.channel}) >0
-                    HD = N{s.nuclei}.userDots{s.channel}(homolog==kk-2,:);                    
+                    HD = N{s.nuclei}.userDots{s.channel}(homolog==kk-2,:);
                     DH{kk} = plot(HD(:,2), HD(:,1), ...
                         style.shape, 'Color', style.color, 'MarkerSize', style.size, 'ButtonDownFcn', @gui_dotClick, ...
                         'Visible', style.visible);
@@ -1427,9 +1447,9 @@ fig_menu_delete()
                 M.channels{s.channel}, s.nuclei, ...
                 s.dots.th{s.channel}, ...
                 size(N{s.nuclei}.userDots{s.channel},1), ...
-            sum(homolog==0), ...
-            sum(homolog==1), ...
-            sum(homolog==2));            
+                sum(homolog==0), ...
+                sum(homolog==1), ...
+                sum(homolog==2));
             
         else
             %% If all nuclei are shown at the same time
@@ -1977,7 +1997,7 @@ fig_menu_delete()
     function Z = plotSliceZ(varargin)
         % Plot slice nr vs contrast
         ctr = df_image_focus('image', C{1}, 'method', 'gm');
-                
+        
         figure
         plot(1:size(C{1},3), ctr)
         grid on
@@ -2024,8 +2044,6 @@ end
 
 
 %% Functions not sharing the global variables goes below
-
-
 
 function M = setToM(M, s)
 % See parseFromM()
@@ -2093,7 +2111,7 @@ if isfield(M, 'th')
 else
     warning('No threshold available!');
     s.dots.th = mat2cell(zeros(1, numel(M.channels)), 1, ones(1,numel(M.channels)));
-    s.dots.th0 = mat2cell(zeros(1, numel(M.channels)), 1, ones(1,numel(M.channels)));    
+    s.dots.th0 = mat2cell(zeros(1, numel(M.channels)), 1, ones(1,numel(M.channels)));
 end
 
 end

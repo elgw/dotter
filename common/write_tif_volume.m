@@ -1,7 +1,10 @@
 function write_tif_volume(stack, filename)
 %% function write_tif_volume(stack, filename)
 
-assert(isa(stack, 'uint16'))
+if ~isa(stack, 'uint16')
+    error('Image has to be of type uint16');
+end
+
 assert(isa(filename, 'char'))
 
 t = Tiff(filename, 'w');

@@ -6,7 +6,7 @@ if numel(varargin)==1
         t.string = 'Cluster: Volume - spheres';
         t.selChan = 1;
         t.features = 'C';
-        s.radius = 130*10;
+        s.radius = 130*5;
         t.s = s;
         if nargout == 1
             varargout{1} = t;

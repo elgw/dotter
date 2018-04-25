@@ -1,19 +1,32 @@
-function [TH, dpn, dpn_all] = df_exp_nucSim(varargin)
-%% Look at a set of nuclei and figure out which are outliers based on the
+function [TH, dpn, dpn_all] = df_dotThreshold(varargin)
+%% Suggest a threshold per channel for a multi colour FISH experiment
+%
+%% Algorithm
+% 1/ Look at a set of nuclei and figure out which are outliers based on the
 % dot profiles, consisting of the 20 strongest dots.
 % Returns the nuclei that are ok
 %
-% [M,N] = df_exp_nucSim('M', M, 'N', N);
+% 2/ Set try a bunch of threshold and set the one that maximizes the
+% objective. Possible objectives might be:
+% - As many nuclei as possible with the right number of dots
+% - ...
+%
+% [M,N] = df_dotThreshold('M', M, 'N', N);
 %
 
-%% Settings
+%% Default Settings
+% Number of true dots.
 s.nTrue = 2;
-s.nDots = 5*s.nTrue; % Dots to extract per nuclei
-
+% Number of dots to extract per nuclei
+s.nDots = 5*s.nTrue; 
+% Plot or be quiet
 s.plot = 1;
+% Number of thresholds to try
 s.nThresholds = 1024;
-s.curve_max_dist = 1.1;
-
+% Max outliner distance for the nuclei profiles
+s.curve_max_dist = 0.01;
+% Ask for settings?
+s.query = 1;
 
 s.query = 1;
 for kk = 1:numel(varargin)
@@ -29,13 +42,24 @@ for kk = 1:numel(varargin)
     if strcmpi(varargin{kk}, 'noplot')
         s.plot = 0;
     end
+    if strcmpi(varargin{kk}, 'folder')
+        folder = varargin{kk+1};
+    end
 end
 
 if ~exist('M', 'var')
     %folder = '/data/current_images/iJC766_20170720_002_calc/';
-    folder = uigetdir('/data/current_images/iAM/');
     
+    if ~exist('folder', 'var')
+    folder = df_getConfig('df_dotThreshold', 'folder', '~/Desktop/');
+    folder = uigetdir(folder);    
+    if isnumeric(folder)
+        warning('Got no folder, quitting');
+        return
+    end
+    end
     [N, M] = df_getNucleiFromNM('folder', {folder}, 'noClusters');
+    df_setConfig('df_dotThreshold', 'folder', folder);
 end
 
 fprintf('%d nuclei loaded\n', numel(N));
@@ -52,7 +76,13 @@ end
 P = extractDots(N, s);
 
 %% Select nuclei for threshold analysis
-PS = select_curves(P, s);
+% Do this in two steps, first relaxed and then at the value that is of
+% interest.
+st = s;
+st.curve_max_dist =st.curve_max_dist+0.1;
+PS = select_curves(P, st);
+PS = select_curves(PS, s);
+
 for cc = 1:numel(PS)
     fprintf('%d of %d nuclei used\n', size(PS{cc},1), size(P{cc},1));
 end
@@ -80,12 +110,14 @@ if s.plot
         
         subplot(s.nChan, 4, cc*4-4+1)
         plot(P{cc}')
-        title('All nuclei')
-        h = text(-5, 2, M{1}.channels{cc})
+        a = axis();
+        title(sprintf('All nuclei, %d', size(P{cc},1)));
+        h = text(-5, 2, M{1}.channels{cc});
         set(h, 'rotation', 90);
         subplot(s.nChan, 4, cc*4-4+2)
         plot(PS{cc}')
-        title('Selected nuclei')
+        axis(a);
+        title(sprintf('Selected nuclei, %d', size(PS{cc},1)));
         subplot(s.nChan, 4, cc*4-4+3)
         plot(THS{cc}, Q{cc})
         a = axis();
@@ -133,19 +165,30 @@ end
 end
 
 function PS = select_curves(P, s)
-
+%% Select dot curves that are within s.curve_max_dist
+% 1. Normalize each curve
+% 2. Calculate the mean normalized profile and it's norm
+% 3. Scalar product between the mean normalized profile and each profile
+%keyboard
 for cc = 1:s.nChan
     Q = P{cc};
-    w = sqrt(mean(Q)+1);
+    %w = sqrt(mean(Q,1)+1);
+    w = ones(1,size(Q,2));
+    qn = zeros(size(Q,1),1); % Pre-allocate for the scalar product
     for kk = 1:size(Q,1)
-        Q(kk,:) = Q(kk,:)./w;
+        Q(kk,:) = Q(kk,:)./w;        
+        qn(kk)=norm(Q(kk,:));
+        Q(kk,:) = Q(kk,:)/qn(kk);
     end
-    m = mean(Q,1);
+    
+    m = mean(Q,1); 
+    
     nm = norm(m);
-    m = m/nm;
-    d = zeros(size(Q,1),1);
+    m = m/nm; % Mean normalized vector of the weighted profiles
+    d = zeros(size(Q,1),1); % Pre-allocate for the scalar product
+    mqn = mean(qn);
     for kk = 1:size(Q,1)
-        d(kk) = abs(m*Q(kk,:)')/nm;
+        d(kk) = (1-abs(m*Q(kk,:)'))*abs(qn(kk)-mqn)/mqn;
     end
     
     C = P{cc}(d<s.curve_max_dist,:);

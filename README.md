@@ -8,6 +8,10 @@
 
 # Changes to DOTTER 
 
+# 0.519
+ * `df_exp_nucSim` renamed to `df_dotThresholds`
+ * Integrated `df_dotThresholds` into `setUserDotsDNA`
+
 # 0.514
  * Collected error messages into log file for `df_validateNM`
  * It is now possible to remove blobs in `setUserDotsDNA`.
