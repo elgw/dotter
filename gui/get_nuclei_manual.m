@@ -11,15 +11,13 @@ function [mask, S] = get_nuclei_manual(mask, I)
 %    s          find shape automatically, snaps to contours
 %    L          show/hide labels
 %    <enter>    done, return the nuclei
-%    1          shape mode (default)
-%    2          slide mode (for 3D images, change z by draggin)
 %    d/<bspace> delete current dots
 %    h          show help
 %
 %  MOUSE
 %    left       create dot/add dot to current nuclei
 %    left-drag  move dot
-%    right      delete dot
+%    right      delete dot OR nuclei
 %
 % Note:
 %  - When cells are overlapping, the latest added will consume the ones
@@ -108,6 +106,13 @@ uicontrol('Style', 'pushbutton', ...
     'Units', 'Normalized', ...
     'Position', [.9, 0, .1, .05], ...
     'Callback', @done, ...
+    'Parent', f);
+
+uicontrol('Style', 'pushbutton', ...
+    'String', 'Help', ...
+    'Units', 'Normalized', ...
+    'Position', [.8, 0, .1, .05], ...
+    'Callback', @get_help, ...
     'Parent', f);
 
 set(f, 'Pointer', 'Cross'); % To show that some input is expected
@@ -712,6 +717,11 @@ close(f);
             end
         end
         uiresume(f);
+    end
+
+    function get_help(varargin)        
+        hm = help('get_nuclei_manual');
+        msgbox(hm);
     end
 
 end
