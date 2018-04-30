@@ -8,6 +8,12 @@
 
 # Changes to DOTTER 
 
+# 0.521
+ * Updated `df_getNucleiFromNM.m` not to crash when a single folder is used as argument.
+
+# 0.520
+ * Added help button in manual dot segmentation mode.
+
 # 0.519
  * `df_exp_nucSim` renamed to `df_dotThresholds`
  * Integrated `df_dotThresholds` into `setUserDotsDNA`

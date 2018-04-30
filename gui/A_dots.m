@@ -1,4 +1,4 @@
-function A_dots(varargin)
+% function A_dots(varargin)
 % Finds dot candidates and segments the nuclei,
 % Saves this data for further processing.
 %

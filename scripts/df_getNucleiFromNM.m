@@ -21,6 +21,9 @@ s.recursive = 1;
 for kk = 1:nargin
     if strcmpi(varargin{kk}, 'folder')
         files = varargin{kk+1};
+        if ~iscell(files)
+            files = {files};
+        end
         %files = dir([folder '*.NM']);
         %files = df_fileStructToFileList(files);
     end
