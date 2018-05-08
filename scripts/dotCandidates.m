@@ -57,7 +57,7 @@ for kk = 1:numel(varargin)
     end
     if strcmp(upper(varargin{kk}), 'LAMBDA')
         s.lambda = varargin{kk+1};
-    end       
+    end
 end
 
 
@@ -89,11 +89,11 @@ if returnDefaults
     if ~isfield(s, 'lambda')
         s.lambda = df_getEmission(defaultsChannel);
     end
-        
+    
     % for a594 lambda = 617 nm pixel size, [130,130,300]
     % s.sigmadog = [1.2, 1.2, 1.7];
     s.sigmadog = [1.2*s.lambda/617*voxelSize(1)/130*[1,1], ...
-                  1.7*s.lambda/617*voxelSize(3)/300];
+        1.7*s.lambda/617*voxelSize(3)/300];
     
     s.xypadding = 5;
     s.localizationMethods = {'DoG', 'intensity', 'gaussian'};
@@ -109,7 +109,7 @@ if returnDefaults
     s.channel = defaultsChannel;
     s.calcFWHM = 0;
     
-    P = s;        
+    P = s;
     return
 end
 
@@ -128,32 +128,36 @@ if s.verbose
     disp('Finding local maximas')
 end
 
-if strcmp(s.localization, 'DoG')
+if strcmpi(s.localization, 'DoG')
     disp('DoG localization')
     % DOG - Difference of Gaussians, i.e., approximation of Laplacian
     J = gsmooth(I, s.sigmadog, 'normalized')-gsmooth(I, s.sigmadog+0.01, 'normalized');
 end
 
-if strcmp(s.localization, 'intensity')
+if strcmpi(s.localization, 'intensity')
     disp('Intensity localization')
     J = I;
 end
 
-if strcmp(s.localization, 'gaussian')
+if strcmpi(s.localization, 'gaussian')
     disp('Gaussian correlation localization')
     J = gcorr(I, s.sigmadog);
+end
+
+if ~exist('J', 'var')
+    error('The localization method was not recognized')
 end
 
 % D: Dilation of J, to find the local maximas
 if size(I,3)>1
     
-    sel = ones(3,3,3);           
+    sel = ones(3,3,3);
     for z = [1,3] % Corners in z = 1,3 removed
         sel(1,1,z) = 0;
         sel(1,3,z) = 0;
         sel(3,1,z) = 0;
         sel(3,3,z) = 0;
-    end    
+    end
     sel(2,2,2)=0; % Hole in the middle
     
     % Or 'plus?'
@@ -186,7 +190,7 @@ if nsat>0
             removeSaturated = 0;
         case 'No'
             removeSaturated = 1;
-    end    
+    end
 end
 
 if removeSaturated
@@ -198,7 +202,7 @@ Pos = find(J>D);
 [PX, PY, PZ]=ind2sub(size(I), Pos);
 
 %%  Step 2: Ordering
-if strcmp(s.ranking, 'DoG')
+if strcmpi(s.ranking, 'DoG')
     disp('Ranking based on DoG')
     if s.dogDimension == 2
         for kk = 1:size(I,3)
@@ -211,13 +215,13 @@ if strcmp(s.ranking, 'DoG')
     end
 end
 
-if strcmp(s.ranking, 'intensity');
+if strcmpi(s.ranking, 'intensity')
     disp('Ranking based on intensity')
     % Intensity - median
     V = I;
 end
 
-if strcmp(s.ranking,'gaussian')
+if strcmpi(s.ranking,'gaussian')
     disp('Ranking based on gaussian correlation')
     % Gaussian correlation
     V = gcorr(I, s.sigmadog);
@@ -232,7 +236,7 @@ if strcmpi(s.refinement, 'none')
 end
 
 if strcmpi(s.refinement, 'Weighted Centre of Mass')
-    disp('>> Refining using df_com3 with weighting')    
+    disp('>> Refining using df_com3 with weighting')
     X = df_com3(V, [PX, PY, PZ]', 1)';
     PX = X(:,1);
     PY = X(:,2);

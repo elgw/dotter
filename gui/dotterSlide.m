@@ -35,12 +35,30 @@ function fig = dotterSlide(I, P, S, s, varargin)
 %  r: Export dots per nuclei and dots per region at current threshold
 %
 
+fileName = '??';
+
+if ~exist('I', 'var')
+    folder = df_getConfig('dotterSlide', 'folder', '~/');
+    [file, path] = uigetfile({'*.tif'}, 'Select image to load', folder);
+    if isnumeric(file)
+        disp('Aborting')
+        return
+    end
+    df_setConfig('dotterSlide', 'folder', path);
+    I = [path file];
+    fileName = I;
+end
 
 if ischar(I)
     I = df_readTif(I);
 end
 
+imageClass = class(I);
 I = double(I);
+
+if ~exist('P', 'var')
+    P = [];
+end
 
 if ~exist('s', 'var')
     s.limitedCLIM = 1;
@@ -176,13 +194,26 @@ gui.btn_showLabels = uicontrol('Style', 'togglebutton', ...
     'Callback', @setNumbers, ...
     'Value', s.showNumbers);
 
+gui.btn_info = uicontrol('Style', 'pushbutton', ...
+    'Parent', gui.panel, ...
+    'Units', 'Normalized', ...
+    'Position', [0, .2, 1, .1], ...
+    'String', 'Histogram', ...
+    'Callback', @showHistogram);
+
+gui.btn_info = uicontrol('Style', 'pushbutton', ...
+    'Parent', gui.panel, ...
+    'Units', 'Normalized', ...
+    'Position', [0, .1, 1, .1], ...
+    'String', 'Info', ...
+    'Callback', @showInfo);
+
 gui.btn_help = uicontrol('Style', 'pushbutton', ...
     'Parent', gui.panel, ...
     'Units', 'Normalized', ...
     'Position', [0, 0, 1, .1], ...
     'String', 'Help', ...
     'Callback', @showHelp);
-
 
 if exist('s', 'var')
     if isfield(s, 'mask')
@@ -872,10 +903,10 @@ end
                     bg.SelectedObject = r2;
                 case 2
                     bg.SelectedObject = r3;
-            end            
+            end
         end
         
-       
+        
         if s.sumView==0
             disp('slice mode')
             set(gca, 'clim', climVol)
@@ -888,10 +919,33 @@ end
             disp('z-max-projection mode')
             set(gca, 'clim', climMax)
         end
-       
-         s.updateImageData = 1;
+        
+        s.updateImageData = 1;
         updateGUI();
         
+    end
+
+    function showInfo(varargin)
+        msg = sprintf('Info:\n\n');
+        msg = [msg, ...
+            sprintf('File name: %s\n', fileName)];
+        msg = [msg, ...
+            sprintf('Image size: %dx%dx%d\n', size(I,1), size(I,2), size(I,3))];
+        msg = [msg, ...
+            sprintf('Image type: %s\n', imageClass)];
+        msg = [msg, ...
+            sprintf('Number of dots: %d\n', size(P,1))];
+        msg = [msg, ...
+            sprintf('\n')];
+        msgbox(msg);
+    end
+
+    function showHistogram(varargin)
+        figure
+        histogram(I(:));
+        grid on
+        xlabel('Intensity')
+        ylabel('#')
     end
 
 end
