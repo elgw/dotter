@@ -8,6 +8,9 @@
 
 # Changes to DOTTER 
 
+# 0.525
+ * `get_nuclei_manual` fixed, would previously skip some numbers in the mask.
+
 # 0.521
  * Updated `df_getNucleiFromNM.m` not to crash when a single folder is used as argument.
 
