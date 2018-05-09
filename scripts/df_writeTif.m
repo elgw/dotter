@@ -6,7 +6,9 @@ if ~isa(stack, 'uint16')
     error('Image has to be of type uint16');
 end
 
-assert(isa(filename, 'char'))
+if ~isa(filename, 'char')
+    error('File name has to be a string')
+end
 
 t = Tiff(filename, 'w');
 

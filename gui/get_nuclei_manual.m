@@ -752,6 +752,7 @@ close(f);
                 
             end
         end
+        [mask] = bwlabeln(mask);
         uiresume(f);
     end
 

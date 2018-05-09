@@ -20,10 +20,10 @@ for kk = 1:numel(files)
     bname = sprintf('%s_%03d.tif', channels{2}, kk);
    
     disp(['Writing ' aname]);
-    write_tif_volume(aname, a);
+    df_writeTif(aname, a);
     
     disp(['Writing ' bname]);
-    write_tif_volume(bname,b);
+    df_writeTif(bname,b);
     
 end
 

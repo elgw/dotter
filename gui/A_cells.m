@@ -21,7 +21,7 @@ function A_cells(varargin)
 % A_settings
 % A_cellSegmentation
 %   get_nuclei_dapi_ui
-%
+%   get_nuclei_dapi_manual
 
 folder = [];
 for kk = 1:numel(varargin)

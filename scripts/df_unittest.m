@@ -1,6 +1,9 @@
 function df_unittest()
 % Test some of the components in DOTTER
 %
+% It grabs all files ending with '_ut.m' in the standard 
+% directories and runs them.
+%
 % Run directly from terminal with:
 %   matlab -nodesktop -nosplash -r "run('df_unittest.m')"
 
