@@ -1,7 +1,21 @@
 function [m] = df_readExternalMask(file)
 % Read an external 2D/3D mask from a file and projects it down to 2D
 
+
+if ~exist('file', 'var')
+    error('No file specified')
+end
+
+if ~ischar(file)
+    error('File name has to be provided as a string');
+end
+
 fprintf('Reading mask from %s\n', file);
+
+if ~exist(file, 'file')
+    error('Can not read file')
+end
+
 if(strcmpi(file(end-3:end), '.tif'))
     I = df_readTif(file);
 else
@@ -11,7 +25,9 @@ end
 
 I = double(I); % uint32 can not be nan
 
-assert(size(I,3)>1, 'The external mask is not 3D\n');
+if(size(I,3)==1)
+    error('The external mask is not 3D');
+end
 
 if size(I,3)>1
     fprintf('  Projecting 3D mask to 2D\n');    
@@ -39,5 +55,7 @@ end
 if max(m(:)) == 1
     m = uint16(bwlabeln(m));
 end
+
+assert( (max(m(:)) +1 == numel(unique(m(:)))));
 
 end

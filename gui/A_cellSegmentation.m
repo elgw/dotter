@@ -104,7 +104,7 @@ for kk = 1:numel(dapifiles)
         end
     end
     
-    N = create_nuclei_from_mask(mask, idapi);
+    [N, mask] = create_nuclei_from_mask(mask, idapi);
     
     Ntot = Ntot+numel(N);
     %dotterSlide_settings.mask = mask;

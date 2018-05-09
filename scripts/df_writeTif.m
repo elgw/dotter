@@ -1,5 +1,6 @@
-function write_tif_volume(stack, filename)
-%% function write_tif_volume(stack, filename)
+function df_writeTif(stack, filename)
+%% function df_writeTif(stack, filename)
+% Writes a uint16 volumetric image to disk
 
 if ~isa(stack, 'uint16')
     error('Image has to be of type uint16');
@@ -28,8 +29,8 @@ t = Tiff(filename, 'w');
 end
 
 
-function [status] = write_tif_volume_old(V, filename)
-% function [status] = write_tif_volume(V, filename)
+function [status] = df_writeTif_old(V, filename)
+% function [status] = df_writeTif(V, filename)
 
 t = Tiff(filename,'w');
 

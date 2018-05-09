@@ -6,7 +6,7 @@ I(4,5,6) = 2^16;
 
 filename = [tempdir() 'test.tif'];
 tic
-write_tif_volume(I, filename);
+df_writeTif(I, filename);
 fprintf('Took %.2f s to write a normal sized tif file\n', toc);
 tic
 I2 = df_readTif(filename);

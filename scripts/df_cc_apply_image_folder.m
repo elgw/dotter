@@ -30,7 +30,7 @@ for kk = 1:numel(files)
         return
     end
     C = cc_apply_image('image', I, 'ccData', cc, 'from', channel{1}, 'to', 'dapi');
-    write_tif_volume(uint16(C), [outDir files(kk).name]);    
+    df_writeTif(uint16(C), [outDir files(kk).name]);    
     waitbar(kk/numel(files), w);
 end
 close(w)

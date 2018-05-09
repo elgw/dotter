@@ -1,4 +1,4 @@
-function  N = create_nuclei_from_mask(mask, I, s)
+function  [N, mask] = create_nuclei_from_mask(mask, I, s)
 %   N = create_nuclei_from_mask(mask, I, s)
 %   Initiates all nuclei based on a segmentation mask and the dapi image.
 %
@@ -12,10 +12,18 @@ function  N = create_nuclei_from_mask(mask, I, s)
 % N{kk}.centroid
 % N{kk}.dapisum
 % N{kk}.area
+%
+% TODO: 
+% What to do if the mask is missing a label? Alternatives
+% A/ Empty nuclei -- might screw up something later.
+% B/ Changing the mask -- has to be propagated back!
+% Idealy each nuclei should have a maskId which says what number in the
+% mask that it belongs to.
 
 N = [];
 if max(mask(:)) == 1
     [S, nCells] = bwlabeln(mask, 8);
+    mask = S;
 else
     S = mask;
     nCells = max(S(:));
@@ -49,6 +57,6 @@ for kk=1:numel(objects)
     N{kk} = nuclei;
 end
 
-% return N
+
 end
 

@@ -195,7 +195,7 @@ for kk = 1:nSeries
             
             if save_fov
                 fprintf(s.logFile, 'Writing % s to: %s\n', filename, outFileName);
-                write_tif_volume(V, outFileName);
+                df_writeTif(V, outFileName);
             else
                 fprintf(s.logFile, 'Not writing this field\n');
             end

@@ -1411,6 +1411,10 @@ fig_menu_delete()
             anno = [];
         end
         
+        if s.nuclei == 4
+            keyboard
+        end
+        
         if s.nuclei > 0 % A single nuclei will be drawn
             bbx = N{s.nuclei}.bbx;
             

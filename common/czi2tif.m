@@ -85,7 +85,7 @@ for kk = 1:reader.getSeriesCount()
         % getChannelName(imageIndex, channelIndex)
         outFileName = sprintf('%s%s_%03d.tif', [directory outFolder], char(omeMeta.getChannelName(0,cc-1)), kk);
         fprintf('Writing to: %s\n', outFileName);
-        write_tif_volume(V, outFileName);        
+        df_writeTif(V, outFileName);        
     end
 end
 

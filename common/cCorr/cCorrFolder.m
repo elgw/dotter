@@ -65,7 +65,7 @@ for kk = 1:numel(files)
         V(:,:,ss) = cCorrI(V(:,:,ss), channel, refChannel, cCorrFile, maxDist);
     end
     
-    write_tif_volume(V, sprintf('cc/%s', files(kk).name));
+    df_writeTif(V, sprintf('cc/%s', files(kk).name));
 end
 
 

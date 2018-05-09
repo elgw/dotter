@@ -2,6 +2,7 @@ function [V] = df_readTif(filename, varargin)
 % function [V, info] = df_readTif(filename, varargin)
 % Reads a volumetric tif image specified by filename
 %
+% See also df_writeTif
 
 % Possible improvement, for non-local files, copy to temp location before
 % reading because the Tif reader makes multiple disk accesses.

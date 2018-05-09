@@ -1,9 +1,14 @@
 function [mask, S] = get_nuclei_manual(mask, I)
 % function [mask, S] = get_nuclei_manual(I, mask)
 % GUI for manual cell segmentation.
+%
 % Input:
 % I: DAPI image
 % mask: previous (incomplete) segmentation
+%
+% Output:
+% mask: updated mask
+% S:
 %
 % Shortcuts:
 %  KEYBOARD
@@ -29,6 +34,7 @@ verbose = 0;
 snapType = 2; % Closest Line
 
 s.showLabels = 1;
+s.radius = 30;    % For magic shape
 
 if nargin == 0
     
@@ -58,6 +64,8 @@ if nargin == 0
     
 end
 
+
+
 hasI = 1;
 if numel(I) == 0
     hasI = 0;
@@ -73,6 +81,7 @@ end
 cells = {};
 Lines=[]; Labels = [];
 
+% REMOVE
 if exist('mask', 'var')
     [S, n] = bwlabeln(mask);
     %figure, imagesc(S);
@@ -92,6 +101,13 @@ if exist('mask', 'var')
 else
     S = zeros(size(I));
 end
+
+if exist('mask', 'var')
+    mask0 = mask;
+else
+    mask0 = S;
+end
+
 
 if hasI
     f = figure('Position', [300,200,1024,1024], ...
@@ -114,6 +130,21 @@ uicontrol('Style', 'pushbutton', ...
     'Position', [.8, 0, .1, .05], ...
     'Callback', @get_help, ...
     'Parent', f);
+
+uicontrol('Style', 'pushbutton', ...
+    'String', 'Settings', ...
+    'Units', 'Normalized', ...
+    'Position', [.7, 0, .1, .05], ...
+    'Callback', @settings, ...
+    'Parent', f);
+
+uicontrol('Style', 'pushbutton', ...
+    'String', 'Cancel', ...
+    'Units', 'Normalized', ...
+    'Position', [0, 0, .1, .05], ...
+    'Callback', @cancel, ...
+    'Parent', f);
+
 
 set(f, 'Pointer', 'Cross'); % To show that some input is expected
 
@@ -603,10 +634,10 @@ close(f);
             y0=get(Markers(1), 'Ydata');
             
             nPoints = 5;
-            radius = 30;
+            
             for kk = 1:nPoints
-                x(kk) = x0+sin(2*pi*kk/nPoints)*radius;
-                y(kk) = y0+cos(2*pi*kk/nPoints)*radius;
+                x(kk) = x0+sin(2*pi*kk/nPoints)*s.radius;
+                y(kk) = y0+cos(2*pi*kk/nPoints)*s.radius;
             end
             delete(Markers(1));
             Markers = [];
@@ -686,6 +717,11 @@ close(f);
         updateLine();
     end
 
+    function cancel(varargin)
+        mask = mask0;
+        uiresume(f);
+    end
+
     function done(varargin)
         % When done. This will create the 2D pixel map, mask,
         % and then end the GUI
@@ -722,6 +758,17 @@ close(f);
     function get_help(varargin)        
         hm = help('get_nuclei_manual');
         msgbox(hm);
+    end
+
+    function settings(varargin)
+        t = StructDlg(s);
+        if numel(t)>0
+            disp('Updating settings')
+            s = t;
+        else
+            disp('Not changing settings')
+        end
+        
     end
 
 end
