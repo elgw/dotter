@@ -19,6 +19,7 @@ if isunix || ismac
     cd([DOTTER_PATH 'common/mex'])
     mex  CFLAGS='$CFLAGS -std=c99 -march=native' COPTIMFLAGS='-O3' df_histo16.c
     mex  CFLAGS='$CFLAGS -std=c99 -march=native' COPTIMFLAGS='-O3' df_com2.c
+    mex  CFLAGS='$CFLAGS -std=c99 -march=native' COPTIMFLAGS='-O3' df_sphere3.c
     
     mex  CFLAGS='$CFLAGS -std=c99 -march=native -Wall `pkg-config gsl --cflags --libs`' gaussianInt2.c COPTIMFLAGS='-DNDEBUG -O3' -c
     mex  CFLAGS='$CFLAGS -std=c99 -march=native -Wall `pkg-config gsl --cflags --libs`' df_gaussianInt2.c COPTIMFLAGS='-DNDEBUG -O3' 
