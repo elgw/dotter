@@ -1412,7 +1412,7 @@ fig_menu_delete()
         end
         
         if s.nuclei == 4
-            keyboard
+            %keyboard
         end
         
         if s.nuclei > 0 % A single nuclei will be drawn
