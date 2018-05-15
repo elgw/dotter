@@ -37,6 +37,6 @@ if(nrhs>2)
     B[kk] = Bin[kk];
 
 
-sphere3(B, size_B[0], size_B[1], size_B[2], D, N, radius);
+sphere3(B, size_B[0], size_B[1], size_B[2], D, N, radius, 1);
 
 }

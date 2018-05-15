@@ -102,11 +102,19 @@ if exist('S', 'var')
     end
 else
     if numel(P)>0
-        [~, idx] = sort(P(:,4), 'descend');
-        if ~(sum(idx' == 1:size(P,1)) == size(P,1))
-            warning('Sorting P by column 4')
-            P = P(idx,:);
+        if size(P,2)>3
+            [~, idx] = sort(P(:,4), 'descend');
+            if ~(sum(idx' == 1:size(P,1)) == size(P,1))
+                warning('Sorting P by column 4')
+                P = P(idx,:);
+            end
+        else
+            assert(size(P,2) ==3);
+            warning('No 4th column, appending')            
+            P = [P, (size(P,1):-1:1)'];
+            assert(size(P,2)==4);
         end
+        
     end
 end
 

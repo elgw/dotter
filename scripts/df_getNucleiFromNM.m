@@ -140,7 +140,8 @@ for ff = 1:numel(files)
     if s.verbose
         fprintf('Loading %s\n', fname);
     end
-    D = load([folder fname], '-mat');
+    nmFile = [folder fname];
+    D = load(nmFile, '-mat');
     
     if(isfield(D.M, 'channels') == 0)
         errordlg(sprintf('Can not load the NM. No channels specified in %s', fname));
@@ -161,6 +162,7 @@ for ff = 1:numel(files)
     end
     
     M{ff} = D.M;
+    M{ff}.nmFile = nmFile;
     
     for nn = 1:numel(D.N)
         D.N{nn}.file = fname;
