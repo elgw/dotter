@@ -16,9 +16,14 @@ for kk = 1:numel(varargin)
         verbose =1;
     end
 end
-
-t = Tiff(filename, 'r');
-tiffInfo = imfinfo(filename);
+if isfile(filename)
+    t = Tiff(filename, 'r');
+    tiffInfo = imfinfo(filename);
+else
+    warning('File does not exist');
+    V = [];
+    return
+end
 
 if verbose
     tiffInfo

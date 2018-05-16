@@ -45,13 +45,13 @@ void sphere3(double * restrict B, const size_t M, const size_t N, const size_t P
 
   if(radius>0)
   {
-    m0  = max(0, vmin(D, 3, nD)-radius+offset);
-    m1  = min(M, vmax(D, 3, nD)+radius+1+offset);
-    n0  = max(0, vmin(D+1, 3, nD)-radius+offset);
-    n1  = min(N, vmax(D+1, 3, nD)+radius+1+offset);
+    m0  = max(0, vmin(D, 3, nD)  -radius-1*offset);
+    m1  = min(M, vmax(D, 3, nD)  +radius-1*offset+1);
+    n0  = max(0, vmin(D+1, 3, nD)-radius-1*offset);
+    n1  = min(N, vmax(D+1, 3, nD)+radius-1*offset+1);
 
-    p0  = max(0, vmin(D+2, 3, nD)-radius+offset);
-    p1  = min(P, vmax(D+2, 3, nD)+radius+1+offset);
+    p0  = max(0, vmin(D+2, 3, nD)-radius-1*offset);
+    p1  = min(P, vmax(D+2, 3, nD)+radius-1*offset+1);
   }
 
   size_t M0 = (size_t) m0;
@@ -61,7 +61,7 @@ void sphere3(double * restrict B, const size_t M, const size_t N, const size_t P
   size_t P0 = (size_t) p0;
   size_t P1 = (size_t) p1;
 
-  //  printf(" %zu %zu %zu %zu %zu %zu\n", M0, M1, N0, N1, P0, P1);
+//   printf(" %zu %zu %zu %zu %zu %zu\n", M0, M1, N0, N1, P0, P1);
 
   if(0)
     for(size_t dd = 0; dd<nD; dd++)
