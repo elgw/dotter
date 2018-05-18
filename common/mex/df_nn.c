@@ -1,8 +1,9 @@
+#include "mex.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
 #include "nn.c"
-#include "mex.h"
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray
 *prhs[])

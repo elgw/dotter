@@ -7,6 +7,8 @@
 #include <time.h>
 #include <unistd.h>
 
+#define verbose 0
+
 // For the hash function
 int M; // Number of buckets along the first dimension
 double m0, m1; // the range of the data in dimension M is [m0, m1)
@@ -29,17 +31,17 @@ double eudist2(double * A, double * B)
 
 uint32_t hash_m(double * d)
 {
-  return floor(M*(d[0]-m0)/(m1-m0));
+  return floor(M*(d[0]-m0)/1.0001/(m1-m0));
 }
 
 uint32_t hash_n(double * d)
 {
-  return floor(N*(d[1]-n0)/(n1-n0));
+  return floor(N*(d[1]-n0)/1.0001/(n1-n0));
 }
 
 uint32_t hash_p(double * d)
 {
-  return floor(P*(d[2]-p0)/(p1-p0));
+  return floor(P*(d[2]-p0)/1.0001/(p1-p0));
 }
 
 
@@ -80,31 +82,55 @@ double mins(double * D, size_t nD, int stride)
 
 int nn(double * D, uint8_t * X, size_t nD, size_t stride, double d)
 {
-  const int verbose = 0;
 
   double d2 = d*d; // squared distance
+
+  M = sqrt(nD);
+  N = sqrt(nD);
+  P = sqrt(nD);
 
   m0 = mins(D, nD, stride);
   m1 = maxs(D, nD, stride);
   m1 = m1 + 0.001*(m1-m0);
+  
+  if(1000000*d>(m1-m0))
     M = floor((m1-m0)/d);
-  assert((m1-m0)/M>=d); // bin size at least d
+  
+
+ // assert((m1-m0)/M>=d); // bin size at least d
     if(M==0)
       M = 1;
+  
   n0 = mins(D+1, nD, stride);
   n1 = maxs(D+1, nD, stride);
   n1 = n1 + 0.001*(n1-n0);
-  N = floor((n1-n0)/d);
-  assert((n1-n0)/N>=d); // bin size at least d
+  if(1000000*d>(n1-n0))
+    N = floor((n1-n0)/d);
+
+ // assert((n1-n0)/N>=d); // bin size at least d
   if(N==0)
     N = 1;
   p0 = mins(D+2, nD, stride);
   p1 = maxs(D+2, nD, stride);
   p1 = p1 + 0.001*(p1-p0);
-  P = floor((p1-p0)/d);
-  assert((p1-p0)/P>=d); // bin size at least d
+  if(1000000*d>(p1-p0))
+    P = floor((p1-p0)/d);
+ // assert((p1-p0)/P>=d); // bin size at least d
   if(P==0)
     P = 1;
+
+  // Avoid using too much memory. 
+  // get some system statistics from proc
+  // to tune better
+  while(0.1*M*N*P>nD || M*N*P > 1000000000)
+  {
+    if(M>1)
+      M--;
+    if(N>1)
+      N--;
+    if(P>1)
+      P--;
+  }
 
   if(verbose)
   {
@@ -247,17 +273,17 @@ int main(int argc, char ** argv)
   int seed = time(NULL);
   printf("random seed: %d\n");
   srand(seed);
-  size_t N = 100; // number of points
+  size_t N = 1000000; // number of points
   size_t M = 10; // number of values per point, i.e., (x,y,z,id,color)
   double * D = malloc(N*M*sizeof(double));
   uint8_t * X = malloc(N*sizeof(uint8_t));
   memset(X, 0, N*sizeof(uint8_t));
   for(size_t kk = 0; kk<N*M; kk++)
-    D[kk] = 102*(rand()/ (double) RAND_MAX);
+    D[kk] = 1024*(rand()/ (double) RAND_MAX);
   for(size_t kk = 0; kk<N; kk++)
     D[kk*M+9] = 1;
   
-  nn(D,X,N,M, 20);
+  nn(D,X,N,M, 2);
 
   free(X);
   free(D);
