@@ -34,6 +34,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray
   plhs[0] = mxCreateNumericArray(1, Ddim+1, mxUINT8_CLASS, mxREAL);
   uint8_t * X = (uint8_t *) mxGetPr(plhs[0]);
 
+  if(Ddim[1] == 0)
+    return;
+
   nn(D, X, Ddim[1], Ddim[0], d[0]);
   
   return;

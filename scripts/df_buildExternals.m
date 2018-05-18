@@ -1,3 +1,4 @@
+function df_buildExternals()
 %% Purpose: build the routines written in C required to run DOTTER
 
 DOTTER_PATH = getenv('DOTTER_PATH');
@@ -61,4 +62,6 @@ if isunix || ismac
     cd(DOTTER_PATH)
 else
     disp('Platform not supported.')
+end
+
 end
