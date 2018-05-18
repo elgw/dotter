@@ -17,6 +17,7 @@ if isunix || ismac
     mex  CFLAGS='$CFLAGS -std=c99 -march=native' COPTIMFLAGS='-DNDEBUG -O3' ccum_mex.c
     
     cd([DOTTER_PATH 'common/mex'])
+	mex  CFLAGS='$CFLAGS -std=c99 -march=native' COPTIMFLAGS='-O3' df_nn.c
     mex  CFLAGS='$CFLAGS -std=c99 -march=native' COPTIMFLAGS='-O3' df_histo16.c
     mex  CFLAGS='$CFLAGS -std=c99 -march=native' COPTIMFLAGS='-O3' df_com2.c
     mex  CFLAGS='$CFLAGS -std=c99 -march=native' COPTIMFLAGS='-O3' df_sphere3.c
