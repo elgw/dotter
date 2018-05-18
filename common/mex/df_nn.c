@@ -36,8 +36,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray
 
   if(Ddim[1] == 0)
     return;
-
-  nn(D, X, Ddim[1], Ddim[0], d[0]);
+  
+  nn_settings s = nn_setParameters(D, Ddim[1], Ddim[0], d[0]);
+  nn(D, X, s);
   
   return;
 }

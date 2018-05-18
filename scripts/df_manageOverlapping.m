@@ -7,6 +7,9 @@ function df_manageOverlapping()
 % - extending df_nm_load.m (yes!)
 % - adding it here (not DRY!)
 
+%% TODO: have a way to see what dots were removed
+% - export to separate calc folder?
+
 %% Options
 
 s.radius = 200; % nm
