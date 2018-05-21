@@ -2,7 +2,7 @@ function df_manageOverlapping()
 %% Find dots that overlap from different channels
 
 
-%% TODO: apply cc-correction, either by 
+%% TODO: apply cc-correction, either by
 % - df_getNucleiFromNM.m, or
 % - extending df_nm_load.m (yes!)
 % - adding it here (not DRY!)
@@ -19,6 +19,7 @@ s.save = 0;
 s.showReport = 1;
 s.ccFile = '';
 s.hasCCfile = 0;
+s.plot = 0;
 
 %% Read NM files
 
@@ -30,14 +31,16 @@ if isnumeric(s.folder)
 end
 df_setConfig('manageOverlap', 'folder', s.folder);
 
+
 files = dir([folder filesep() '*.NM']);
 fprintf('Found %d files\n', numel(files));
 
-ccFile = dir([folder '*.cc']);
+ccFile = dir([folder filesep() '*.cc']);
 if numel(ccFile) == 0
     s.ccFile = 'NOT FOUND';
 else
-    s.ccFile = ccFile(1).name;
+    s.ccFile = [folder filesep() ccFile(1).name];
+    s.hasCCfile = 1;
 end
 
 
@@ -58,18 +61,19 @@ if s.showReport
     s.logFileName = [tempdir() 'df_manageOverlapping.txt'];
     s.logFile = fopen(s.logFileName, 'w');
     
-    fprintf(s.logFile, 'Log from df_manageOverlap, %s\n\n', datestr(date(), 'YYYY-mm-DD'));   
+    fprintf(s.logFile, 'Log from df_manageOverlap, %s\n\n', datestr(date(), 'YYYY-mm-DD'));
     
-    fprintf(s.logFile, 'Folder: %s\n', folder);    
-    fprintf(s.logFile, 'Radius: %d nm\n\n', s.radius);    
+    fprintf(s.logFile, 'Folder: %s\n', folder);
+    fprintf(s.logFile, 'Radius: %d nm\n\n', s.radius);
     fprintf(s.logFile, 'cc-file: %s\n', s.ccFile);
 end
 
 for kk = 1:numel(files)
+    fprintf(s.logFile, '\n ----> File: %d/%d: %s\n', kk, numel(files), files(kk).name);
     applyToFile([folder filesep() files(kk).name], s);
 end
 
-if s.showReport    
+if s.showReport
     fprintf(s.logFile, '\n\nTook %d s\n', toc);
     fclose(s.logFile);
     web(s.logFileName, '-browser');
@@ -79,11 +83,19 @@ end
 
 function applyToFile(file, s)
 
+style = {'ro', 'bv', 'gx', 'cs', 'm+', 'k<'};
+
 if s.apply_MetaDots
     if s.showReport
         fprintf(s.logFile, '\n--> Applying to all dots in meta data\n');
     end
-    [M, N] = df_nm_load(file);
+    
+    if s.hasCCfile
+        [M, N] = df_nm_load(file, 'cc', s.ccFile);
+    else
+        [M, N] = df_nm_load(file);
+    end
+    
     M = M{1};
     % Grab all dots
     D = [];
@@ -99,6 +111,25 @@ if s.apply_MetaDots
     end
     D = df_rescale_dots(D, pixelSize);
     
+    
+    
+    if s.plot
+        
+        figure,
+        s1 = subplot(1,2,1);
+        hold on
+        for kk = 1:numel(M.channels)
+            plot3(D(D(:,end)==kk,2), ...
+                D(D(:,end)==kk,1), ...
+                D(D(:,end)==kk,3), style{kk});
+        end
+        title('All dots, before removal')
+        view(2)
+        axis image
+        grid on
+        legend
+    end
+    
     % Find close ones
     X = df_nn(D', s.radius);
     
@@ -109,6 +140,25 @@ if s.apply_MetaDots
         if s.showReport
             fprintf(s.logFile, '  %s removed %d/%d dots\n', M.channels{kk}, sum(XC), numel(XC));
         end
+    end
+    
+    if s.plot
+        
+        D=D(X==0, :);
+        
+        s2 = subplot(1,2,2);
+        hold on
+        for kk = 1:numel(M.channels)
+            plot3(D(D(:,end)==kk,2), ...
+                D(D(:,end)==kk,1), ...
+                D(D(:,end)==kk,3), style{kk});
+        end
+        title('All dots, after removal')
+        view(2)
+        axis image
+        grid on
+        legend
+        linkaxes([s1, s2]);
     end
     
     % And save
@@ -122,7 +172,11 @@ if s.apply_UserDots
         fprintf(s.logFile, '\n--> Applying to all UserDots\n');
     end
     
-    [M,NN] = df_nm_load(file);
+    if s.hasCCfile
+        [M, NN] = df_nm_load(file, 'ccFile', s.ccFile);
+    else
+        [M, NN] = df_nm_load(file);
+    end
     
     if s.showReport
         fprintf(s.logFile, 'File: %s\n', file);
@@ -140,6 +194,28 @@ if s.apply_UserDots
     % dots
     
     % More to take care of, i.e., userDotsLabels
+    
+    if s.plot
+        
+        figure,
+        s1 = subplot(1,2,1);
+        hold on
+        for nn = 1:numel(NN)
+            D = NN{nn}.userDots;
+            for kk = 1:numel(M.channels)
+                plot3(D{kk}(:,2), ...
+                    D{kk}(:,1), ...
+                    D{kk}(:,3), style{kk});
+            end
+        end
+        title('All dots, before removal')
+        view(2)
+        axis image
+        grid on
+        contour(M.mask, [.5,.5], 'Color', 'black')
+        
+    end
+    
     
     for nn = 1:numel(NN)
         if s.showReport
@@ -172,6 +248,26 @@ if s.apply_UserDots
         % Put it back
         NN{nn} = N;
     end
+    
+    if s.plot        
+        s2 = subplot(1,2,2);
+        hold on
+        for nn = 1:numel(NN)
+            D = NN{nn}.userDots;
+            for kk = 1:numel(M.channels)
+                plot3(D{kk}(:,2), ...
+                    D{kk}(:,1), ...
+                    D{kk}(:,3), style{kk});
+            end
+        end
+        title('All dots, after removal')
+        view(2)
+        axis image
+        grid on
+        contour(M.mask, [.5,.5], 'Color', 'black')
+        linkaxes([s1,s2], 'xy');
+    end
+    
     % Save to disk
     if s.save
         df_nm_save(M, NN, file);

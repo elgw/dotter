@@ -128,6 +128,10 @@ uimenu(mCC, 'Label',  'Measure chromatic aberrations', 'Callback', @CA_scripts);
 uimenu(mCC, 'Label',  'View cc file', 'Callback', @CC_open);
 uimenu(mCC, 'Label',  'Apply CC on images', 'Callback', @CA_folder);
 
+mDots = uimenu(gui.win, 'Label', 'Dots');
+uimenu(mDots, 'Label', 'Get threshold suggestion', 'Callback', @run_dotThreshold);
+uimenu(mDots, 'Label', 'Manage colocalized dots', 'Callback', @run_manageOverlapping);
+
 mCells = uimenu(gui.win, 'Label', 'Detect');
 uimenu(mCells, 'Label', 'Find nuclei and dots (image -> calc)', 'Callback', @run_A_cells, ...
     'Accelerator','F');
@@ -136,7 +140,7 @@ uimenu(mCells, 'Label', 'Find nuclei and dots (image -> calc)', 'Callback', @run
 %    'Separator','on');
 %uimenu(mCells, 'Label', 'Integral Intensity in nuclei -- all channels', 'Callback', @integralIntensity);
 uimenu(mCells, 'Label', 'Add missing dapiTh and pixelSize for calc folder', 'Callback', @setDapiThFolder);
-uimenu(mCells, 'Label', 'Get threshold suggestion', 'Callback', @run_dotThreshold);
+
 
 mDots = uimenu(gui.win, 'Label', 'Select');
 uimenu(mDots, 'Label', 'View/Select DNA-FISH dots by threshold (->UD)', 'Callback', @run_setUserDots, ...
@@ -176,6 +180,11 @@ uimenu(mDNA, 'Label', 'Export dots', 'Callback', @run_exportDots, ...
 %mMISC = uimenu(gui.win, 'Label', 'Misc');
 
 %uimenu(mMISC, 'Label', 'Fix Bad Masks', 'Callback', @fix_badMasks);
+
+    function run_manageOverlapping(varargin)
+        df_manageOverlapping()
+    end
+
 
     function gui_delete(varargin)
         disp('Closing DOTTER')

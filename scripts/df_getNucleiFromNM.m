@@ -172,17 +172,8 @@ for ff = 1:numel(files)
     
     if numel(ccFile) > 0
         ccData = load(ccFile, '-mat');
-        disp('Applying CC')
-        for nn = 1:numel(D.N)
-            for cc = 1:numel(D.M.channels)
-                
-                D.N{nn}.userDots{cc} = ...
-                    df_cc_apply_dots('dots', D.N{nn}.userDots{cc}, ...
-                    'from', D.M.channels{cc}, ... % From
-                    'to', 'dapi', ... % To
-                    'ccData', ccData, 'settings', s);
-            end
-        end
+        disp('Applying CC')        
+        D.N = df_cc_apply_n(D.M, D.N, 'ccData', ccData);        
         disp('Done!')
     end
     

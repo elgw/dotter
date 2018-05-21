@@ -68,8 +68,9 @@ already using it!.</p>
 
 <p>Your machine has be recognized by the server that hosts the code, send your <code>.ssh/id_rsa.pub</code> to <a href="">erik.wernersson@scilifelab.se</a>. If you don&rsquo;t have such file, generate one with</p>
 
-<pre><code>ssh-keygen -t rsa
-</code></pre>
+<p><code>
+ssh-keygen -t rsa
+</code></p>
 
 <p>Get the code:
 <code>
@@ -88,10 +89,11 @@ sudo brew install pkg-config
 <p>Make sure that MATLAB finds DOTTER when it starts, add the following lines to
 your <code>~/matlab/startup.m</code>:</p>
 
-<pre><code>setenv('DOTTER_PATH', '~/dotter/');
+<p><code>
+setenv('DOTTER_PATH', '~/dotter/');
 run([getenv('DOTTER_PATH') 'dotterStartup.m'])
 addpath(getenv('DOTTER_PATH'));
-</code></pre>
+</code></p>
 
 <p>Then run this file or restart MATLAB. You should now be able to start
 DOTTER with the command: <code>DOTTER</code> in MATLAB.</p>
@@ -110,8 +112,9 @@ in MATLAB. Ask someone for help if you get stuck at this point.</p>
 <p>Since the files are managed by GIT you can go to a terminal, <code>cd</code> to
 the directory with the source codes and do a</p>
 
-<pre><code>git pull
-</code></pre>
+<p><code>
+git pull
+</code></p>
 
 <p>The same thing is accessible from the menubar in DOTTER,
 <em>DOTTER->Maintenance->Update</em></p>
@@ -127,17 +130,20 @@ git log --pretty=format:'%h %ad | %s%d [%an]' --graph --date=short
 
 <p>and then to get a specific version, use</p>
 
-<pre><code>git checkout &lt;hash&gt;
-</code></pre>
+<p><code>
+git checkout &lt;hash&gt;
+</code></p>
 
 <p>Example:</p>
 
-<pre><code>git log --pretty=format:'%h %ad | %s%d [%an]' --graph --date=short
+<p>```
+git log &ndash;pretty=format:&lsquo;%h %ad | %s%d [%an]&rsquo; &ndash;graph &ndash;date=short
 * 57a3363 2017-11-24 | v 0.471 [erikw]
 * 8d18c29 2017-11-22 | v 0.462 [erikw]
-...
-git checkout 8d18c29
-</code></pre>
+&hellip;
+git checkout 8d18c29</p>
+
+<p>```</p>
 
 <p><a name="Workflow"/></p>
 
@@ -165,9 +171,10 @@ git checkout 8d18c29
 
 <p>Dot detection is done with <code>dotCandidates.m</code>, two key lines are</p>
 
-<pre><code>    s.sigmadog = [1.2*s.lambda/617*voxelSize(1)/130*[1,1], ...
+<p><code>
+    s.sigmadog = [1.2*s.lambda/617*voxelSize(1)/130*[1,1], ...
         1.7*s.lambda/617*voxelSize(3)/300];
-</code></pre>
+</code></p>
 
 <p><a name="ShiftsCorrections"/></p>
 
