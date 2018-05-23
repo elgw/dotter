@@ -42,7 +42,12 @@ if(sum(m(:)) == 0)
 end
 
 % Check that no mask numbers are skipped
-assert(sum(m(:)==0) > 0, 'There are no background pixels'); % Should be background
+if(sum(m(:)==0) == 0)
+ warning('Strange mask! There are no background pixels');
+ m = 0*m;
+ return
+end
+
 
 u = unique(m(:)); % unique elements, is sorted
 if(~(max(m(:)) +1 == numel(u))) % If one or more labels are skipped
