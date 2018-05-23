@@ -1,6 +1,6 @@
 function df_readExternalMask_ut()
 
-tests = {@wrong_input, @TwoDInput, @zeroMask, @oneMissing};
+tests = {@wrong_input, @TwoDInput, @zeroMask, @oneMissing, @oneMask};
 nFail = 0;
 
 for kk = 1:numel(tests)    
@@ -57,6 +57,18 @@ m = df_readExternalMask(fileName);
 assert(max(m(:))==0);
 
 end
+
+function oneMask()
+% should produce empty output from zero-mask
+
+X = ones(1024,1024,11);
+fileName = [tempdir() '/temp.tif'];
+df_writeTif(uint16(X), fileName);
+m = df_readExternalMask(fileName);
+assert(max(m(:))==0);
+
+end
+
 
 function oneMissing()
 % Set two nuclei with label 3 and 5
