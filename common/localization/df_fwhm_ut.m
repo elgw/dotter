@@ -14,7 +14,9 @@ assert(w0<2);
 
 disp('  No estimation for flat data')
 w1 = df_fwhm(V, cell2mat(p2));
-assert(w1==-1);
+if (w1~=-1)
+    error('Didn''t handle flat data')
+end
 
 V = zeros(100,100,100);
 V(50,50,:) = 1;

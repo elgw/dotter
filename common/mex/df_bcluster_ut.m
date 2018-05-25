@@ -1,9 +1,4 @@
 function df_bcluster_ut()
-% bcluster(Dots, distance)
-%
-% dots is a [Nx3] matrix
-% distance is a double
-%
 
 disp('--> Testing df_bcluster')
 % mex CFLAGS='$CFLAGS -std=c99' COPTIMFLAGS='-DNDEBUG -O3' df_bcluster.c volBucket.c
