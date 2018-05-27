@@ -92,8 +92,8 @@ if returnDefaults
     
     % for a594 lambda = 617 nm pixel size, [130,130,300]
     % s.sigmadog = [1.2, 1.2, 1.7];
-    s.sigmadog = [1.2*s.lambda/617*voxelSize(1)/130*[1,1], ...
-        1.7*s.lambda/617*voxelSize(3)/300];
+    s.sigmadog = [1.2*s.lambda/617*130/voxelSize(1)*[1,1], ...
+        1.7*s.lambda/617*300/voxelSize(3)];
     
     s.xypadding = 5;
     s.localizationMethods = {'DoG', 'intensity', 'gaussian'};

@@ -137,7 +137,7 @@ end
 %  - Load segmentation mask from files, s.askForSegmentationMasks
 
 if s.useExistingSegmentation
-    fprint('Using existing segmentation\n');
+    fprintf('Using existing segmentation\n');
 end
 
 if s.askForSegmentationMasks    
