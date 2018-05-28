@@ -91,9 +91,9 @@ if returnDefaults
     end
     
     % for a594 lambda = 617 nm pixel size, [130,130,300]
-    % s.sigmadog = [1.2, 1.2, 1.7];
-    s.sigmadog = [1.2*s.lambda/617*130/voxelSize(1)*[1,1], ...
-        1.7*s.lambda/617*300/voxelSize(3)];
+    % s.sigmadog = [1.1, 1.1, 1.24];
+    s.sigmadog = [1.1*s.lambda/617*130/voxelSize(1)*[1,1], ...
+        1.24*s.lambda/617*300/voxelSize(3)];
     
     s.xypadding = 5;
     s.localizationMethods = {'DoG', 'intensity', 'gaussian'};
@@ -131,7 +131,7 @@ end
 if strcmpi(s.localization, 'DoG')
     disp('DoG localization')
     % DOG - Difference of Gaussians, i.e., approximation of Laplacian
-    J = gsmooth(I, s.sigmadog, 'normalized')-gsmooth(I, s.sigmadog+0.01, 'normalized');
+    J = gsmooth(I, s.sigmadog, 'normalized')-gsmooth(I, s.sigmadog+0.001, 'normalized');
 end
 
 if strcmpi(s.localization, 'intensity')
@@ -204,14 +204,17 @@ Pos = find(J>D);
 %%  Step 2: Ordering
 if strcmpi(s.ranking, 'DoG')
     disp('Ranking based on DoG')
+    
     if s.dogDimension == 2
         for kk = 1:size(I,3)
-            V(:,:,kk) = gsmooth(I(:,:,kk), s.sigmadog, 'normalized')-gsmooth(I(:,:,kk), s.sigmadog+0.01, 'normalized');
+            V(:,:,kk) = gsmooth(I(:,:,kk), 0.7*s.sigmadog, 'normalized')-gsmooth(I(:,:,kk), 0.7*s.sigmadog+0.001, 'normalized');
         end
     end
     
+    
     if s.dogDimension == 3
-        V = gsmooth(I, s.sigmadog, 'normalized')-gsmooth(I, s.sigmadog+0.01, 'normalized');
+        keyboard
+        V = gsmooth(I, 0.7*s.sigmadog, 'normalized')-gsmooth(I, 0.7*s.sigmadog+0.01, 'normalized');
     end
 end
 

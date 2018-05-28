@@ -17,6 +17,7 @@ end
 verbose = 0;
 
 useNewFWHM1d = 1;
+s.zMode = 0;
 
 V = double(V);
 
@@ -29,14 +30,22 @@ else
 end
 
 for kk=1:numel(varargin)
-    if strcmp(varargin{kk}, 'interpolation')
+    if strcmpi(varargin{kk}, 'interpolation')
         interpolation = varargin{kk+1};
     end
-    if strcmp(varargin{kk}, 'verbose')
+    if strcmpi(varargin{kk}, 'verbose')
         verbose = 1;
+    end
+    if strcmpi(varargin{kk}, 'z')
+        s.zMode = 1;
     end
 end
 
+%% Going for z?
+if s.zMode == 1
+    w = fwhmz(V, D);
+    return;
+end
 
 %interpolation = 'sinc'; % 'pchip', 'spline'
 DD = round(D(:,1:3));
@@ -101,13 +110,13 @@ for kk = 1:size(D,1)
                     (D(kk, 2)-s.Side):(D(kk, 2)+s.Side), interpolation);
             end
         end
-                
+        
         if useNewFWHM1d == 1
             wy = df_fwhm1d(ly);
             %save fwhm1dtest.mat ly
         else
             wy = getw(ly, 0, lzero);
-        end                
+        end
         
         
         if verbose
@@ -123,7 +132,7 @@ for kk = 1:size(D,1)
         
         if wx>0 && wy>0
             w(kk) = min(wx,wy);
-        end        
+        end
     else
         if verbose
             disp('Out of bounds')
@@ -133,3 +142,21 @@ end
 
 end
 
+function w = fwhmz(V, D)
+interpolation = 'cubic';
+
+for kk = 1:size(D,1)
+    s.Side = 5;    
+    lz = interpn(V, ...
+        D(kk,1)*ones(1,2*s.Side+1), ...
+        D(kk,2)*ones(1,2*s.Side+1), ...
+        (D(kk,3)-s.Side):(D(kk,3)+s.Side), interpolation); 
+    lz = lz(isfinite(lz));            
+    if mod(numel(lz),2)==1
+    w(kk) = df_fwhm1d(squeeze(lz)');
+    else
+        w(kk) = nan;
+    end
+end
+
+end
