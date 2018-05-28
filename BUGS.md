@@ -8,6 +8,8 @@
 
 # Bugs
 
+B7 df_fwhm1d crashes matlab when the input contains nan values
+
 B6 In setUserDotsDNA when dots have the same x,y, different z. It
 is impossible to select/deselect one of them. Possible solution: when
 in non-projected mode only show dots at current plane. Or show a list

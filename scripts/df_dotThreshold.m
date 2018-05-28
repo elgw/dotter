@@ -206,7 +206,7 @@ function [TH, THS, Q, B] = get_thresholds(PS, s)
 for cc = 1:s.nChan
     C = PS{cc};
     % Set threshold to try
-    maxThres = max(max(C(:,s.nTrue:end)));
+    maxThres = max(max(C(:,floor(s.nTrue):end)));
     ths = linspace(min(C(:)), maxThres, s.nThresholds);
     %keyboard
     for tt = 1:numel(ths)
@@ -247,10 +247,15 @@ function q = histQuality(C, s)
 
 weight = (((0:s.nDots)-s.nTrue).^2).^(1/2);
 weight = sqrt(weight+1);
-weight(1:s.nTrue+1) = 0*weight(1:s.nTrue+1)*0.8;
-weight = -weight;
+
+%weight(1:s.nTrue+1) = 0*weight(1:s.nTrue+1)*0.8;
+%weight = -weight;
 weight = weight*0; % EXPERIMENTAL
-weight(s.nTrue+1) = 1;
+
+for pp = floor(s.nTrue):ceil(s.nTrue)
+    weight(pp+1) = 1-abs((pp-s.nTrue));
+end
+
 
 %keyboard
 if 0

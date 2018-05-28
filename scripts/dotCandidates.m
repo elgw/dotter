@@ -119,7 +119,9 @@ end
 
 s.verbose = 0;
 
-nSat = verify_image(I); % Spot saturated pixels etc
+% Spot saturated pixels etc
+verify_image(I); 
+
 
 I = double(I);
 
@@ -129,18 +131,24 @@ if s.verbose
 end
 
 if strcmpi(s.localization, 'DoG')
-    disp('DoG localization')
+    if s.verbose
+        disp('DoG localization')
+    end
     % DOG - Difference of Gaussians, i.e., approximation of Laplacian
-    J = gsmooth(I, s.sigmadog, 'normalized')-gsmooth(I, s.sigmadog+0.001, 'normalized');
+    J = dog3(I, s.sigmadog);
 end
 
 if strcmpi(s.localization, 'intensity')
+    if s.verbose
     disp('Intensity localization')
+    end
     J = I;
 end
 
 if strcmpi(s.localization, 'gaussian')
+    if s.verbose
     disp('Gaussian correlation localization')
+    end
     J = gcorr(I, s.sigmadog);
 end
 
@@ -169,7 +177,9 @@ if size(I,3)>1
     
     D = imdilate(J, strel('arbitrary', sel));
 else
+    if s.verbose
     disp('2D')
+    end
     sel = ones(3,3);
     sel(2,2)=0;
     D = imdilate(J, strel('arbitrary', sel));
@@ -179,53 +189,38 @@ J = clearBoarders(J, 3, -inf); % 3 was working fine
 %K = clearBoarders(A, 1, -1);
 %K=clearBoardersXY(A,s.xypadding,-1);
 
-%% Ask before doing this!
-nsat = sum(I(:)==2^16-1);
-removeSaturated = 1;
-
-if nsat>0
-    qans = questdlg('There are saturated pixels in the image. Do you want to use them for dot detection?', 'Saturated pixels', 'No', 'Yes', 'No');
-    switch qans
-        case 'Yes'
-            removeSaturated = 0;
-        case 'No'
-            removeSaturated = 1;
-    end
-end
-
-if removeSaturated
-    J(I==2^16-1)=-1; % Don't consider saturated pixels
-end
-
+% Detect and possibly remove pixels in J where I is saturated
+J = removeSaturatedPixels(I,J); 
 
 Pos = find(J>D);
 [PX, PY, PZ]=ind2sub(size(I), Pos);
 
 %%  Step 2: Ordering
 if strcmpi(s.ranking, 'DoG')
-    disp('Ranking based on DoG')
-    
-    if s.dogDimension == 2
-        for kk = 1:size(I,3)
-            V(:,:,kk) = gsmooth(I(:,:,kk), 0.7*s.sigmadog, 'normalized')-gsmooth(I(:,:,kk), 0.7*s.sigmadog+0.001, 'normalized');
-        end
+    if s.verbose
+        disp('Ranking based on DoG')    
     end
-    
+    if s.dogDimension == 2
+        V = dog2(I, s.sigmadog);            
+    end    
     
     if s.dogDimension == 3
-        keyboard
-        V = gsmooth(I, 0.7*s.sigmadog, 'normalized')-gsmooth(I, 0.7*s.sigmadog+0.01, 'normalized');
+        V = dog3(I, s.sigmadog);    
     end
 end
 
 if strcmpi(s.ranking, 'intensity')
-    disp('Ranking based on intensity')
+    if s.verbose
+        disp('Ranking based on intensity')
+    end
     % Intensity - median
     V = I;
 end
 
 if strcmpi(s.ranking,'gaussian')
+    if s.verbose
     disp('Ranking based on gaussian correlation')
+    end
     % Gaussian correlation    
     V = gcorr(I, s.sigmadog);
     if ~isreal(V)
@@ -235,11 +230,12 @@ if strcmpi(s.ranking,'gaussian')
 end
 
 
-
 %% Refinement should go here
 
 if strcmpi(s.refinement, 'none')
-    disp('No refinement');
+    if s.verbose
+        disp('No refinement');
+    end
 end
 
 if strcmpi(s.refinement, 'Weighted Centre of Mass')
@@ -256,14 +252,13 @@ P(:,1)=PX; P(:,2)=PY; P(:,3)=PZ;
 P(:,4)=V(Pos); % filter values
 P(:,5)=I(Pos); % pixel values
 
-
-
 % sort by the V-value
 [~, IDX]=sort(P(:,4), 'descend');
 P = P(IDX, :);
 
 % seems like not a good idea
 %P(:,4) = P(:,4)./P(:,5).^(1/2);
+
 
 %% FWHM
 if s.calcFWHM
@@ -291,6 +286,8 @@ if s.maxNpoints > 0
     end
 end
 
+return; %done
+
 end
 
 function nSat = verify_image(I)
@@ -316,6 +313,43 @@ end
 if nSat>0
     fprintf(' Consider removing dots where the intensity is %d by:\n', 2^type-1);
     fprintf(' P = P(P(:,5)<%d,:)\n', 2^type-1);
+end
+
+end
+
+function V = dog2(I, sigma)
+% Difference of gaussians, per 2D plane
+for kk = 1:size(I,3)
+    V(:,:,kk) = gsmooth(I(:,:,kk), sigma/sqrt(2), 'normalized')-gsmooth(I(:,:,kk), sigma/sqrt(2)+0.001, 'normalized');
+end
+end
+
+function V = dog3(I, sigma)
+% Difference of gaussians, 3D
+V = gsmooth(I, sigma/sqrt(2), 'normalized')-gsmooth(I, sigma/sqrt(2)+0.01, 'normalized');
+end
+
+
+function J = removeSaturatedPixels(I,J)
+%% Looks for saturated pixels and can remove them from the analysis if wanted.
+% Most of all it is important to warn about this 
+
+nsat = sum(I(:)==2^16-1);
+removeSaturated = 1;
+
+if nsat>0
+    qans = questdlg('There are saturated pixels in the image. Do you want to use them for dot detection?', ...
+        'Saturated pixels', 'No', 'Yes', 'No');
+    switch qans
+        case 'Yes'
+            removeSaturated = 0;
+        case 'No'
+            removeSaturated = 1;
+    end
+end
+
+if removeSaturated
+    J(I==2^16-1)=-1; % Don't consider saturated pixels
 end
 
 end
