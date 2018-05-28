@@ -1,4 +1,4 @@
-function df_writeTif(stack, filename)
+function df_writeTif(stack, filename, metaData)
 %% function df_writeTif(stack, filename)
 % Writes a uint16 volumetric image to disk
 
@@ -21,6 +21,10 @@ t = Tiff(filename, 'w');
     %tagstruct.Compression = Tiff.Compression.LZW;
     tagstruct.Compression = Tiff.Compression.None;
 
+    if exist('metaData', 'var')
+        % TODO put more meta data
+    end
+    
 	for k = 1:size(stack, 3)
 		t.setTag(tagstruct)
 		t.write(stack(:, :, k));

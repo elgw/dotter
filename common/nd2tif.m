@@ -73,6 +73,7 @@ end
 function BFfile2tif(filename, outputDir, s)
 reader = bfGetReader(filename);
 
+
 outFolder = strsplit(filename, '/');
 outFolder = outFolder(end);
 outFolder = [outputDir outFolder{1}(1:end-4) '/'];
@@ -164,6 +165,15 @@ for kk = 1:nSeries
             % remove everything that is not a letter or number
             cName = regexprep(cName,'[^a-zA-Z0-9]','');
             outFileName = sprintf('%s%s_%03d.tif', outFolder, cName, kk);
+            
+            % TODO: put meta data in tif files
+            metaOutFileName = sprintf('%s%s_%03d.txt', outFolder, cName, kk);
+            metaFile = fopen(metaOutFileName, 'w');
+            fprintf(metaFile, '%s\n', omeMeta.getPixelsPhysicalSizeX(0).toString());           
+            fprintf(metaFile, '%s\n', omeMeta.getPixelsPhysicalSizeY(0).toString());
+            fprintf(metaFile, '%s\n', omeMeta.getPixelsPhysicalSizeZ(0).toString());
+            fclose(metaFile);
+
             
             if cc==1 % DAPI
                 if s.focus_check

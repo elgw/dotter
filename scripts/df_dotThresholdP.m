@@ -191,8 +191,13 @@ end
             close(f);
         end
         
-        p1 = interp1(threshold, thp, th1);
-        p2 = interp1(threshold, thp, th2);
+        try
+            p1 = interp1(threshold, thp, th1);
+            p2 = interp1(threshold, thp, th2);
+        catch e            
+            p1 = nan;
+            p2 = nan;
+        end
         
         %hold on
         %plot(th1, p1, 'ko')

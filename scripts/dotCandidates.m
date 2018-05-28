@@ -223,8 +223,12 @@ end
 
 if strcmpi(s.ranking,'gaussian')
     disp('Ranking based on gaussian correlation')
-    % Gaussian correlation
+    % Gaussian correlation    
     V = gcorr(I, s.sigmadog);
+    if ~isreal(V)
+        warning('V is not real!')
+        keyboard
+    end
 end
 
 

@@ -13,7 +13,7 @@ function [mask, refine, P] = get_nuclei_dapi_ui(V,s)
 % Call with no parameters for testing
 
 refine = 0;
-addpath([getenv('DOTTER_PATH') '/dotter/addons/structdlg/']);
+addpath([getenv('DOTTER_PATH') '/addons/structdlg/']);
 
 if  nargin>2
     warning('Wrong number of inputs')
@@ -52,8 +52,16 @@ s.mrfSigma = 5;
 s.usePrefilter = 0;
 s.projectionType = 'max'; % median, mean
 s.localContrastProjection = [];
-s.minarea = 500;
+% min and max area of nuclei, given in pixels
+
+s.minarea = 500; 
 s.maxarea = 15000;
+
+
+if isfield(s, 'pixelSize')
+    s.minarea = s.minarea*(130^2/s.pixelSize(1)^2);
+    s.maxarea = s.maxarea*(130^2/s.pixelSize(1)^2);
+end
 
 gui.win = figure('Position', [300,200,1024,1024], 'Menubar', 'none', ...
     'NumberTitle','off', ...

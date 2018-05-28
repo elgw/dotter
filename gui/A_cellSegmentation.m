@@ -19,6 +19,7 @@ if nargin == 0
     s.nTrueDots = [];
     s.channels = [];
     s.threeD = 0;
+    s.pixelSize = [130,130,300];
 end
 
 %% Parse input arguments
@@ -83,6 +84,7 @@ for kk = 1:numel(dapifiles)
     
     M.imageSize = size(idapi);
     dapisettings.useWatershed = s.dapiWS;
+    dapisettings.pixelSize = s.pixelSize;
     
     if isfield(s, 'masks')
         mask = s.masks{kk};
