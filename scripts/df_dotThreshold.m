@@ -16,9 +16,8 @@ function [TH, dpn, dpn_all] = df_dotThreshold(varargin)
 
 %% Default Settings
 % Number of true dots.
-s.nTrue = 2;
+
 % Number of dots to extract per nuclei
-s.nDots = 5*s.nTrue; 
 % Plot or be quiet
 s.plot = 1;
 % Number of thresholds to try
@@ -66,11 +65,29 @@ fprintf('%d nuclei loaded\n', numel(N));
 [M,N] = df_exp_onlyG1(M,N);
 fprintf('Keeping %d G1\n', numel(N));
 
-s.nChan = numel(M{1}.channels);
+
+nFields = numel(fieldnames(s));
+for kk = 1:numel(M{1}.channels)
+    s.(sprintf('%s_nDots', M{1}.channels{kk})) = 2;
+end
+s = orderfields(s, [nFields+1:nFields+numel(M{1}.channels) 1:nFields]);
 
 if s.query
-    s = StructDlg(s);
+    s = rmfield(s, 'query');
+    s = StructDlg(s, 'Settings for df_dotThreshold');
+    if numel(s) == 0
+        warning('Got no settings, quitting');
+        return
+    end    
 end
+
+for kk = 1:numel(M{1}.channels)
+    s.nTrue(kk) = s.(sprintf('%s_nDots', M{1}.channels{kk}));
+    s.nDots(kk) = 5*s.nTrue(kk);
+end
+
+s.nChan = numel(M{1}.channels);
+
 
 %% Extract dots
 P = extractDots(N, s);
@@ -128,7 +145,7 @@ if s.plot
         title('Threshold finding')
         
         subplot(s.nChan, 4, cc*4-4+4)
-        bar(0:s.nDots,B{cc})
+        bar(0:s.nDots(cc),B{cc})
         title('At best threshold')
         xlabel('Dots')
         ylabel('#')
@@ -154,10 +171,10 @@ end
 for kk = 1:numel(N)
     for cc = 1:s.nChan
         D = N{kk}.dots{cc};
-        if(size(D,1)>s.nDots)
-            D = D(1:s.nDots,:);
+        if(size(D,1)>s.nDots(cc))
+            D = D(1:s.nDots(cc),:);
         end
-        if(size(D,1)>=s.nDots)
+        if(size(D,1)>=s.nDots(cc))
             P{cc} = [P{cc}; D(:,4)'];
         end
     end
@@ -206,15 +223,17 @@ function [TH, THS, Q, B] = get_thresholds(PS, s)
 for cc = 1:s.nChan
     C = PS{cc};
     % Set threshold to try
-    maxThres = max(max(C(:,floor(s.nTrue):end)));
+    %keyboard
+    %maxThres = max(max(C(:,floor(s.nTrue(cc)):end)));
+    maxThres = max(C(:));
     ths = linspace(min(C(:)), maxThres, s.nThresholds);
     %keyboard
     for tt = 1:numel(ths)
         CT = C>ths(tt);
         CT = sum(CT,2);
         nCT = df_histo16(uint16(CT));
-        nCT = double(nCT(1:s.nDots+1));
-        thsq(tt) = histQuality(nCT, s);
+        nCT = double(nCT(1:s.nDots(cc)+1));
+        thsq(tt) = histQuality(nCT, s, cc);
         %figure(3)
         %bar(0:s.nDots, nCT)
         %title(sprintf('%f', ths(tt)));
@@ -228,7 +247,7 @@ for cc = 1:s.nChan
     CT = C>thbest;
     CT = sum(CT,2);
     nCT = df_histo16(uint16(CT));
-    nCT = double(nCT(1:s.nDots+1));
+    nCT = double(nCT(1:s.nDots(cc)+1));
     
     Q{cc} = thsq;
     TH(cc) = thbest;
@@ -238,22 +257,21 @@ end
 
 end
 
-function q = histQuality(C, s)
+function q = histQuality(C, s, cc)
 % Quality of histogram
 %C(1): n nuclei with 0 dots
 %C(2): n nuclei with 1 dot
 % ...
 
-
-weight = (((0:s.nDots)-s.nTrue).^2).^(1/2);
+weight = (((0:s.nDots(cc))-s.nTrue(cc)).^2).^(1/2);
 weight = sqrt(weight+1);
 
 %weight(1:s.nTrue+1) = 0*weight(1:s.nTrue+1)*0.8;
 %weight = -weight;
 weight = weight*0; % EXPERIMENTAL
 
-for pp = floor(s.nTrue):ceil(s.nTrue)
-    weight(pp+1) = 1-abs((pp-s.nTrue));
+for pp = floor(s.nTrue(cc)):ceil(s.nTrue(cc))
+    weight(pp+1) = 1-abs((pp-s.nTrue(cc)));
 end
 
 
@@ -261,7 +279,7 @@ end
 if 0
     plot(0:numel(weight)-1, weight, 'k')
     hold on
-    plot(s.nTrue*[1,1], [min(weight), max(weight)], 'k--');
+    plot(s.nTrue(cc)*[1,1], [min(weight), max(weight)], 'k--');
     legend('Weight Curve', 'nDots')
     xlabel('Number of dots')
     ylabel('Weight')
