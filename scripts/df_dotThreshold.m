@@ -83,7 +83,7 @@ end
 
 for kk = 1:numel(M{1}.channels)
     s.nTrue(kk) = s.(sprintf('%s_nDots', M{1}.channels{kk}));
-    s.nDots(kk) = 5*s.nTrue(kk);
+    s.nDots(kk) = round(5*s.nTrue(kk));
 end
 
 s.nChan = numel(M{1}.channels);
@@ -97,6 +97,7 @@ P = extractDots(N, s);
 % interest.
 st = s;
 st.curve_max_dist =st.curve_max_dist+0.1;
+
 PS = select_curves(P, st);
 PS = select_curves(PS, s);
 
@@ -225,7 +226,10 @@ for cc = 1:s.nChan
     % Set threshold to try
     %keyboard
     %maxThres = max(max(C(:,floor(s.nTrue(cc)):end)));
-    maxThres = max(C(:));
+    if numel(C) == 0
+        warning('No dot curves')
+    else
+    maxThres = max(C(:));    
     ths = linspace(min(C(:)), maxThres, s.nThresholds);
     %keyboard
     for tt = 1:numel(ths)
@@ -253,6 +257,7 @@ for cc = 1:s.nChan
     TH(cc) = thbest;
     THS{cc} = ths;
     B{cc} = nCT;
+    end
 end
 
 end

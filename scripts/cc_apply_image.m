@@ -27,9 +27,14 @@ end
 ifrom = find(strcmpi(cc.channels, from));
 ito = find(strcmpi(cc.channels, to));
 
+if numel(ito) == 0
+    varargout{1} = [];
+    errordlg(sprintf('Can''t use %s as reference channel. It does not exist in the bead data', to));
+    return
+end
 
-if s.verbose
-    fprintf('cc from %s to %s\n', from, to);
+if s.verbose    
+    fprintf('cc from %s (#%d) to %s (#%d) \n', from, ifrom, to, ito);
 end
 
 if ifrom == ito

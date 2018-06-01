@@ -30,7 +30,7 @@ assert(numel(channels) == numel(D));
 if numel(s.filename) == 0
     outFolder = df_getConfig('df_cc', 'ccfolder', '~');
     
-    [b,a] = uiputfile([outFolder, filesep(), '19840101.cc'], 'Where to save the cc?');
+    [b,a] = uiputfile([outFolder, filesep(), datestr(now, 'yyyymmdd'), '.cc'], 'Where to save the cc?');
     
     if isnumeric(b)
         return
