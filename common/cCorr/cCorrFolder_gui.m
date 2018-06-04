@@ -3,10 +3,13 @@ function cCorrFolder_gui(varargin)
 %
 % Correct images from shifts and chromatic aberrations measured from beads.
 %
-% 1. Select folder(s) that contains TIFF images.
+% 1. Select folder(s)* that contains TIFF images.
 % 2. Select the correction file to use
 %
-% For each input folder, the corrected images will be created in a new 
+% More than one in-folder can be selected if they are to use the same
+% cc-file.
+%
+% For each input folder, the corrected images will be created in a new
 % subfolder called cc.
 %
 % As default, 'DAPI' is the reference channel, i.e., 'DAPI' is left
@@ -15,10 +18,10 @@ function cCorrFolder_gui(varargin)
 % another reference channel.
 %
 % Make sure not to correct the dots that you get from the images in the
-% cc-folder since applying the correction twice will give you at least as 
+% cc-folder since applying the correction twice will give you at least as
 % bad results as us you would get using no correction at all.
 
-s.inFolder = df_getConfig('cCorrFolder_gui', 'inFolder', '~/Desktop/');
+s.inFolder{1} = df_getConfig('cCorrFolder_gui', 'inFolder', '~/Desktop/');
 s.ccFile = df_getConfig('cCorrFolder_gui', 'ccFile', '~/Desktop/test.cc');
 
 GUI.fig = figure('Position', [0,200,400,600], 'Menubar', 'none', ...
@@ -28,7 +31,7 @@ GUI.fig = figure('Position', [0,200,400,600], 'Menubar', 'none', ...
 % inFolder
 uicontrol(GUI.fig, 'Style', 'text', ...
     'HorizontalAlignment', 'left', ...
-    'String', 'Input folder:', ...
+    'String', 'Input folder(s):', ...
     'FontWeight', 'bold', ...
     'Position',[20 490 300 30]);
 
@@ -84,15 +87,15 @@ GUI.start = uicontrol(GUI.fig, 'Style', 'pushbutton', ...
     'Callback', @gui_run);
 
 GUI.cancel = uicontrol(GUI.fig, 'Style', 'pushbutton', ...
-    'String', 'Cancel', ...
+    'String', 'Close/Cancel', ...
     'Units', 'Normalized', ...
-    'Position',[0, 0, .3, .1], ...
+    'Position',[0.4, 0, .3, .1], ...    
     'Callback', @gui_quit);
 
 GUI.help = uicontrol(GUI.fig, 'Style', 'pushbutton', ...
     'String', 'Help', ...
     'Units', 'Normalized', ...
-    'Position',[0.4, 0, .3, .1], ...
+    'Position',[0, 0, .3, .1], ...
     'Callback', @gui_help);
 
 
@@ -110,11 +113,13 @@ end
 
     function gui_selectInFolder(varargin)
         disp('select folder')
-        t = uipickfiles('FilterSpec', s.inFolder);
+        t = uipickfiles('FilterSpec', s.inFolder{1});
         if ~isnumeric(t)
-            s.inFolder = t{1};
-            s.outFolder = [s.inFolder '/cc'];
-            df_setConfig('cCorrFolder_gui', 'inFolder', s.inFolder);
+            for dd = 1:numel(t)
+                s.inFolder{dd} = t{dd};
+                s.outFolder{dd} = [s.inFolder{dd} '/cc'];
+            end
+            df_setConfig('cCorrFolder_gui', 'inFolder', s.inFolder{1});
             gui_refresh();
         end
     end
@@ -140,8 +145,8 @@ end
     end
 
     function gui_refresh()
-        set(GUI.inFolder, 'String', s.inFolder);
-        set(GUI.outFolder, 'String', [s.inFolder '/cc/']);
+        set(GUI.inFolder, 'String', s.inFolder{1});
+        set(GUI.outFolder, 'String', [s.inFolder{1} '/cc/']);
         set(GUI.ccFile, 'String', s.ccFile);
         
         if 1
@@ -154,9 +159,20 @@ end
     end
 
     function gui_run(varargin)
-        fprintf('cCorrFolder2(%s, %s)\n', s.inFolder, s.ccFile);
-        df_cc_apply_image_folder(s.inFolder, s.ccFile);
+        oldpointer = get(GUI.fig, 'pointer');
+        set(GUI.fig, 'pointer', 'watch')
+        drawnow;
+        %code that runs
+        try
+            for dd = 1:numel(s.inFolder)
+                fprintf('cCorrFolder2(%s, %s)\n', s.inFolder{dd}, s.ccFile);
+                df_cc_apply_image_folder(s.inFolder{dd}, s.ccFile);
+            end
+        catch e
+            e
+        end
         %cCorrFolder2(s.inFolder, s.ccFile);
+        set(GUI.fig, 'pointer', oldpointer)
     end
 
 end

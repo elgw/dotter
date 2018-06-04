@@ -1,3 +1,12 @@
+/* Linear convolution of 2D and 3D images of type double
+ *
+ * Compilation example:
+ *  gcc conv1.c -v -Dverbose -lpthread -Dstandalone -fprefetch-loop-arrays -DnThreads=4
+ *
+ *  On Intel 6700k, no gain with more than 4 threads
+ *
+ */
+
 #include <assert.h>
 #include <inttypes.h>
 #include <math.h>
@@ -11,7 +20,9 @@
 
 #include "conv1.h"
 
+#ifndef nThreads
 #define nThreads 4
+#endif
 
 typedef struct{
   double * V; // volume
@@ -302,9 +313,9 @@ void timing2d(void)
 
 void timing3d(void)
 {
-  size_t M = 24;
-  size_t N = 24;
-  size_t P = 21;
+  size_t M = 1024;
+  size_t N = 1024;
+  size_t P = 61;
 
   double * V = calloc(M*N*P, sizeof(double));
   assert(V!= NULL);

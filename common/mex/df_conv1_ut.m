@@ -31,7 +31,7 @@ assert(gotError ==1);
 
 disp('--> timings');
 % some timings of matlab
-V = zeros(1024,1024,60);
+V = rand(1024,1024,60);
 V(50,50,30) = 1;
 K = fspecial('gaussian', [11,1], 1);
 
@@ -69,7 +69,7 @@ tic
 W3 = df_conv1(V,K1,K2,K3);
 tdxyz = toc;
 
-fprintf('Matlab: (%.1f, %.1f, %.1f) %.1f s, \nDOTTER: (%.1f, %.1f, %.1f) %.1f (%.1f s if all at one) s\n', ...
+fprintf('Matlab: (%.1f, %.1f, %.1f) %.1f s, \nDOTTER: (%.1f, %.1f, %.1f) %.1f s (%.1f s using one call)\n', ...
     tmx, tmy, tmz, tm, ...
     tdx, tdy, tdz, td, tdxyz);
 
