@@ -55,7 +55,7 @@ s.localContrastProjection = [];
 % min and max area of nuclei, given in pixels
 
 s.minarea = 500; 
-s.maxarea = 15000;
+s.maxarea = 30000;
 
 
 if isfield(s, 'pixelSize')
@@ -75,6 +75,7 @@ gui.im = imagesc(imread([getenv('DOTTER_PATH') 'logo.jpg']), 'ButtonDownFcn', @i
 gui.c1 = uicontextmenu();
 gui.im.UIContextMenu = gui.c1;
 gui.m1 = uimenu(gui.c1, 'Label', 'Split', 'Callback', @splitNuclei);
+gui.m1 = uimenu(gui.c1, 'Label', 'More Settings', 'Callback', @showSettings);
 
 colormap gray
 hold on
@@ -640,6 +641,13 @@ end
        % - Connect points on edge with high curvature (greedy, recursively)
        % - Snakes
        % - etc...       
+    end
+
+    function showSettings(varargin)
+        t = StructDlg(s);
+        if numel(t)>0
+            s = t;
+        end       
     end
 
 end
