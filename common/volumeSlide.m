@@ -6,15 +6,21 @@ function varargout = volumeSlide(V, varargin)
 %  No arguments: a file dialogue is opened
 %
 
+s.nanAlpha = 1;
+
 % Browse for a file if none provided
 if ~exist('V', 'var')
-    [file, path] = uigetfile({'*.tif'}, 'Select image to load');
+    folder = df_getConfig('volumeSlide', 'folder', '~/');
+    [file, path] = uigetfile({'*.tif'}, 'Select image to load', folder);
     if isnumeric(file)
         disp('Aborting')
         return
     end
+    df_setConfig('volumeSlide', 'folder', folder);
     fprintf('Reading %s\n',[path file]);
     V = df_readTif([path file]);
+    disp('Image size:')
+    disp(size(V))
 end
 
 % Read from disk if a file name
@@ -23,6 +29,9 @@ if ischar(V)
 end
 V = double(V);
 
+if sum(isnan(V(:))) == 0
+    s.nanAlpha = 0;
+end
 
 
 s.limitedCLIM = 0;
@@ -41,10 +50,16 @@ end
 
 fprintf('X/Z resolution ratio: %f\n', s.zstep);
 
-fig = figure('Tag', 'volumeSlide');
+fig = figure('Tag', 'volumeSlide', 'Color', [.6, .5, .4]);
 border = .1;
 plo = subplot('Position', [border,border,1-border,1-border]);
-img = imagesc(V(:,:,slice));
+                
+if s.nanAlpha
+    img = imagesc(V(:,:,slice), 'AlphaData', isfinite(V(:,:,slice)));
+else
+    img = imagesc(V(:,:,slice), 'AlphaData', isfinite(V(:,:,slice)));
+end
+
 ah = gca;
 hold on
 Line = plot(0,0, 'r', 'LineWidth', 3);
@@ -71,13 +86,26 @@ end
 
 sliderLower = uicontrol(fig,'Style','slider',...
     'Max',max(V(:))+1,'Min',min(V(:))-1,'Value',climVol(1),...
-    'Position',[0 0 30 150],...
+    'Units', 'Normalized', ...
+    'Position',[0 .05 .05 .3],...
     'Callback', @cLimChange);
 sliderUpper = uicontrol(fig,'Style','slider',...
     'Max',max(V(:))+1,'Min',min(V(:))-1,'Value',climVol(2),...
-    'Position',[30 0 30 150],...
+    'Units', 'Normalized', ...
+    'Position',[.05 .05 .05 .3],...
     'Callback', @cLimChange);
 
+if size(V,3)>1
+sliderZ = uicontrol(fig,'Style','slider',...
+    'Min',1,...    
+    'Max',size(V,3),...    
+    'Value',slice,...
+    'Units', 'Normalized', ...
+    'Position',[.0 0 1 .05],...
+    'Callback', @setZ_slider);
+
+addlistener(sliderZ, 'Value','PostSet', @setZ_slider);
+end
 
 V = double(V);
 %minVal = min(V(:));
@@ -143,7 +171,18 @@ menu()
         newslice = slice+round(delta/10);
         newslice = max(1, newslice);
         newslice = min(nslices, newslice);
+        setZ(newslice)        
+    end
+
+    function setZ_slider(varargin)             
+        setZ(round(sliderZ.Value));
+    end
+
+    function setZ(newslice)
         set(img, 'Cdata', V(:,:,newslice));
+        if s.nanAlpha
+            set(img, 'AlphaData', isfinite(V(:,:,newslice)));
+        end
         set(fig, 'name', sprintf('Slice: %d / %d', newslice, nslices));
     end
 
@@ -175,14 +214,22 @@ menu()
             end
             if size(V,3) >3
                 PZ = interpn(V, TX, TY, Z, 'linear');
-                figure, imagesc(PZ); colormap gray, axis image
+                
+                figure, 
+                if s.nanAlpha
+                imAlpha = ones(size(PZ));
+                imAlpha(~isfinite(PZ)) = 0;                
+                imagesc(PZ, 'AlphaData',imAlpha); 
+                else
+                    imagesc(PZ); 
+                end
+                colormap gray, axis image
+                    
                 rl = round(l); % discrete length
                 % unit length direction
                 dire = [P(2,1), P(2,2)]-[P(1,1), P(1,2)];
                 dire = dire/norm(dire);
-                P2 = [[P(1,1), P(1,2)] ; [P(1,1), P(1,2)]+rl*dire];
-                P
-                P2
+                P2 = [[P(1,1), P(1,2)] ; [P(1,1), P(1,2)]+rl*dire];                
                 line = interpn(V, ...
                     linspace(P2(1,1), P2(2,1), rl), ...
                     linspace(P2(1,2), P2(2,2), rl), ...
