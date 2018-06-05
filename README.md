@@ -8,6 +8,13 @@
 
 # Changes to DOTTER 
 
+# 0.544
+ * Threshold selection now works when non-integer number of dots are specified.
+ * Possible to specify number of expected dots per channel for the threshold selection.
+ * Corrections for chromatic aberrations can be run on a set of folders, not just one at a time.
+ * Changed the `extrapvalue` of the interpolation function when correction for CC into the mean of the image (was set to 0 before and that caused a lot of false dots to be detected close to the borders, as an alternative, the image could be extended using linear inperpolation into a larger image, interpolated and then clipped).
+ * Fixed some minor issue in the UX here and there.
+
 # 0.525
  * `get_nuclei_manual` fixed, would previously skip some numbers in the mask.
 
