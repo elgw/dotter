@@ -5,6 +5,8 @@
  *
  *  On Intel 6700k, no gain with more than 4 threads
  *
+ * Will crash if smaller dimensions than number of threads.
+ *
  */
 
 #include <assert.h>
@@ -21,7 +23,7 @@
 #include "conv1.h"
 
 #ifndef nThreads
-#define nThreads 8
+#define nThreads 1
 #endif
 
 typedef struct{
@@ -106,7 +108,7 @@ void * conv1th(void * in)
     {
       if(dbg>1)
         printf("MNP: %lu row: %lu start: %lu", MNP, row, start);
-      if(row >= M)
+      if(row >= M) // TODO: WRONG when nTh > 1
       { row = 0;
         start = start+MN-M;
       }
@@ -219,9 +221,9 @@ int conv1_3(double * V, const size_t M, const size_t N, const size_t P ,
   return 0;
 }
 
-int conv1(double * restrict V, double * restrict W, 
+int conv1_s1(double * restrict V, double * restrict W, 
     const size_t nV, 
-    const double * restrict K, const size_t nKu, const size_t stride)
+    const double * restrict K, const size_t nKu)
 {
   /** 
    * Convolve the volumetric image V by the kernel K
@@ -237,6 +239,7 @@ int conv1(double * restrict V, double * restrict W,
    *  is 32 bit indexing faster?
    *  border cases not tested, i.e., nKu = 0, 1
    */
+const size_t stride = 1;
 
   if(verbose>1)
     printf("stride: %lu\n", stride);
@@ -286,6 +289,84 @@ int conv1(double * restrict V, double * restrict W,
   // copy back to V
   for(size_t kk = 0; kk<nV; kk++)
     V[kk*stride] = W[kk];
+
+  return 1;
+}
+
+int conv1(double * restrict V, double * restrict W, 
+    const size_t nV, 
+    const double * restrict K, const size_t nKu, const size_t stride)
+{
+  /** 
+   * Convolve the volumetric image V by the kernel K
+   *
+   * INPUTS:
+   * V: Volumetric image with nV elements to be visited
+   *    separated by stride
+   * K: kernel with nK elements
+   * W (optional): temporary buffer of length nV or more
+   *
+   * NOTES?
+   * The gives same result as 0-padding would do.
+   *  is 32 bit indexing faster?
+   *  border cases not tested, i.e., nKu = 0, 1
+   */
+
+  if(verbose>1)
+    printf("stride: %lu\n", stride);
+
+  assert(nKu%2==1);
+  assert(nV>nKu);
+
+  const size_t k2 = (nKu-1)/2;
+  const size_t N = nV;
+
+  // First part
+  for(size_t vv = 0;vv<k2; vv++)
+  {
+    double acc = 0;
+    for(size_t kk = 0; kk<nKu; kk++)      
+    {
+      if(vv+kk+1 > k2)
+        acc = acc + K[kk]*V[(vv+kk-k2)*stride];
+    }
+    W[vv] = acc;
+  }
+ // size_t wpos = 0;
+  //V[wpos*stride] = W[wpos++]
+
+  // Central part where K fits completely
+  for(size_t vv = k2; vv+k2<N; vv++) 
+  {
+    double acc = 0;
+    for(size_t kk = 0; kk<nKu; kk++)
+    {
+      // printf("kk:%lu pos: %lu ",  kk, (vv-k2+kk)*stride);
+      acc = acc + K[kk]*V[(vv+kk-k2)*stride];
+    }
+    W[vv] = acc;
+  //V[wpos*stride] = W[wpos++]
+  }
+
+  // Last part
+  for(size_t vv = N-k2;vv<N; vv++)
+  {
+    double acc = 0;
+    for(size_t kk = 0; kk<nKu; kk++)      
+    {
+      if(vv-k2+kk<N)
+        acc = acc + K[kk]*V[(vv+kk-k2)*stride];
+    }
+    W[vv] = acc;
+ // V[wpos*stride] = W[wpos++]
+  }
+
+  // copy back to V
+//  for(size_t kk = wpos; kk<nV; kk++)
+ //   V[kk*stride] = W[kk];
+
+  for(size_t kk = 0; kk<nV; kk++)
+   V[kk*stride] = W[kk];
 
   return 1;
 }
