@@ -7,7 +7,8 @@ function DOTTER()
 
 %   This GUI is stateless. I.e., working folder/file has to be specified
 %    for each action.
-%
+%   It is not completely safe to run multiple copies simultaneously since
+%   some temporary files as well as the configuration files are shared.
 
 % should be set in startup.m
 DOTTER_PATH = getenv('DOTTER_PATH');
@@ -185,9 +186,8 @@ uimenu(mDNA, 'Label', 'Export dots', 'Callback', @run_exportDots, ...
         df_manageOverlapping()
     end
 
-
     function gui_delete(varargin)
-        disp('Closing DOTTER')
+        % disp('Closing DOTTER')
         pos = get(gui.win, 'Position');
         df_setConfig('DOTTER', 'winPos', pos);
         diary('off')

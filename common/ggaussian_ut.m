@@ -1,6 +1,9 @@
 function ggaussian_ut()
 
 g1 = ggaussian(15, 1);
+
+disp('  Normalization');
+assert(abs(1-sum(abs(g1)))<1e-9)
 g2 = fspecial('gaussian', [15,1],1);
 D = -7:7;
 g3 = normpdf(D, 0, 1);
@@ -12,9 +15,8 @@ g5 = reshape(g10, [oversampling,15]);
 g5 = sum(g5,1);
 g5 = g5/sum(g5);
 
-sum(g1)
-sum(g2)
-assert(abs(1-sum(abs(g1)))<1e-9)
+disp('  Vs alternative way to calculate')
+assert(sum(abs(g1-g5))<1e-3)
 
 if(0)
     figure,

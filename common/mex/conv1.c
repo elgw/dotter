@@ -21,7 +21,7 @@
 #include "conv1.h"
 
 #ifndef nThreads
-#define nThreads 4
+#define nThreads 8
 #endif
 
 typedef struct{

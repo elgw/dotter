@@ -31,9 +31,13 @@ assert(gotError ==1);
 
 disp('--> timings');
 % some timings of matlab
-V = rand(1024,1024,60);
+
+M = 1024; N = 1024; P = 31;
+nK = 11;
+fprintf('     Image: [%d, %d, %d], x,y,z-kernels: [%d]\n', M, N, P, nK);
+V = rand(M, N, P);
 V(50,50,30) = 1;
-K = fspecial('gaussian', [11,1], 1);
+K = fspecial('gaussian', [nK,1], 1);
 
 K1 = linspace(1,2,11);
 K2 = linspace(1,2,11);
@@ -65,13 +69,25 @@ tdz = toc;
 
 td = tdx+tdy+tdz;
 
-tic 
-W3 = df_conv1(V,K1,K2,K3);
+% Convolve/Shift approach
+tic
+W2 = df_conv1(V,K1,[],[]);
+W2 = shiftdim(W2);
+W2 = df_conv1(W2,K2,[],[]);
+W2 = shiftdim(W2);
+W2 = df_conv1(W2,K3,[],[]);
+W2 = shiftdim(W2);
+tdsz = toc;
+
+tic
+W2 = df_conv1(V,K1,K2,K3);
 tdxyz = toc;
 
-fprintf('Matlab: (%.1f, %.1f, %.1f) %.1f s, \nDOTTER: (%.1f, %.1f, %.1f) %.1f s (%.1f s using one call)\n', ...
+fprintf('Matlab: (%.2f, %.2f, %.2f) %.2f s, \nDOTTER: (%.2f, %.2f, %.2f) %.2f s (%.1f s using one call)\n', ...
     tmx, tmy, tmz, tm, ...
     tdx, tdy, tdz, td, tdxyz);
+
+fprintf('DOTTER/shiftdim: %.2f\n', tdsz);
 
 if doPlot
     figure, imagesc([W(:,:,30) W2(:,:,30); W(:,:,31) W2(:,:,31)])

@@ -73,7 +73,8 @@ void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[])
   printf("V: %lux%lux%lu, K:%lu, %lu, %lu\n", M, N, P, nKx, nKy, nKz);
 #endif
 
-  plhs[0] = mxCreateNumericArray(VnDim, Vdim, mxDOUBLE_CLASS, mxREAL);
+  size_t Wdim[] = {Vdim[0], Vdim[1], Vdim[2]};
+  plhs[0] = mxCreateUninitNumericArray(VnDim, Wdim, mxDOUBLE_CLASS, mxREAL);
   double * W = (double *) mxGetPr(plhs[0]);
   memcpy(W, V, Vnel*sizeof(double));
 
