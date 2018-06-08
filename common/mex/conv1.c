@@ -5,8 +5,6 @@
  *
  *  On Intel 6700k, no gain with more than 4 threads
  *
- * Will crash if smaller dimensions than number of threads.
- *
  */
 
 #include <assert.h>
@@ -18,12 +16,10 @@
 
 #include <pthread.h>
 
-#include <gsl/gsl_math.h>
-
 #include "conv1.h"
 
 #ifndef nThreads
-#define nThreads 1
+#define nThreads 4
 #endif
 
 typedef struct{
@@ -44,6 +40,13 @@ typedef struct{
 } thrJob;
 
 int dbg;
+
+size_t smax(size_t a, size_t b)
+{
+  if(a>b)
+    return a;
+  return b;
+}
 
 void * conv1th(void * in)
   /* 
@@ -67,34 +70,21 @@ void * conv1th(void * in)
   {
     size_t stride = 1;
     size_t length = M;
-    for(size_t rr = idTh; rr<N*P; rr=rr+nTh)
+    //for(size_t rr = idTh; rr<N*P; rr=rr+nTh)
+    size_t first = (idTh)*floor(N*P/nTh);
+    size_t last = (idTh+1)*floor(N*P/nTh);
+    if(idTh+1 == nTh)
+      last = N*P;
+    for(size_t rr = first; rr<last; rr++)
     {
       size_t start = rr*M;
-      //printf("start: %lu \n", start);
-      //printf("nK: %lu\n", j->nK);
 
-      conv1(j->V+start, j->B, length, j->K, j->nK, stride); 
+      //conv1(j->V+start, j->B, length, j->K, j->nK, stride); 
+      
+      conv1_noStride(j->V+start, j->B, length, j->K, j->nK); 
+
     }
   }
-
-//  if(j->direction == 2)
-//  {
-//    size_t stride = M;
-//    size_t length = N;
-//    size_t start = idTh;
-//    for(size_t rr = idTh; rr<MP; rr=rr+nTh)
-//    {
-//      if(dbg>1)
-//        printf("MNP: %lu MN: %lu start: %lu", MNP, MN, start);
-//      if(start>=MNP)
-//      { start = start-MNP+1; }
-//      if(dbg>1)
-//        printf(" -> %lu\n", start);
-//      conv1(j->V+start, j->B, length, j->K, j->nK, stride); 
-//    start = start + nTh*MN;
-//    }
-//  }
-
 
   if(j->direction == 2)
   {
@@ -102,21 +92,13 @@ void * conv1th(void * in)
     size_t length = N;
     size_t start = idTh;
     size_t row = idTh;
-    assert(idTh<M);
 
     for(size_t rr = idTh; rr<MP; rr=rr+nTh)
     {
-      if(dbg>1)
-        printf("MNP: %lu row: %lu start: %lu", MNP, row, start);
-      if(row >= M) // TODO: WRONG when nTh > 1
-      { row = 0;
-        start = start+MN-M;
-      }
-      if(dbg>1)
-        printf(" -> %lu %lu\n", row, start);
+      // rr: row id, defines start point in x-z (y=0) plane
+      div_t pos = div(rr, M);
+      start = pos.rem + MN*pos.quot;
       conv1(j->V+start, j->B, length, j->K, j->nK, stride); 
-      start=start+nTh;
-      row=row+nTh;
     }
   }
 
@@ -148,7 +130,7 @@ int conv1_3(double * V, const size_t M, const size_t N, const size_t P ,
   pthread_t threads[nThreads];
   thrJob jobs[nThreads];
   for(int kk = 0; kk<nThreads; kk++) {
-    jobs[kk].B = malloc(GSL_MAX(GSL_MAX(M,N),P)*sizeof(double));
+    jobs[kk].B = malloc(smax(smax(M,N),P)*sizeof(double));
     jobs[kk].nTh = nThreads;
     jobs[kk].V = V;
     jobs[kk].M = M;
@@ -221,34 +203,15 @@ int conv1_3(double * V, const size_t M, const size_t N, const size_t P ,
   return 0;
 }
 
-int conv1_s1(double * restrict V, double * restrict W, 
+int conv1_noStride(double * restrict V, double * restrict W, 
     const size_t nV, 
     const double * restrict K, const size_t nKu)
 {
-  /** 
-   * Convolve the volumetric image V by the kernel K
-   *
-   * INPUTS:
-   * V: Volumetric image with nV elements to be visited
-   *    separated by stride
-   * K: kernel with nK elements
-   * W (optional): temporary buffer of length nV or more
-   *
-   * NOTES?
-   * The gives same result as 0-padding would do.
-   *  is 32 bit indexing faster?
-   *  border cases not tested, i.e., nKu = 0, 1
-   */
-const size_t stride = 1;
-
-  if(verbose>1)
-    printf("stride: %lu\n", stride);
-
-  assert(nKu%2==1);
-  assert(nV>nKu);
-
+// TODO: the buffer is the problem! Use k2+1 long LIFO (circular!)
   const size_t k2 = (nKu-1)/2;
   const size_t N = nV;
+  size_t bpos=0; // where to put in buffer
+  size_t wpos=0; // where to write
 
   // First part
   for(size_t vv = 0;vv<k2; vv++)
@@ -257,9 +220,9 @@ const size_t stride = 1;
     for(size_t kk = 0; kk<nKu; kk++)      
     {
       if(vv+kk+1 > k2)
-        acc = acc + K[kk]*V[(vv-k2+kk)*stride];
+        acc = acc + K[kk]*V[(vv-k2+kk)];
     }
-    W[vv] = acc;
+    W[bpos++] = acc;
   }
 
   // Central part where K fits completely
@@ -268,10 +231,18 @@ const size_t stride = 1;
     double acc = 0;
     for(size_t kk = 0; kk<nKu; kk++)
     {
-      // printf("kk:%lu pos: %lu ",  kk, (vv-k2+kk)*stride);
-      acc = acc + K[kk]*V[(vv-k2+kk)*stride];
+      acc = acc + K[kk]*V[(vv-k2+kk)];
     }
-    W[vv] = acc;
+    W[bpos++] = acc;
+
+    if(bpos>200)
+    {
+      size_t nWrite = 200-k2+1;
+      memcpy(V+wpos, W, nWrite*sizeof(double));
+      wpos = wpos+nWrite;
+      memcpy(W, W+nWrite, k2*sizeof(double));
+      bpos = k2;
+    }
   }
 
   // Last part
@@ -281,14 +252,12 @@ const size_t stride = 1;
     for(size_t kk = 0; kk<nKu; kk++)      
     {
       if(vv-k2+kk<N)
-        acc = acc + K[kk]*V[(vv-k2+kk)*stride];
+        acc = acc + K[kk]*V[(vv-k2+kk)];
     }
-    W[vv] = acc;
+    W[bpos++] = acc;
   }
 
-  // copy back to V
-  for(size_t kk = 0; kk<nV; kk++)
-    V[kk*stride] = W[kk];
+    memcpy(V+wpos, W, (bpos+1)*sizeof(double));
 
   return 1;
 }
@@ -332,10 +301,45 @@ int conv1(double * restrict V, double * restrict W,
     }
     W[vv] = acc;
   }
- // size_t wpos = 0;
-  //V[wpos*stride] = W[wpos++]
+  
+  size_t wpos = 0;
 
-  // Central part where K fits completely
+  size_t bs = 200; // block size 256?
+
+  size_t start_pos = k2;
+  int final = 0;
+  while(final==0)
+  {
+  size_t end_pos = start_pos +bs;
+  if(end_pos + k2 >= N)
+  {
+    end_pos = N-k2;
+    final = 1;
+  }
+  //printf("start_pos: %zu, end_pos: %zu k2: %zu N: %zu\n", start_pos, end_pos, k2, N);
+  
+  for(size_t vv = start_pos; vv<end_pos; vv++) 
+  {
+    double acc = 0;
+    for(size_t kk = 0; kk<nKu; kk++)
+    {
+      // printf("kk:%lu pos: %lu ",  kk, (vv-k2+kk)*stride);
+      acc = acc + K[kk]*V[(vv+kk-k2)*stride];
+    }
+    W[vv] = acc;
+  }
+
+  for(size_t kk =0; kk<end_pos-start_pos; kk++)
+  {
+    V[wpos*stride] = W[wpos];
+    wpos++;
+  }
+  start_pos = end_pos;
+
+  }
+
+  /*
+ // Central part where K fits completely
   for(size_t vv = k2; vv+k2<N; vv++) 
   {
     double acc = 0;
@@ -345,8 +349,8 @@ int conv1(double * restrict V, double * restrict W,
       acc = acc + K[kk]*V[(vv+kk-k2)*stride];
     }
     W[vv] = acc;
-  //V[wpos*stride] = W[wpos++]
   }
+*/
 
   // Last part
   for(size_t vv = N-k2;vv<N; vv++)
@@ -358,15 +362,14 @@ int conv1(double * restrict V, double * restrict W,
         acc = acc + K[kk]*V[(vv+kk-k2)*stride];
     }
     W[vv] = acc;
- // V[wpos*stride] = W[wpos++]
   }
 
   // copy back to V
-//  for(size_t kk = wpos; kk<nV; kk++)
- //   V[kk*stride] = W[kk];
+  for(size_t kk = wpos; kk<nV; kk++)
+    V[kk*stride] = W[kk];
 
-  for(size_t kk = 0; kk<nV; kk++)
-   V[kk*stride] = W[kk];
+ // for(size_t kk = 0; kk<nV; kk++)
+ //  V[kk*stride] = W[kk];
 
   return 1;
 }
@@ -392,11 +395,11 @@ void timing2d(void)
   free(V);
 }
 
-void timing3d(void)
+void timing3d(size_t MN)
 {
-  size_t M = 1024;
-  size_t N = 1024;
-  size_t P = 61;
+  size_t M = MN;
+  size_t N = MN;
+  size_t P = 31;
 
   double * V = calloc(M*N*P, sizeof(double));
   assert(V!= NULL);
@@ -447,7 +450,6 @@ void timing3d(void)
 
 }
 
-#ifdef standalone
 int main(int argc, char ** argv)
 {
 
@@ -463,7 +465,8 @@ int main(int argc, char ** argv)
   //printf("timing2d\n");
   //timing2d();
   printf("timing3d\n");
-  timing3d();
+  timing3d(512);
+  timing3d(1024);
+  timing3d(2048);
 
 }
-#endif

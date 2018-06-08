@@ -5,7 +5,7 @@
 #include "conv1.h"
 
 #ifndef verbose
-#define verbose 1
+#define verbose 0
 #endif
 
 void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[]) 
@@ -79,7 +79,4 @@ void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[])
   memcpy(W, V, Vnel*sizeof(double));
 
   conv1_3(W, M, N, P, Kx, nKx, Ky, nKy, Kz, nKz);
-
 }
-
-

@@ -14,10 +14,10 @@ end
 
 if doCompile
     cd ~/code/dotter/common/mex/
-    mex  conv1.c CFLAGS='$CFLAGS -g -std=c99 -march=native `pkg-config gsl --cflags --libs`' COPTIMFLAGS=' -O3 -D verbose=0' ...
-        LINKLIBS='$LINKLIBS -lgsl -lgslcblas -lpthread' -c
-    mex  df_conv1.c CFLAGS='$CFLAGS -g -std=c99 -march=native `pkg-config gsl --cflags --libs`' COPTIMFLAGS=' -O3 -D verbose=0' ...
-        LINKLIBS='$LINKLIBS -lgsl -lgslcblas' conv1.o
+    
+    mex df_conv1.c conv1.c CFLAGS='$CFLAGS -O3 -std=c99 -march=native -flto -Dverbose=0' ...
+        COPTIMFLAGS='$COPTIMFLAGS -O3 -flto' 
+        
 end
 
 disp('--> too small kernel');
@@ -29,6 +29,7 @@ catch e
 end
 assert(gotError ==1);
 
+details_x()
 
 disp('--> all kernels used');
 K1 = 2*ones(3,1);
@@ -40,46 +41,99 @@ T2 = df_conv1(T, K1, K2, K3);
 assert(T2(11,11,11) == 2*3*5);
 assert(sum(abs(T2(:))) == 2*3*5*27);
 
+
+
 disp('--> Verifying correctness')
 t = rand(101,102,103);
 k = rand(7,1);
 
-disp('-->z');
+fprintf('z... ');
 t1 = convn(t, reshape(k,[1,1,7]),'same');
 t2 = df_conv1(t, [], [], flipud(k));
 diff = sum(abs(t1(:) - t2(:)));
 assert(diff<10e-8)
 
 
-disp('-->y');
+fprintf('y... ');
 t1 = convn(t, reshape(k,[1,7,1]),'same');
 t2 = df_conv1(t, [], flipud(k), []);
 diff = sum(abs(t1(:) - t2(:)));
 assert(diff<10e-8);
 
-disp('-->x');
+fprintf('x... ');
 t1 = convn(t, reshape(k,[7,1,1]),'same');
 t2 = df_conv1(t, flipud(k), [], []);
+
 assert(sum(abs(t1(:) - t2(:)))<10e-9);
-
-
-
+fprintf('\n');
 
 disp('--> timings');
 % some timings of matlab
 
-timing_typical_image_size()
+timing_typical_image_size(356, 356, 31, 11);
+timing_typical_image_size(512, 512, 31, 11);
+timing_typical_image_size(1024, 1024, 31, 11);
+time_vs_size()
 
 
 end
 
-function timing_typical_image_size()
+function time_vs_size()
+NS = 100:50:550;
+for kk = 1:numel(NS)
+    N = NS(kk);
+    V = rand(N,N,31);
+    K1 = rand(11,1);
+    clear W
+    tic
+    W = convn(V,reshape(K1, [11,1,1]), 'same');
+    t_mat(kk) = toc;
+    clear W
+    tic
+    W = df_conv1(V,fliplr(K1),[],[]);
+    t_df(kk) = toc;
+end
+figure,
+plot(NS, t_df)
+hold on
+plot(NS, t_mat)
+legend({'df', 'matlab'}, 'location', 'nw');
+end
+        
+function details_x()
+
+V = rand(1024,3,3)/11;
+K = ones(7,1);
+V(512,2,2) = 1;
+C = df_conv1(V, K, [], []);
+C2 = convn(V, K, 'same');
+figure,
+plot(2+squeeze(V(:,2,2)), 'r--')
+hold on
+c1 = C(:,2,2);
+plot(1+c1, 'b:', 'lineWidth', 2)
+hold on
+c2 = squeeze(C2(:,2,2));
+plot(c2, 'k')
+legend({'V', 'df', 'mat'})
+axis([512-10,512+10,0,3])
+
+figure,
+plot(c1-c2)
+hold on
+plot(c1)
+plot(c2)
+legend({'diff', 'df', 'matlab'})
+assert(1==0)
+
+end
+    
+
+function timing_typical_image_size(M, N, P, nK)
 doPlot = 0;
-M = 1024; N = 1024; P = 31;
 nK = 11;
-fprintf('     Image: [%d, %d, %d], x,y,z-kernels: [%d]\n', M, N, P, nK);
+fprintf('Image: [%d, %d, %d], x,y,z-kernels: [%d]\n', M, N, P, nK);
 V = rand(M, N, P);
-V(50,50,30) = 1;
 K = fspecial('gaussian', [nK,1], 1);
 
 K1 = linspace(1,2,11);
@@ -115,9 +169,8 @@ td = tdx+tdy+tdz;
 
 diff = sum(abs(W(:)-W2(:)));
 
-assert(diff<1e-5);
-
 % Convolve/Shift approach
+clear W2
 tic
 W2 = df_conv1(V,K1,[],[]);
 W2 = shiftdim(W2);
@@ -127,6 +180,7 @@ W2 = df_conv1(W2,K3,[],[]);
 W2 = shiftdim(W2);
 tdsz = toc;
 
+clear W2
 tic
 W2 = df_conv1(V,K1,K2,K3);
 tdxyz = toc;
@@ -136,6 +190,7 @@ fprintf('Matlab: (%.2f, %.2f, %.2f) %.2f s\n', ...
 fprintf('DOTTER: (%.2f, %.2f, %.2f) %.2f s (%.2f s using one call)\n', ...
     tdx, tdy, tdz, td, tdxyz);
 fprintf('DOTTER/shiftdim: %.2f\n', tdsz);
+assert(diff<1e-5);
 
 if doPlot
     figure, imagesc([W(:,:,30) W2(:,:,30); W(:,:,31) W2(:,:,31)])
