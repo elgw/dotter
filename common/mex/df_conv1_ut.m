@@ -5,7 +5,7 @@ function df_conv1_ut()
 disp('--> Testing df_conv1');
 
 if ~exist('doCompile', 'var')
-    doCompile = 1;
+    doCompile = 0;
 end
 
 if ~exist('doPlot', 'var')
@@ -29,7 +29,8 @@ catch e
 end
 assert(gotError ==1);
 
-details_x()
+%details_x()
+%details_z()
 
 disp('--> all kernels used');
 K1 = 2*ones(3,1);
@@ -67,14 +68,18 @@ t2 = df_conv1(t, flipud(k), [], []);
 assert(sum(abs(t1(:) - t2(:)))<10e-9);
 fprintf('\n');
 
+verify_xyz(356, 354, 31, 11);
+
+if 0
 disp('--> timings');
 % some timings of matlab
 
 timing_typical_image_size(356, 356, 31, 11);
 timing_typical_image_size(512, 512, 31, 11);
 timing_typical_image_size(1024, 1024, 31, 11);
+timing_typical_image_size(2*1024, 2*1024, 31, 11);
 time_vs_size()
-
+end
 
 end
 
@@ -127,7 +132,40 @@ legend({'diff', 'df', 'matlab'})
 assert(1==0)
 
 end
+
+function details_z()
+
+V = .1*rand(3,3,1024)/11;
+K = ones(7,1);
+V(2,2, 512) = 1;
+V(2,2, 495) = 1;
+C = df_conv1(V, [], [], K);
+C2 = convn(V, reshape(K, [1,1,numel(K)]), 'same');
+figure,
+subplot(2,1,1)
+v = squeeze(V(2,2, :));
+plot(2+squeeze(v), 'r--')
+hold on
+c1 = squeeze(C(2,2,:));
+plot(1+c1, 'b:', 'lineWidth', 2)
+hold on
+c2 = squeeze(C2(2,2, :))
+plot(c2, 'k')
+legend({'V', 'df', 'mat'})
+%axis([512-10,512+10,0,3])
+
+subplot(2,1,2)
+plot(c1-c2)
+hold on
+plot(c1)
+plot(c2+0.01)
+legend({'diff', 'df', 'matlab'})
+title(sprintf('Details Z, max abs diff: %f', max(abs(c1-c2))))
+assert(1==0)
+
+end
     
+
 
 function timing_typical_image_size(M, N, P, nK)
 doPlot = 0;
@@ -167,7 +205,7 @@ tdz = toc;
 
 td = tdx+tdy+tdz;
 
-diff = sum(abs(W(:)-W2(:)));
+diff = max(abs(W(:)-W2(:)));
 
 % Convolve/Shift approach
 clear W2
@@ -195,4 +233,69 @@ assert(diff<1e-5);
 if doPlot
     figure, imagesc([W(:,:,30) W2(:,:,30); W(:,:,31) W2(:,:,31)])
 end
+end
+
+function verify_xyz(M, N, P, nK)
+doPlot = 0;
+nK = 11;
+fprintf('Image: [%d, %d, %d], x,y,z-kernels: [%d]\n', M, N, P, nK);
+V = rand(M, N, P);
+K = fspecial('gaussian', [nK,1], 1);
+
+K1 = linspace(1,2,11);
+K2 = linspace(1,2,11);
+K3 = linspace(1,2,11);
+
+tic
+W = convn(V,reshape(K1, [11,1,1]), 'same');
+tmx = toc;
+
+tic
+W = convn(W,reshape(K2, [1,11,1]), 'same');
+tmy = toc;
+
+tic
+W = convn(W,reshape(K3, [1,1,11]), 'same');
+tmz = toc;
+
+tm = tmx + tmy + tmz;
+
+
+tic
+W2 = df_conv1(V,fliplr(K1),[],[]);
+tdx = toc;
+tic
+W2 = df_conv1(W2,[],fliplr(K2),[]);
+tdy = toc;
+tic
+W2 = df_conv1(W2,[],[],fliplr(K3));
+tdz = toc;
+
+td = tdx+tdy+tdz;
+
+diff = max(abs(W(:)-W2(:)));
+
+% Convolve/Shift approach
+clear W2
+tic
+W2 = df_conv1(V,K1,[],[]);
+W2 = shiftdim(W2);
+W2 = df_conv1(W2,K2,[],[]);
+W2 = shiftdim(W2);
+W2 = df_conv1(W2,K3,[],[]);
+W2 = shiftdim(W2);
+tdsz = toc;
+
+clear W2
+tic
+W2 = df_conv1(V,K1,K2,K3);
+tdxyz = toc;
+
+fprintf('Matlab: (%.2f, %.2f, %.2f) %.2f s\n', ...
+    tmx, tmy, tmz, tm);
+fprintf('DOTTER: (%.2f, %.2f, %.2f) %.2f s (%.2f s using one call)\n', ...
+    tdx, tdy, tdz, td, tdxyz);
+fprintf('DOTTER/shiftdim: %.2f\n', tdsz);
+assert(diff<1e-5);
+
 end

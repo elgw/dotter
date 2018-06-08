@@ -208,6 +208,7 @@ int conv1_noStride(double * restrict V, double * restrict W,
     const double * restrict K, const size_t nKu)
 {
 // TODO: the buffer is the problem! Use k2+1 long LIFO (circular!)
+  const size_t block_size = 256*2;
   const size_t k2 = (nKu-1)/2;
   const size_t N = nV;
   size_t bpos=0; // where to put in buffer
@@ -235,9 +236,9 @@ int conv1_noStride(double * restrict V, double * restrict W,
     }
     W[bpos++] = acc;
 
-    if(bpos>200)
+    if(bpos>block_size+k2-1)
     {
-      size_t nWrite = 200-k2+1;
+      size_t nWrite = block_size;
       memcpy(V+wpos, W, nWrite*sizeof(double));
       wpos = wpos+nWrite;
       memcpy(W, W+nWrite, k2*sizeof(double));
@@ -257,12 +258,79 @@ int conv1_noStride(double * restrict V, double * restrict W,
     W[bpos++] = acc;
   }
 
-    memcpy(V+wpos, W, (bpos+1)*sizeof(double));
+    memcpy(V+wpos, W, (bpos)*sizeof(double));
 
   return 1;
 }
 
+void memcpy_dbl_stride(double * restrict TO, // strided
+    const double * restrict FROM,  // not strided
+    const size_t N, const size_t stride)
+{
+  for(size_t kk = 0; kk<N; kk++)
+    TO[kk*stride] = FROM[kk];
+}
+
 int conv1(double * restrict V, double * restrict W, 
+    const size_t nV, 
+    const double * restrict K, const size_t nKu, const size_t stride)
+{
+  const size_t block_size = 256*2;
+  const size_t k2 = (nKu-1)/2;
+  const size_t N = nV;
+  size_t bpos=0; // where to put in buffer
+  size_t wpos=0; // where to write
+
+  // First part
+  for(size_t vv = 0;vv<k2; vv++)
+  {
+    double acc = 0;
+    for(size_t kk = 0; kk<nKu; kk++)      
+    {
+      if(vv+kk+1 > k2)
+        acc = acc + K[kk]*V[stride*(vv-k2+kk)];
+    }
+    W[bpos++] = acc;
+  }
+
+  // Central part where K fits completely
+  for(size_t vv = k2; vv+k2<N; vv++) 
+  {
+    double acc = 0;
+    for(size_t kk = 0; kk<nKu; kk++)
+    {
+      acc = acc + K[kk]*V[stride*(vv-k2+kk)];
+    }
+    W[bpos++] = acc;
+
+    if(bpos>block_size+k2-1)
+    {
+      size_t nWrite = block_size;
+      memcpy_dbl_stride(V+wpos*stride, W, nWrite, stride);
+      wpos = wpos+nWrite;
+      memcpy(W, W+nWrite, k2*sizeof(double));
+      bpos = k2;
+    }
+  }
+
+  // Last part
+  for(size_t vv = N-k2;vv<N; vv++)
+  {
+    double acc = 0;
+    for(size_t kk = 0; kk<nKu; kk++)      
+    {
+      if(vv-k2+kk<N)
+        acc = acc + K[kk]*V[stride*(vv-k2+kk)];
+    }
+    W[bpos++] = acc;
+  }
+
+  memcpy_dbl_stride(V+wpos*stride, W, bpos, stride);
+
+  return 1;
+}
+
+int conv1_old(double * restrict V, double * restrict W, 
     const size_t nV, 
     const double * restrict K, const size_t nKu, const size_t stride)
 {
