@@ -51,21 +51,21 @@ k = rand(7,1);
 fprintf('z... ');
 t1 = convn(t, reshape(k,[1,1,7]),'same');
 t2 = df_conv1(t, [], [], flipud(k));
-diff = sum(abs(t1(:) - t2(:)));
+diff = max(abs(t1(:) - t2(:)));
 assert(diff<10e-8)
 
 
 fprintf('y... ');
 t1 = convn(t, reshape(k,[1,7,1]),'same');
 t2 = df_conv1(t, [], flipud(k), []);
-diff = sum(abs(t1(:) - t2(:)));
+diff = max(abs(t1(:) - t2(:)));
 assert(diff<10e-8);
 
 fprintf('x... ');
 t1 = convn(t, reshape(k,[7,1,1]),'same');
 t2 = df_conv1(t, flipud(k), [], []);
 
-assert(sum(abs(t1(:) - t2(:)))<10e-9);
+assert(max(abs(t1(:) - t2(:)))<10e-9);
 fprintf('\n');
 
 verify_xyz(356, 354, 31, 11);
