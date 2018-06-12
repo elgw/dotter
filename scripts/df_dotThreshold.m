@@ -50,12 +50,12 @@ if ~exist('M', 'var')
     %folder = '/data/current_images/iJC766_20170720_002_calc/';
     
     if ~exist('folder', 'var')
-    folder = df_getConfig('df_dotThreshold', 'folder', '~/Desktop/');
-    folder = uigetdir(folder);    
-    if isnumeric(folder)
-        warning('Got no folder, quitting');
-        return
-    end
+        folder = df_getConfig('df_dotThreshold', 'folder', '~/Desktop/');
+        folder = uigetdir(folder);
+        if isnumeric(folder)
+            warning('Got no folder, quitting');
+            return
+        end
     end
     [N, M] = df_getNucleiFromNM('folder', {folder}, 'noClusters');
     df_setConfig('df_dotThreshold', 'folder', folder);
@@ -78,18 +78,19 @@ if s.query
     if numel(s) == 0
         warning('Got no settings, quitting');
         return
-    end    
+    end
 end
 
 for kk = 1:numel(M{1}.channels)
     s.nTrue(kk) = s.(sprintf('%s_nDots', M{1}.channels{kk}));
-    s.nDots(kk) = round(5*s.nTrue(kk));
+    s.nDots(kk) = round(5*max(1,s.nTrue(kk)));
 end
 
 s.nChan = numel(M{1}.channels);
 
 
 %% Extract dots
+%keyboard
 P = extractDots(N, s);
 
 %% Select nuclei for threshold analysis
@@ -129,28 +130,30 @@ if s.plot
         subplot(s.nChan, 4, cc*4-4+1)
         plot(P{cc}')
         a = axis();
-        title(sprintf('All nuclei, %d', size(P{cc},1)));
-        h = text(-5, 2, M{1}.channels{cc});
-        set(h, 'rotation', 90);
-        subplot(s.nChan, 4, cc*4-4+2)
-        plot(PS{cc}')
-        axis(a);
-        title(sprintf('Selected nuclei, %d', size(PS{cc},1)));
-        subplot(s.nChan, 4, cc*4-4+3)
-        plot(THS{cc}, Q{cc})
-        a = axis();
-        hold on
-        plot([TH(cc), TH(cc)], [a(3), a(4)], '--k');
-        xlabel('Threshold')
-        ylabel('Quality');
-        title('Threshold finding')
-        
-        subplot(s.nChan, 4, cc*4-4+4)
-        bar(0:s.nDots(cc),B{cc})
-        title('At best threshold')
-        xlabel('Dots')
-        ylabel('#')
-        
+        title(sprintf('%s, All nuclei, %d', M{1}.channels{cc}, size(P{cc},1)));
+        if s.nTrue(cc) > 0
+            
+            subplot(s.nChan, 4, cc*4-4+2)
+            plot(PS{cc}')
+            axis(a);
+            
+            
+            title(sprintf('Selected nuclei, %d', size(PS{cc},1)));
+            subplot(s.nChan, 4, cc*4-4+3)
+            plot(THS{cc}, Q{cc})
+            a = axis();
+            hold on
+            plot([TH(cc), TH(cc)], [a(3), a(4)], '--k');
+            xlabel('Threshold')
+            ylabel('Quality');
+            title('Threshold finding')
+            
+            subplot(s.nChan, 4, cc*4-4+4)
+            bar(0:s.nDots(cc),B{cc})
+            title('At best threshold')
+            xlabel('Dots')
+            ylabel('#')
+        end
         %plot(THS{cc}, Q{cc});
     end
 end
@@ -194,12 +197,12 @@ for cc = 1:s.nChan
     w = ones(1,size(Q,2));
     qn = zeros(size(Q,1),1); % Pre-allocate for the scalar product
     for kk = 1:size(Q,1)
-        Q(kk,:) = Q(kk,:)./w;        
+        Q(kk,:) = Q(kk,:)./w;
         qn(kk)=norm(Q(kk,:));
         Q(kk,:) = Q(kk,:)/qn(kk);
     end
     
-    m = mean(Q,1); 
+    m = mean(Q,1);
     
     nm = norm(m);
     m = m/nm; % Mean normalized vector of the weighted profiles
@@ -222,41 +225,48 @@ function [TH, THS, Q, B] = get_thresholds(PS, s)
 % B: "bars" for the best threshold
 
 for cc = 1:s.nChan
-    C = PS{cc};
-    % Set threshold to try
-    %keyboard
-    %maxThres = max(max(C(:,floor(s.nTrue(cc)):end)));
-    if numel(C) == 0
-        warning('No dot curves')
+    if s.nTrue(cc) == 0
+        Q{cc} = [];
+        TH(cc) = Inf;
+        THS{cc} = [];
+        B{cc} = [];
     else
-    maxThres = max(C(:));    
-    ths = linspace(min(C(:)), maxThres, s.nThresholds);
-    %keyboard
-    for tt = 1:numel(ths)
-        CT = C>ths(tt);
-        CT = sum(CT,2);
-        nCT = df_histo16(uint16(CT));
-        nCT = double(nCT(1:s.nDots(cc)+1));
-        thsq(tt) = histQuality(nCT, s, cc);
-        %figure(3)
-        %bar(0:s.nDots, nCT)
-        %title(sprintf('%f', ths(tt)));
-        %pause
-    end
-    
-    thpos = find(thsq==max(thsq));
-    thpos = thpos(1);
-    thbest = ths(thpos);
-    
-    CT = C>thbest;
-    CT = sum(CT,2);
-    nCT = df_histo16(uint16(CT));
-    nCT = double(nCT(1:s.nDots(cc)+1));
-    
-    Q{cc} = thsq;
-    TH(cc) = thbest;
-    THS{cc} = ths;
-    B{cc} = nCT;
+        C = PS{cc};
+        % Set threshold to try
+        %keyboard
+        %maxThres = max(max(C(:,floor(s.nTrue(cc)):end)));
+        if numel(C) == 0
+            warning('No dot curves')
+        else
+            maxThres = max(C(:));
+            ths = linspace(min(C(:)), maxThres, s.nThresholds);
+            %keyboard
+            for tt = 1:numel(ths)
+                CT = C>ths(tt);
+                CT = sum(CT,2);
+                nCT = df_histo16(uint16(CT));
+                nCT = double(nCT(1:s.nDots(cc)+1));
+                thsq(tt) = histQuality(nCT, s, cc);
+                %figure(3)
+                %bar(0:s.nDots, nCT)
+                %title(sprintf('%f', ths(tt)));
+                %pause
+            end
+            
+            thpos = find(thsq==max(thsq));
+            thpos = thpos(1);
+            thbest = ths(thpos);
+            
+            CT = C>thbest;
+            CT = sum(CT,2);
+            nCT = df_histo16(uint16(CT));
+            nCT = double(nCT(1:s.nDots(cc)+1));
+            
+            Q{cc} = thsq;
+            TH(cc) = thbest;
+            THS{cc} = ths;
+            B{cc} = nCT;
+        end
     end
 end
 

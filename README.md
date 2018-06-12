@@ -8,6 +8,9 @@
 
 # Changes to DOTTER 
 
+# 0.552
+ * Fixed an issue where the script for finding a dot threshold would crash if 0 dots were asked for.
+
 # 0.544
  * Threshold selection now works when non-integer number of dots are specified.
  * Possible to specify number of expected dots per channel for the threshold selection.

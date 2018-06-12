@@ -14,8 +14,9 @@ function DOTTER()
 DOTTER_PATH = getenv('DOTTER_PATH');
 
 if strcmp(DOTTER_PATH, '')
-    disp('DOTTER is not properly configured.');
-    warning('The DOTTER_PATH is not set, please see the documentation')
+    warning('DOTTER is not properly configured.');
+    disp('startup.m has to be run before DOTTER.m');
+    disp('Please add the folder containing dotter to the paths')
     return
 end
 

@@ -1,8 +1,9 @@
 function df_cc_apply_image_folder(folder, ccFile)
+% function df_cc_apply_image_folder(folder, ccFile)
+% Correct all tif files in a folder using measurements from beads
+%
 
-if folder(end) ~= '/'
-    folder = [folder '/'];
-end
+folder = [folder filesep()];
 
 files = dir([folder '*.tif']);
 outDir = [folder 'cc/'];
@@ -16,10 +17,25 @@ else
     return;
 end
 
+logFileName = sprintf('%scc_log.txt', outDir);
+if isfile(logFileName)    
+    errordlg('A log file already exist in the input folder which suggests that it has been corrected already');
+    return
+end
+
+logFile = fopen(logFileName, 'w');
+
+logFile = fopen(logFileName, 'w');
+
+fprintf(logFile, 'Log from df_cc_apply_image_folder\n');
+fprintf(logFile, 'Date: %s\n', datestr(now, 'yyyy-mm-dd'));
+fprintf(logFile, 'DOTTER version: %s\n', df_version());
+fprintf(logFile, 'Using correction file: %s\n', ccFile);
 cc = load(ccFile, '-mat');
 
-
 refChannel = setRefChannel(cc, 'dapi');
+fprintf('Reference channel: %s\n', refChannel);
+
 
 w = waitbar(0, 'Processing ...');
 for kk = 1:numel(files)    
@@ -38,6 +54,7 @@ for kk = 1:numel(files)
 end
 close(w)
 
+fclose(logFile);
 fprintf('done\n');
 end
 
