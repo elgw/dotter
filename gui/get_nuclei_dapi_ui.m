@@ -55,7 +55,7 @@ s.localContrastProjection = [];
 % min and max area of nuclei, given in pixels
 
 s.minarea = 500; 
-s.maxarea = 30000;
+s.maxarea = 60000;
 
 
 if isfield(s, 'pixelSize')
