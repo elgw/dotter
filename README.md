@@ -1,8 +1,8 @@
 <link rel="stylesheet" href="style.css">
 
-[Requests](REQUESTS.html)
-[Bugs](BUGS.html)
-[Help](HELP.html)
+[Requests](REQUESTS.md)
+[Bugs](BUGS.md)
+[Help](HELP.md)
 
 ![DOTTER LOGO](logo_758.jpg)
 

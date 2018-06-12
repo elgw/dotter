@@ -5,11 +5,11 @@
   MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
 </script>
 
-[Changes](CHANGELOG.html)
-[Bugs](BUGS.html)
-[Help](HELP.html)
+[Changes](README.md)
+[Bugs](BUGS.md)
+[Help](HELP.md)
 
-![DOTTER LOGO](dotter/logo_758.jpg)
+![DOTTER LOGO](logo_758.jpg)
 
 # Help
 
