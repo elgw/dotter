@@ -4,7 +4,7 @@
 [Bugs](BUGS.html)
 [Help](HELP.html)
 
-![DOTTER LOGO](dotter/logo_758.jpg)
+![DOTTER LOGO](logo_758.jpg)
 
 # Changes to DOTTER 
 
