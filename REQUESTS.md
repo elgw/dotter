@@ -1,10 +1,10 @@
 <link rel="stylesheet" href="style.css">
 
-[Changes](CHANGELOG.html)
-[Bugs](BUGS.html)
-[Help](HELP.html)
+[Changes](README.md)
+[Bugs](BUGS.md)
+[Help](HELP.md)
 
-![DOTTER LOGO](dotter/logo_758.jpg)
+![DOTTER LOGO](logo_758.jpg)
 
 # Requests and things to do
 
