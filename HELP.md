@@ -11,7 +11,7 @@
 
 [Changes](README.md)
 [Bugs](BUGS.md)
-[Help](HELP.md)
+[Requests](REQUESTS.md)
 
 ![DOTTER LOGO](logo_758.jpg)
 
