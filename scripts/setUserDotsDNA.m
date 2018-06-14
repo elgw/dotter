@@ -51,6 +51,8 @@ if nargin == 0
     s.maxFiles = 2;
 end
 
+
+
 close all
 
 gui = [];
@@ -906,6 +908,7 @@ fig_menu_delete()
     function gui_fieldJump(varargin)
         % Jump directly to a field.
         
+        
         files = s.files;
         nmfiles = {};
         for kk = 1:numel(files)
@@ -937,31 +940,38 @@ fig_menu_delete()
         else
             disp('Not changing field')
         end
+        
     end
 
     function gui_previousField(varargin)
+        
         if s.fieldNo>1
             ctrl.info.Visible = 'on';
             ctrl.table.Visible = 'off';
             set(ctrl.info, 'String', sprintf('Saving %s ...', s.files(s.fieldNo).name), ...
                 'ForegroundColor', s.activeColor);
             drawnow();
+            
             gui_saveField();
+            
             s.fieldNo = max(1, s.fieldNo-1);
             s.updateAll = 1;
             set(ctrl.info, 'String', sprintf('Loading %s ...', s.files(s.fieldNo).name));
             drawnow();
+            
             gui_loadField(s.files(s.fieldNo).name);
+            
             if ~isfield(N{1}, 'userDots')
                 [M, N, s] = df_resetUserDots(M, N, s);
             end
             gui_update();
         end
         ctrl.info.Visible = 'off';
-        ctrl.table.Visible = 'on';
+        ctrl.table.Visible = 'on';                
     end
 
     function gui_saveField()
+
         disp('Updating meta data');
         M = setToM(M, s);
         disp('Saving user dots')
@@ -973,6 +983,7 @@ fig_menu_delete()
         else
             errordlg('You just found a super serious bug! Please report to erik!');
         end
+
     end
 
     function gui_loadField(filename)
@@ -1072,7 +1083,6 @@ fig_menu_delete()
         s.channel = 1;
         s.sumProjection = 0;
         s.maxProjection = 1;
-        
     end
 
     function generateProjections()
