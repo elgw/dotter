@@ -965,7 +965,14 @@ fig_menu_delete()
         disp('Updating meta data');
         M = setToM(M, s);
         disp('Saving user dots')
-        save([s.folder s.files(s.fieldNo).name], 'M', 'N');
+        nm_file = [s.folder s.files(s.fieldNo).name];
+        Meta_old = df_nm_load(nm_file);
+        
+        if strcmp(Meta_old{1}.dapifile, M.dapifile) == 1                
+            save(nm_file, 'M', 'N');
+        else
+            errordlg('You just found a super serious bug! Please report to erik!');
+        end
     end
 
     function gui_loadField(filename)
