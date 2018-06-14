@@ -8,6 +8,9 @@
 
 # Changes to DOTTER 
 
+# 0.559
+ * Changed `df_relocateTif` so that XYZ.nm always points to a `/folder/dapi_XYZ.tif` file.
+
 # 0.552
  * Fixed an issue where the script for finding a dot threshold would crash if 0 dots were asked for.
 

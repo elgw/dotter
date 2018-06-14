@@ -537,7 +537,7 @@ fig_menu_delete()
             'String', 'Field', 'Position', [10,10,150,40], ...
             'HorizontalAlignment','left',...
             'Parent', gui.viewPanel);
-        ctrl.filedJump = uicontrol('Style', 'pushbutton', ...
+        ctrl.fieldJump = uicontrol('Style', 'pushbutton', ...
             'String', '#', 'Position', [230,10,40,40], ...
             'Callback', @gui_fieldJump,...
             'Parent', gui.viewPanel);
@@ -904,16 +904,19 @@ fig_menu_delete()
     end
 
     function gui_fieldJump(varargin)
+        % Jump directly to a field.
         
         files = s.files;
         nmfiles = {};
         for kk = 1:numel(files)
             nmfiles{kk} = files(kk).name;
+            if numel(files)<20
             t = load(fullfile(s.folder, files(kk).name), '-mat');
             if numel(t.N) > 0
                 if isfield(t.N{1}, 'userDots')
                     nmfiles{kk} = [nmfiles{kk} ' with userDots'];
                 end
+            end
             end
         end
         

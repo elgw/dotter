@@ -335,8 +335,9 @@ function J = removeSaturatedPixels(I,J)
 % Most of all it is important to warn about this 
 
 nsat = sum(I(:)==2^16-1);
-removeSaturated = 1;
+removeSaturated = 0;
 
+if 0
 if nsat>0
     qans = questdlg('There are saturated pixels in the image. Do you want to use them for dot detection?', ...
         'Saturated pixels', 'No', 'Yes', 'No');
@@ -346,6 +347,7 @@ if nsat>0
         case 'No'
             removeSaturated = 1;
     end
+end
 end
 
 if removeSaturated

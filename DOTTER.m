@@ -81,7 +81,7 @@ end
 
 gui.win = figure('Position', pos, 'Menubar', 'none', ...
     'NumberTitle','off', ...
-    'Name', 'DOTTER BiCroLabs 2015-2018', ...
+    'Name', sprintf('DOTTER v. %s --- BiCroLabs 2015-2018', df_version()), ...
     'MenuBar', 'None', ...
     'Color', [1,1,1], ...
     'Resize', 'Off', ...
@@ -240,7 +240,7 @@ uimenu(mDNA, 'Label', 'Export dots', 'Callback', @run_exportDots, ...
             TIFfolder = uigetdir([NMfolder '/..'], 'Say where the tif files are (sub folder)');
             
             if ~isnumeric(TIFfolder)
-                relocateTIF([NMfolder, '/'], [TIFfolder, '/'])
+                df_relocateTif([NMfolder, '/'], [TIFfolder, '/'])
             else
                 disp('Aborting')
             end
@@ -439,13 +439,16 @@ uimenu(mDNA, 'Label', 'Export dots', 'Callback', @run_exportDots, ...
     end
 
     function openChangelog(varargin)
-        clFile = [getenv('DOTTER_PATH') 'CHANGELOG.html'];
+        clFile = [getenv('DOTTER_PATH') 'README.html'];
         % A trick to get the full file name, i.e., replace the tilde
         t = fopen(clFile);
+        if t == -1
+            warndlg('Can not find documentation');
+            return
+        end       
         clFile = fopen(t);
         fclose(t);
-        
-        web(['file://' clFile],  '-browser');
+        web(['file://' clFile],  '-browser');        
     end
 
     function openHelp(varargin)
