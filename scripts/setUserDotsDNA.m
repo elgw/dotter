@@ -55,10 +55,6 @@ if nargin == 0
     s.maxFiles = 2;
 end
 
-
-
-close all
-
 gui = [];
 s.updateAll = 1; % Indicate that all graphic components should be redrawn
 s.updateMarkerTable = 1;
@@ -131,75 +127,8 @@ s.dots.fwhm = [];
 s.captureRadius = 5;   % When clicking the images, how far away are dots captured
 
 % Background dots
-s.dotMarkers{1}.shape = 'x';
-s.dotMarkers{1}.color = 'c';
-s.dotMarkers{1}.size = 2;
-s.dotMarkers{1}.name = 'background dots';
-s.dotMarkers{1}.visible = 'on';
-
-% Label 0
-s.dotMarkers{2}.shape = 's';
-s.dotMarkers{2}.color = 'c';
-s.dotMarkers{2}.size = 10;
-s.dotMarkers{2}.name = 'Label 0';
-s.dotMarkers{2}.visible = 'on';
-
-% Label 1
-s.dotMarkers{3}.shape = 'o';
-s.dotMarkers{3}.color = 'r';
-s.dotMarkers{3}.size = 10;
-s.dotMarkers{3}.name = 'Label 1';
-s.dotMarkers{3}.visible = 'on';
-
-% Label 2
-s.dotMarkers{4}.shape = 'd';
-s.dotMarkers{4}.color = 'b';
-s.dotMarkers{4}.size = 10;
-s.dotMarkers{4}.name = 'Label 2';
-s.dotMarkers{4}.visible = 'on';
-
-% Label 3
-s.dotMarkers{5}.shape = 's';
-s.dotMarkers{5}.color = 'g';
-s.dotMarkers{5}.size = 10;
-s.dotMarkers{5}.name = 'Label 3';
-s.dotMarkers{5}.visible = 'on';
-
-% Label 4
-s.dotMarkers{6}.shape = 'p';
-s.dotMarkers{6}.color = 'm';
-s.dotMarkers{6}.size = 10;
-s.dotMarkers{6}.name = 'Label 4';
-s.dotMarkers{6}.visible = 'on';
-
-% Label 5
-s.dotMarkers{7}.shape = 'h';
-s.dotMarkers{7}.color = 'r';
-s.dotMarkers{7}.size = 10;
-s.dotMarkers{7}.name = 'Label 5';
-s.dotMarkers{7}.visible = 'on';
-
-% Label 6
-s.dotMarkers{8}.shape = '<';
-s.dotMarkers{8}.color = 'b';
-s.dotMarkers{8}.size = 10;
-s.dotMarkers{8}.name = 'Label 6';
-s.dotMarkers{8}.visible = 'on';
-
-% Label 7
-s.dotMarkers{9}.shape = '>';
-s.dotMarkers{9}.color = 'r';
-s.dotMarkers{9}.size = 10;
-s.dotMarkers{9}.name = 'Label 7';
-s.dotMarkers{9}.visible = 'on';
-
-% Label 8
-s.dotMarkers{10}.shape = 's';
-s.dotMarkers{10}.color = 'r';
-s.dotMarkers{10}.size = 10;
-s.dotMarkers{10}.name = 'Label 8';
-s.dotMarkers{10}.visible = 'on';
-
+dm = init_dotMarkers(s);
+s.dotMarkers = dm.dotMarkers;
 
 verbose = 1;
 %
@@ -2176,6 +2105,77 @@ else
     s.dots.th0 = mat2cell(zeros(1, numel(M.channels)), 1, ones(1,numel(M.channels)));
 end
 
+end
+
+function s = init_dotMarkers(s)
+s.dotMarkers{1}.shape = 'x';
+s.dotMarkers{1}.color = 'c';
+s.dotMarkers{1}.size = 2;
+s.dotMarkers{1}.name = 'background dots';
+s.dotMarkers{1}.visible = 'on';
+
+% Label 0
+s.dotMarkers{2}.shape = 's';
+s.dotMarkers{2}.color = 'c';
+s.dotMarkers{2}.size = 10;
+s.dotMarkers{2}.name = 'Label 0';
+s.dotMarkers{2}.visible = 'on';
+
+% Label 1
+s.dotMarkers{3}.shape = 'o';
+s.dotMarkers{3}.color = 'r';
+s.dotMarkers{3}.size = 10;
+s.dotMarkers{3}.name = 'Label 1';
+s.dotMarkers{3}.visible = 'on';
+
+% Label 2
+s.dotMarkers{4}.shape = 'd';
+s.dotMarkers{4}.color = 'b';
+s.dotMarkers{4}.size = 10;
+s.dotMarkers{4}.name = 'Label 2';
+s.dotMarkers{4}.visible = 'on';
+
+% Label 3
+s.dotMarkers{5}.shape = 's';
+s.dotMarkers{5}.color = 'g';
+s.dotMarkers{5}.size = 10;
+s.dotMarkers{5}.name = 'Label 3';
+s.dotMarkers{5}.visible = 'on';
+
+% Label 4
+s.dotMarkers{6}.shape = 'p';
+s.dotMarkers{6}.color = 'm';
+s.dotMarkers{6}.size = 10;
+s.dotMarkers{6}.name = 'Label 4';
+s.dotMarkers{6}.visible = 'on';
+
+% Label 5
+s.dotMarkers{7}.shape = 'h';
+s.dotMarkers{7}.color = 'r';
+s.dotMarkers{7}.size = 10;
+s.dotMarkers{7}.name = 'Label 5';
+s.dotMarkers{7}.visible = 'on';
+
+% Label 6
+s.dotMarkers{8}.shape = '<';
+s.dotMarkers{8}.color = 'b';
+s.dotMarkers{8}.size = 10;
+s.dotMarkers{8}.name = 'Label 6';
+s.dotMarkers{8}.visible = 'on';
+
+% Label 7
+s.dotMarkers{9}.shape = '>';
+s.dotMarkers{9}.color = 'r';
+s.dotMarkers{9}.size = 10;
+s.dotMarkers{9}.name = 'Label 7';
+s.dotMarkers{9}.visible = 'on';
+
+% Label 8
+s.dotMarkers{10}.shape = 's';
+s.dotMarkers{10}.color = 'r';
+s.dotMarkers{10}.size = 10;
+s.dotMarkers{10}.name = 'Label 8';
+s.dotMarkers{10}.visible = 'on';
 end
 
 
