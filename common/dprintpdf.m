@@ -5,6 +5,8 @@ function dprintpdf(filename, varargin)
 % 'h', 10 : height of paper in cm
 %  A4 measures 21.0 × 29.7 cm
 % 'fig', gcf
+% 'driver', '-dpdf', specify multiple drivers as {'-dpng', '-depsc', ...}
+
 
 w = 10; % target paper size
 h = 10;
@@ -27,17 +29,6 @@ for kk = 1:numel(varargin)
     end
 end
 
-drivers = {'-depsc', '-dpdf', '-dpng'};
-
-driverFound = 0;
-for kk = 1:numel(drivers)
-    if strcmp(driver, drivers{kk})
-        driverFound = 1;
-    end
-end
-assert(driverFound==1);
-
-
 
 set(fig,'Units','centimeters',...
     'PaperUnits', 'centimeters', ...
@@ -48,5 +39,11 @@ set(fig,'Units','centimeters',...
 drawnow
 pause(0.1)
 
-print(driver, sprintf('-f%d', fig.Number), filename)
+if ~iscell(driver)
+    driver = {driver};
+end
 
+for kk = 1:numel(driver)
+    print(driver, sprintf('-f%d', fig.Number), filename)
+end
+end

@@ -37,6 +37,10 @@ function setUserDotsDNA(folder)
 % - To leave without saving, press <esc>
 %
 
+%% Locks
+lock_field = 0; % Change field number
+lock_field_io = 0; % Write/save to nm
+
 s.maxFiles = inf;
 
 if nargin == 0
@@ -45,8 +49,8 @@ if nargin == 0
         warning('no testCalcFolder set');
         return
     end
-    folder = '/data/current_images/iJC/iJC829_20170918_001_calc/';
-    %folder = '/data/current_images/iXL/iXL213_20171005_00X_calc/';
+    %folder = '/data/current_images/iJC/iJC829_20170918_001_calc/';
+    folder = '/data/current_images/iXL/iXL213_20171005_00X_calc/';
     %folder = '/data/current_images/iEG/iEG410_170925_004_calc/';
     s.maxFiles = 2;
 end
@@ -380,13 +384,13 @@ fig_menu_delete()
             'Parent', gui.toolsPanel);
         
         if 0
-        ctrl.threshold = uicontrol('Style', 'pushbutton', ...
-            'String', 'reset thresholds', ...
-            'Units', 'Normalized', ...
-            'Position', [.5, .2, .5, .2], ...
-            'Callback', @gui_resetThresholds,...
-            'ForegroundColor', [1,0,0], ...
-            'Parent', gui.toolsPanel);
+            ctrl.threshold = uicontrol('Style', 'pushbutton', ...
+                'String', 'reset thresholds', ...
+                'Units', 'Normalized', ...
+                'Position', [.5, .2, .5, .2], ...
+                'Callback', @gui_resetThresholds,...
+                'ForegroundColor', [1,0,0], ...
+                'Parent', gui.toolsPanel);
         end
         
         uicontrol('Style', 'pushbutton', ...
@@ -854,21 +858,29 @@ fig_menu_delete()
     end
 
 
-
-
     function gui_nextField(varargin)
+        if lock_field == 1
+            return
+        end
+        
+        lock_field = 1;
         if s.fieldNo<s.nFields
             ctrl.info.Visible = 'on';
             ctrl.table.Visible = 'off';
             set(ctrl.info, 'String', sprintf('Saving %s ...', s.files(s.fieldNo).name), ...
                 'ForegroundColor', s.activeColor);
             drawnow();
+            
             gui_saveField();
-            s.fieldNo = min(s.nFields, s.fieldNo+1);
+            
+            s.fieldNo = min(s.nFields, s.fieldNo+1); % Dangerous
+            
             s.updateAll = 1;
             set(ctrl.info, 'String', sprintf('Loading %s ...', s.files(s.fieldNo).name));
             drawnow();
+            
             gui_loadField(s.files(s.fieldNo).name);
+            
             if ~isfield(N{1}, 'userDots')
                 [M, N, s] = df_resetUserDots(M, N, s);
             end
@@ -876,9 +888,12 @@ fig_menu_delete()
             ctrl.info.Visible = 'off';
             ctrl.table.Visible = 'on';
         end
+        
+        lock_field = 0;
     end
 
     function gui_nucJump(varargin)
+        
         % Jump to another nuclei
         
         files = s.files;
@@ -906,6 +921,12 @@ fig_menu_delete()
     end
 
     function gui_fieldJump(varargin)
+        if lock_field == 1
+            return
+        end
+        
+        lock_field = 1;
+        
         % Jump directly to a field.
         
         
@@ -914,12 +935,12 @@ fig_menu_delete()
         for kk = 1:numel(files)
             nmfiles{kk} = files(kk).name;
             if numel(files)<20
-            t = load(fullfile(s.folder, files(kk).name), '-mat');
-            if numel(t.N) > 0
-                if isfield(t.N{1}, 'userDots')
-                    nmfiles{kk} = [nmfiles{kk} ' with userDots'];
+                t = load(fullfile(s.folder, files(kk).name), '-mat');
+                if numel(t.N) > 0
+                    if isfield(t.N{1}, 'userDots')
+                        nmfiles{kk} = [nmfiles{kk} ' with userDots'];
+                    end
                 end
-            end
             end
         end
         
@@ -940,10 +961,15 @@ fig_menu_delete()
         else
             disp('Not changing field')
         end
-        
+        lock_field = 0;
     end
 
     function gui_previousField(varargin)
+        if lock_field == 1
+            return
+        end
+        
+        lock_field = 1;
         
         if s.fieldNo>1
             ctrl.info.Visible = 'on';
@@ -967,26 +993,37 @@ fig_menu_delete()
             gui_update();
         end
         ctrl.info.Visible = 'off';
-        ctrl.table.Visible = 'on';                
+        ctrl.table.Visible = 'on';
+        lock_field = 0;
+        
     end
 
     function gui_saveField()
-
+        if lock_field_io == 1
+            return
+        end
+        
+        lock_field_io =1;
         disp('Updating meta data');
         M = setToM(M, s);
         disp('Saving user dots')
         nm_file = [s.folder s.files(s.fieldNo).name];
         Meta_old = df_nm_load(nm_file);
         
-        if strcmp(Meta_old{1}.dapifile, M.dapifile) == 1                
+        if strcmp(Meta_old{1}.dapifile, M.dapifile) == 1
             save(nm_file, 'M', 'N');
         else
             errordlg('You just found a super serious bug! Please report to erik!');
         end
-
+        lock_field_io = 0;
     end
 
     function gui_loadField(filename)
+        if lock_field_io == 1
+            return
+        end
+        lock_field_io =1;
+        
         % Load an NM file into the GUI
         
         NM = load([s.folder filename], '-mat');
@@ -1083,6 +1120,7 @@ fig_menu_delete()
         s.channel = 1;
         s.sumProjection = 0;
         s.maxProjection = 1;
+        lock_field_io = 0;
     end
 
     function generateProjections()
