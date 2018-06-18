@@ -14,18 +14,16 @@
 <li><p>Fixed a serious bug in <code>setUserDotsDNA</code> that would overwrite the wrong NM file when switching fields of view fast. Lock variables are used to prevent this happening in the future but more care could be taken also to other parts of the code. This <a href="https://undocumentedmatlab.com/blog/controlling-callback-re-entrancy">discussion</a> contains a few alternatives:</p>
 
 <ul>
-<li><code>isMultipleCall</code>
+<li><p><code>isMultipleCall</code>
 ```
 function flag=isMultipleCall()
 flag = false;
 % Get the stack
 s = dbstack();
 if numel(s)&lt; =2
-% Stack too short for a multiple call
-return
-end</li>
-</ul>
-
+  % Stack too short for a multiple call
+  return
+end</p>
 
 <p>% How many calls to the calling function are in the stack?
 names = {s(:).name};
@@ -41,15 +39,18 @@ then in the code a simple
 </code>
 if isMultipleCall();  return;  end
 ```
-can be used.</p>
+can be used.</p></li>
+<li><p>Encapsulation:</p></li>
+</ul>
+
+
+<p> <code>
+ varargout = func( varargin )
+ % inside of callback, use following syntax:
+ varargout = func_queue( @func, varargin )
+</code></p>
 
 <ul>
-<li>Encapsulation:
-<code>
-varargout = func( varargin )
-% inside of callback, use following syntax:
-varargout = func_queue( @func, varargin )
-</code></li>
 <li>A not so portable solution would be to use an external library with mutextes, semaphores etc.</li>
 </ul>
 </li>
