@@ -9,7 +9,7 @@
 # Changes to DOTTER 
 
 # 0.567
- * Fixed a serious bug in `setUserDotsDNA` that would overwrite the wrong NM file when switching fields of view fast. Lock variables are used to prevent this happening in the future but more care could be taken also to other parts of the code. This [discussion](https://undocumentedmatlab.com/blog/controlling-callback-re-entrancy) contains a few alternatives:
+* Fixed a serious bug in `setUserDotsDNA` that would overwrite the wrong NM file when switching fields of view fast. Lock variables are used to prevent this happening in the future but more care could be taken also to other parts of the code. This [discussion](https://undocumentedmatlab.com/blog/controlling-callback-re-entrancy) contains a few alternatives:
 
    * `isMultipleCall`
 
