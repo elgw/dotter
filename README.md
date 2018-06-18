@@ -41,7 +41,6 @@ if isMultipleCall();  return;  end
 ``` 
 
 can be used.
-
    * Encapsulation:
 
 ```
@@ -49,7 +48,6 @@ varargout = func( varargin )
 % inside of callback, use following syntax:
 varargout = func_queue( @func, varargin )
 ```
-
    * A not so portable solution would be to use an external library with mutextes, semaphores etc.
 
 

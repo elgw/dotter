@@ -47,23 +47,15 @@ end
 if isMultipleCall();  return;  end
 </code></p>
 
-<p>can be used.</p>
-
-<ul>
-<li> Encapsulation:</li>
-</ul>
-
+<p>can be used.
+   * Encapsulation:</p>
 
 <p><code>
 varargout = func( varargin )
 % inside of callback, use following syntax:
 varargout = func_queue( @func, varargin )
-</code></p>
-
-<ul>
-<li> A not so portable solution would be to use an external library with mutextes, semaphores etc.</li>
-</ul>
-
+</code>
+   * A not so portable solution would be to use an external library with mutextes, semaphores etc.</p>
 
 <h1>0.559</h1>
 
