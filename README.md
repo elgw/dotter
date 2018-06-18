@@ -49,6 +49,8 @@
 
    * A not so portable solution would be to use an external library with mutextes, semaphores etc.
 
+* Added `df_ls_dapi()` to list nm files and see if they map to unique DAPI files. This is to detect possible overwritten nm-files caused by the bug.
+
 
 # 0.559
  * Changed `df_relocateTif` so that XYZ.nm always points to a `/folder/dapi_XYZ.tif` file.
@@ -335,11 +337,11 @@ files containing
 * Fixed export to 'base' of DAPI and Area when measuring those
   properties. I.e., when doing 'Get nuclei DAPI intensity and area from NE files', then it is possible to export or visualize from the MATLAB command window
 
-```
-scatter(A,D)
-xlabel('Area [pixels]')
-ylabel('DAPI [au]')
-```
+   ```
+   scatter(A,D)
+   xlabel('Area [pixels]')
+   ylabel('DAPI [au]')
+   ```
 
 * `df_getNucleiFromNM.m`, 
   * added _select NM files(s)_ to the prompt
@@ -348,13 +350,13 @@ ylabel('DAPI [au]')
   * this function also appends clusters to each N, N.cluster{} which
     is convenient for further processing
 
-Example:
-```
-[N, M] = df_getNucleiFromNM(); # opens file selector
-Loaded 11 files, 238 nuclei, 420 clusters into M and N
-185 nuclei has two clusters
-```
-
+   Example:
+   ```
+   [N, M] = df_getNucleiFromNM(); # opens file selector
+   Loaded 11 files, 238 nuclei, 420 clusters into M and N
+   185 nuclei has two clusters
+   ```
+   
 ## 0.355, 2017-08-21
 
 * Improvements in the interface when exporting dots

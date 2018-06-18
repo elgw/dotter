@@ -54,6 +54,7 @@ can be used.</p></li>
 <li>A not so portable solution would be to use an external library with mutextes, semaphores etc.</li>
 </ul>
 </li>
+<li><p>Added <code>df_ls_dapi()</code> to list nm files and see if they map to unique DAPI files. This is to detect possible overwritten nm-files caused by the bug.</p></li>
 </ul>
 
 
@@ -544,19 +545,15 @@ files containing</p>
 </li>
 <li><p>setUserDotsDNA, properly closes the climSlider before opening a new
 one &ndash; not cluttering the screen with windows any more.</p></li>
-<li>Fixed export to &lsquo;base&rsquo; of DAPI and Area when measuring those
-properties. I.e., when doing &lsquo;Get nuclei DAPI intensity and area from NE files&rsquo;, then it is possible to export or visualize from the MATLAB command window</li>
-</ul>
+<li><p>Fixed export to &lsquo;base&rsquo; of DAPI and Area when measuring those
+properties. I.e., when doing &lsquo;Get nuclei DAPI intensity and area from NE files&rsquo;, then it is possible to export or visualize from the MATLAB command window</p>
 
-
-<p><code>
-scatter(A,D)
-xlabel('Area [pixels]')
-ylabel('DAPI [au]')
-</code></p>
-
-<ul>
-<li><code>df_getNucleiFromNM.m</code>,
+<p> <code>
+ scatter(A,D)
+ xlabel('Area [pixels]')
+ ylabel('DAPI [au]')
+</code></p></li>
+<li><p><code>df_getNucleiFromNM.m</code>,</p>
 
 <ul>
 <li>added <em>select NM files(s)</em> to the prompt</li>
@@ -565,16 +562,16 @@ nuclei point to a <code>M</code> using the field <code>.metaNo</code></li>
 <li>this function also appends clusters to each N, N.cluster{} which
 is convenient for further processing</li>
 </ul>
-</li>
+
+
+<p> Example:
+ <code>
+ [N, M] = df_getNucleiFromNM(); # opens file selector
+ Loaded 11 files, 238 nuclei, 420 clusters into M and N
+ 185 nuclei has two clusters
+</code></p></li>
 </ul>
 
-
-<p>Example:
-<code>
-[N, M] = df_getNucleiFromNM(); # opens file selector
-Loaded 11 files, 238 nuclei, 420 clusters into M and N
-185 nuclei has two clusters
-</code></p>
 
 <h2>0.355, 2017-08-21</h2>
 
