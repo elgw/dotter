@@ -8,6 +8,63 @@
 
 <h1>Changes to DOTTER</h1>
 
+<h1>0.567</h1>
+
+<ul>
+<li><p>Fixed a serious bug in <code>setUserDotsDNA</code> that would overwrite the wrong NM file when switching fields of view fast. Lock variables are used to prevent this happening in the future but more care could be taken also to other parts of the code. This <a href="https://undocumentedmatlab.com/blog/controlling-callback-re-entrancy">discussion</a> contains a few alternatives:</p>
+
+<ul>
+<li><code>isMultipleCall</code></li>
+</ul>
+</li>
+</ul>
+
+
+<p>```
+function flag=isMultipleCall()
+  flag = false;
+  % Get the stack
+  s = dbstack();
+  if numel(s)&lt; =2
+    % Stack too short for a multiple call
+    return
+  end</p>
+
+<p>  % How many calls to the calling function are in the stack?
+  names = {s(:).name};
+  TF = strcmp(s(2).name,names);
+  count = sum(TF);
+  if count>1
+    % More than 1
+    flag = true;
+  end
+end
+```</p>
+
+<p>then in the code a simple</p>
+
+<p><code>
+if isMultipleCall();  return;  end
+</code></p>
+
+<p>can be used.</p>
+
+<ul>
+<li> Encapsulation:</li>
+</ul>
+
+
+<p><code>
+varargout = func( varargin )
+% inside of callback, use following syntax:
+varargout = func_queue( @func, varargin )
+</code></p>
+
+<ul>
+<li> A not so portable solution would be to use an external library with mutextes, semaphores etc.</li>
+</ul>
+
+
 <h1>0.559</h1>
 
 <ul>

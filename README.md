@@ -8,6 +8,51 @@
 
 # Changes to DOTTER 
 
+# 0.567
+ * Fixed a serious bug in `setUserDotsDNA` that would overwrite the wrong NM file when switching fields of view fast. Lock variables are used to prevent this happening in the future but more care could be taken also to other parts of the code. This [discussion](https://undocumentedmatlab.com/blog/controlling-callback-re-entrancy) contains a few alternatives:
+
+   * `isMultipleCall`
+
+```
+function flag=isMultipleCall()
+  flag = false; 
+  % Get the stack
+  s = dbstack();
+  if numel(s)< =2
+    % Stack too short for a multiple call
+    return
+  end
+ 
+  % How many calls to the calling function are in the stack?
+  names = {s(:).name};
+  TF = strcmp(s(2).name,names);
+  count = sum(TF);
+  if count>1
+    % More than 1
+    flag = true; 
+  end
+end
+```
+
+then in the code a simple 
+
+```
+if isMultipleCall();  return;  end
+``` 
+
+can be used.
+
+   * Encapsulation:
+
+```
+varargout = func( varargin )
+% inside of callback, use following syntax:
+varargout = func_queue( @func, varargin )
+```
+
+   * A not so portable solution would be to use an external library with mutextes, semaphores etc.
+
+
 # 0.559
  * Changed `df_relocateTif` so that XYZ.nm always points to a `/folder/dapi_XYZ.tif` file.
 
