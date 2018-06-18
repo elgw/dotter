@@ -8,7 +8,7 @@
 
 # Changes to DOTTER 
 
-# 0.567
+## 0.567
 
 * Fixed a serious bug in `setUserDotsDNA` that would overwrite the wrong NM file when switching fields of view fast. Lock variables are used to prevent this happening in the future but more care could be taken also to other parts of the code. This [discussion](https://undocumentedmatlab.com/blog/controlling-callback-re-entrancy) contains a few alternatives:
 
@@ -52,33 +52,33 @@
 * Added `df_ls_dapi()` to list nm files and see if they map to unique DAPI files. This is to detect possible overwritten nm-files caused by the bug.
 
 
-# 0.559
+## 0.559
  * Changed `df_relocateTif` so that XYZ.nm always points to a `/folder/dapi_XYZ.tif` file.
 
-# 0.552
+## 0.552
  * Fixed an issue where the script for finding a dot threshold would crash if 0 dots were asked for.
 
-# 0.544
+## 0.544
  * Threshold selection now works when non-integer number of dots are specified.
  * Possible to specify number of expected dots per channel for the threshold selection.
  * Corrections for chromatic aberrations can be run on a set of folders, not just one at a time.
  * Changed the `extrapvalue` of the interpolation function when correction for CC into the mean of the image (was set to 0 before and that caused a lot of false dots to be detected close to the borders, as an alternative, the image could be extended using linear inperpolation into a larger image, interpolated and then clipped).
  * Fixed some minor issue in the UX here and there.
 
-# 0.525
+## 0.525
  * `get_nuclei_manual` fixed, would previously skip some numbers in the mask.
 
-# 0.521
+## 0.521
  * Updated `df_getNucleiFromNM.m` not to crash when a single folder is used as argument.
 
-# 0.520
+## 0.520
  * Added help button in manual dot segmentation mode.
 
-# 0.519
+## 0.519
  * `df_exp_nucSim` renamed to `df_dotThresholds`
  * Integrated `df_dotThresholds` into `setUserDotsDNA`
 
-# 0.514
+## 0.514
  * Collected error messages into log file for `df_validateNM`
  * It is now possible to remove blobs in `setUserDotsDNA`.
 
