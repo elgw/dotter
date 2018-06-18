@@ -65,7 +65,7 @@ fprintf('x... ');
 t1 = convn(t, reshape(k,[7,1,1]),'same');
 t2 = df_conv1(t, flipud(k), [], []);
 
-assert(max(abs(t1(:) - t2(:)))<10e-9);
+assert(max(abs(t1(:) - t2(:)))<10e-8);
 fprintf('\n');
 
 verify_xyz(356, 354, 31, 11);
