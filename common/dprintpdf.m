@@ -8,11 +8,17 @@ function dprintpdf(filename, varargin)
 % 'driver', '-dpdf', specify multiple drivers as {'-dpng', '-depsc', ...}
 
 
+if contains(filename, '.')
+   warning('Filename contains ''.'', replacing with ''_'' ');
+   filename = strrep(filename, '.', '_');
+end
+
 w = 10; % target paper size
 h = 10;
 
 fig = gcf;
-driver = '-dpdf';
+driver = {'-dpdf'};
+
 
 for kk = 1:numel(varargin)
     if strcmpi(varargin{kk}, 'w')
@@ -27,7 +33,14 @@ for kk = 1:numel(varargin)
     if strcmpi(varargin{kk}, 'driver')
         driver = varargin{kk+1};
     end
+    if strcmpi(varargin{kk}, 'publish')
+        driver = {'-dpdf', '-depsc'};
+    end
 end
+
+
+
+        
 
 
 set(fig,'Units','centimeters',...
@@ -43,7 +56,9 @@ if ~iscell(driver)
     driver = {driver};
 end
 
-for kk = 1:numel(driver)
-    print(driver, sprintf('-f%d', fig.Number), filename)
+% Print one file per driver, file endings appended automatically
+for kk = 1:numel(driver)    
+    print(driver{kk}, sprintf('-f%d', fig.Number), filename)
 end
+
 end

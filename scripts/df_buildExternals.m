@@ -11,7 +11,6 @@ if strcmp(DOTTER_PATH, '')
 end
 
 
-
 cd([DOTTER_PATH  'common/volBucket'])
 mex  CFLAGS='$CFLAGS -std=c99 -march=native' COPTIMFLAGS='-DNDEBUG -O3' df_bcluster.c volBucket.c
 

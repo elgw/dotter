@@ -16,7 +16,9 @@ if doBuild
     mex CFLAGS='$CFLAGS -std=c99 -march=native -Wall `pkg-config gsl --cflags --libs`' COPTIMFLAGS='-DNDEBUG -O3' LINKLIBS='$LINKLIBS -lgsl -lgslcblas' df_fwhm1d.c
 end
 
-assert(exist('df_fwhm1d') == 3);
+if exist('df_fwhm1d') ~= 3
+    error('df_fwhm1d does not exist, probably not compiled')
+end
 
 disp('Wrong arguments')
 gotError = false;
