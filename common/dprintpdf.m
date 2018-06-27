@@ -39,11 +39,6 @@ for kk = 1:numel(varargin)
     end
 end
 
-
-
-
-
-
 set(fig,'Units','centimeters',...
     'PaperUnits', 'centimeters', ...
     'PaperSize',[w h], ...

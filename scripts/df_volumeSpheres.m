@@ -23,6 +23,14 @@ for kk = 1:numel(varargin)
     end
 end
 
+if exist('df_volumeSpheresSampling') == 3
+   if numel(unique(S(:,4))) == 1 % Radius column
+        A = df_volumeSpheresSampling(S(1,4), S(:,1:3)');
+        return;
+   end
+end
+    
+
 NEL = 10^6; % number of volume elements to use
 
 rmax = max(S(:,4),[],1);

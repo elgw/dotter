@@ -2,8 +2,9 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdint.h>
-
 #define M_PI 3.14159265358979323846 
+
+#define verbose 0
 
 double eudist2(double x1, double y1, double z1, double x2, double y2, double z2)
 {
@@ -52,13 +53,15 @@ const size_t stride = 1;
   size_t n_samples = 10e7;
   double delta = cbrt((double) volume_box/ (double) n_samples);
 
+  if(verbose)
+  {
   printf("radius: %f\n", radius);
   printf("radius2: %f\n", radius2);
   printf("delta: %f\n", delta);
   printf("volume_box: %f\n", volume_box);
   printf("nA: %zu\n", nA);
   printf("A = [%f, %f, %f, ...\n", A[0], A[1], A[2]);
-
+  }
 
   size_t n_points = 0;
   size_t n_inside = 0;
@@ -85,8 +88,11 @@ const size_t stride = 1;
 
 volume_box = (xx-x0)*(yy-y0)*(zz-z0);
 
+if(verbose)
+{
   printf("n_points: %zu\n", n_points);
   printf("n_inside: %zu\n", n_inside);
+}
 
   return (double) n_inside*pow(delta, 3);
   // (double) n_inside * (double) n_points * volume_box;

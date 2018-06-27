@@ -39,6 +39,9 @@ for kk = 1:nargin
     if strcmpi(varargin{kk}, 'recursive')
         s.recursive = 1;
     end
+    if strcmpi(varargin{kk}, 'waitdlg')
+        s.waitdlg = varargin{kk+1};
+    end
 end
 
 % to be returned
@@ -119,11 +122,15 @@ N = {};
 M = {};
 
 channels = [];
-w = waitbar(0, 'Loading files');
-drawnow()
+if s.waitdlg
+    w = waitbar(0, 'Loading files');
+    drawnow()
+end
 
 for ff = 1:numel(files)
-    waitbar((ff-1)/numel(files), w);
+    if s.waitdlg
+        waitbar((ff-1)/numel(files), w);
+    end
     fname = files{ff};
     
     if numel(folders) == numel(files)
@@ -191,7 +198,10 @@ for ff = 1:numel(files)
     
     end
 end
-close(w);
+
+if s.waitdlg
+    close(w);
+end
 
 nClusters = 0;
 n2clusters = 0;

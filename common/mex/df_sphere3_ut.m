@@ -46,4 +46,10 @@ end
 % And since no radius limit, this should be finite everywhere
 assert(sum(isfinite(S(:))) == numel(S))
 
+disp('  Small radii')
+T = inf([7,7,7]);
+D = [4,4,4];
+S = df_sphere3(T, D');
+s = S(:,:,4);
+
 end

@@ -5,7 +5,9 @@ disp('-> df_volumeSpheres')
 disp('Float input')
 S = [1, 1.1, 1.2, 1.4];
 V = df_volumeSpheres(S);
-assert(abs(V-1.4^3*4/3*pi)<0.1);
+assert(abs(V-1.4^3*4/3*pi)<0.1); % Correct volume
+rel_error = abs(V-1.4^3*4/3*pi)/1.4^3*4/3*pi;
+fprintf('Relative error (%f) is ok\n', rel_error);
 
 disp('One sphere');
 S = [1,1,1,1];

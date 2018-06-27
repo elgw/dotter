@@ -18,13 +18,15 @@ if ~exist('ccData', 'var')
 end
 
 for nn = 1:numel(N)
-    for cc = 1:numel(M.channels)
-        s.verbose = 0;
-        N{nn}.userDots{cc} = ...
-            df_cc_apply_dots('dots', N{nn}.userDots{cc}, ...
-            'from', M.channels{cc}, ... % From
-            'to', 'dapi', ... % To
-            'ccData', ccData, 'settings', s);
+    if isfield(N{nn}, 'userDots')
+        for cc = 1:numel(M.channels)
+            s.verbose = 0;
+            N{nn}.userDots{cc} = ...
+                df_cc_apply_dots('dots', N{nn}.userDots{cc}, ...
+                'from', M.channels{cc}, ... % From
+                'to', 'dapi', ... % To
+                'ccData', ccData, 'settings', s);
+        end
     end
 end
 
