@@ -518,6 +518,7 @@ void timing3d(size_t MN)
 
 }
 
+#ifdef conv1_main
 int main(int argc, char ** argv)
 {
 
@@ -538,3 +539,4 @@ int main(int argc, char ** argv)
   timing3d(2048);
 
 }
+#endif
