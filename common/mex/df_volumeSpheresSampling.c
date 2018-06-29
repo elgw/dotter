@@ -29,7 +29,7 @@ const mwSize out_size [] = {1,1,1};
 
   double * A = mxGetPr(prhs[1]);
   size_t nA = floor(mxGetNumberOfElements(prhs[1])/3.0);
-
-out[0] = sphere3_sampling(radius, A, nA);
+n_samples = 10e6;
+out[0] = sphere3_sampling(n_samples, radius, A, nA);
 
 }
