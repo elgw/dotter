@@ -17,6 +17,7 @@ folder = [];
 files = {};
 folders = {};
 s.recursive = 1;
+s.waitdlg = 1;
 
 for kk = 1:nargin
     if strcmpi(varargin{kk}, 'folder')
