@@ -11,6 +11,10 @@ function V=gsmooth(V, sigma, varargin)
 % 2017-03-30, normalized almost as fast as non-normalized
 %             'normalized' now triggers the normalized2-algorithm
 
+if isvector(V)
+    V = gsmooth1(V, sigma, varargin);
+    return
+end
 
 if sigma == 0
     return
@@ -128,7 +132,7 @@ end
     function N = gnorm(siz, d, sigmas)
         % siz: size of volume
         % d: dimensions of kernel
-        % sigmas: for the gaussian kernel        
+        % sigmas: for the gaussian kernel
         if 0
             siz = [1024,1024, 60];
             d = [11,11,11];
@@ -148,10 +152,39 @@ end
         % demaning with tensor calculus. Many unneccessary multiplications
         % ...
         xy = L1*L2';
-        z = reshape(L3, [1,1,numel(L3)]);        
+        z = reshape(L3, [1,1,numel(L3)]);
         Nxy = repmat(xy, [1,1,numel(L3)]);
         Nz = repmat(z, [siz(1), siz(2), 1]);
         N = Nxy.*Nz;
     end
+
+end
+
+function V = gsmooth1(V, sigma, varargin)
+
+V = reshape(V, [1,numel(V)]);
+
+radius=round(4*sigma+2);
+if (mod(radius,2)==0)
+    radius=radius+1;
+end
+
+for kk = 1:numel(varargin)
+    if strcmp(varargin{kk}, 'radius')
+        radius = varargin{kk+1};
+    end
+    if strcmp(varargin{kk}, 'normalized')
+        normalized = 1;
+    end
+end
+
+% Kernel
+K=ggaussian(radius, sigma);
+
+V = conv(V, K, 'same');
+
+if normalized
+    V = V./conv(ones(size(V)), K, 'same');
+end
 
 end
