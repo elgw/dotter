@@ -54,7 +54,7 @@ df_fwhm1d(t)
 
 disp('Random input')
 for kk = 1:100
-    t = rand(11,1);
+    t = rand(randi(21)*2+5,1);
     df_fwhm1d(t);
 end
 
