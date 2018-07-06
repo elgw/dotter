@@ -52,7 +52,7 @@ void sphere3(double * restrict B, const size_t M, const size_t N, const size_t P
     n1  = min(N, vmax(D+1, 3, nD)+radius-1*offset+1);
 
     p0  = max(0, vmin(D+2, 3, nD)-radius-1*offset);
-    p1  = min(P, vmax(D+2, 3, nD)+radius-1*offset+2);
+    p1  = min(P, vmax(D+2, 3, nD)+radius-1*offset+1);
   }
 
   size_t M0 = (size_t) m0;
