@@ -47,6 +47,7 @@ void getRangeIntersection(const double * restrict A, size_t nA,
     double * min, double * max)
 {
 
+  // TODO: This is not correct, see df_bbx3_intersection.m in DOTTER
   double min_a = 0; double max_a = 0;
   double min_b = 0; double max_b = 0;
   getRange(A, nA, &min_a, &max_a);
