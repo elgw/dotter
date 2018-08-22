@@ -206,7 +206,7 @@ gui.btn_info = uicontrol('Style', 'pushbutton', ...
     'Parent', gui.panel, ...
     'Units', 'Normalized', ...
     'Position', [0, .2, 1, .1], ...
-    'String', 'Histogram', ...
+    'String', 'Histograms', ...
     'Callback', @showHistogram);
 
 gui.btn_info = uicontrol('Style', 'pushbutton', ...
@@ -950,10 +950,18 @@ end
 
     function showHistogram(varargin)
         figure
+        subplot(1,2,1)
         histogram(I(:));
         grid on
-        xlabel('Intensity')
+        xlabel('Voxel Intensity')
         ylabel('#')
+        title('Image')
+        subplot(1,2,2)        
+        histogram(P(:,4));
+        grid on
+        title('Dots')
+        xlabel('Dot values (4th column)')
+        ylabel('#');
     end
 
 end

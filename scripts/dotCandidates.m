@@ -16,7 +16,7 @@ function [ P, meta ] = dotCandidates(varargin)
 % To get default settings, use
 % s = dotCandidates('getDefaults')
 %
-% Outputs:
+% Outputs columns:
 %  x,y,z,dog,intensity
 %
 % Reminder:

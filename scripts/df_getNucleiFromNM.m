@@ -85,7 +85,7 @@ if(isdir(files{1}))
                 if numel(fi) == 1
                     ccFile= [fo filesep() fi(1).name];
                     if hasCC == 1
-                        errordlg(sprintf('More than one .cc file below %s', folder));
+                        errordlg(sprintf('More than one .cc file below %s. Will not extract anything for you before you fix this!', folder));
                         return
                     end
                     hasCC = 1;
