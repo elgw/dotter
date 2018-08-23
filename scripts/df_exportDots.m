@@ -1,35 +1,49 @@
 function T = df_exportDots(varargin)
-%% function T = df_exportDots(varargin)
+%df_exportDots export dots from DOTTER
+%
 % Export dots from a set of NM files
 % The script will ask for NM files to include in the analyis
 % and finally ask where to save the data when the extraction is done.
 %
-% T has the following columns:
-% 'File', 'Channel', 'Nuclei', 'x', 'y', 'z', 'Value','FWHM', 'Label'
+%  Output protocol
+%  ---------------
+%  T has the following columns:
+%  'File', 'Channel', 'Nuclei', 'x', 'y', 'z', 'Value','FWHM', 'Label'
+%  - File is the full file name of the nm file that contained the dots
+%  - Channel is the channel name. This always corresponds to a prefix of the
+%    tif file names, i.e., if there is a594_001.tif, a594 could be the
+%    channel name
+%  - x, y, z: the x, y, and z coordinate, possibly after shift correction
+%  towards DAPI
+%  - Value, is the strengt of the dot, and could be generated with DoG, or
+%  some other filter.
+%  - FWHM: the full width half max of the dot, if calculated
+%  - Label: If dot is clustered, says which cluster it belongs to.
 %
-% Continue with your favorite table processing tool, like awk!
-% See headers
-% awk -F ',' 'BEGIN {print "\033[4m$", "Name\033[0m";} NR==1 {for (kk=1; kk<=NF; kk++) print kk, $kk}' DotsData.csv
+%  Continue with your favorite table processing tool, like awk!
+%  See headers
+%  awk -F ',' 'BEGIN {print "\033[4m$", "Name\033[0m";} NR==1 {for (kk=1; kk<=NF; kk++) print kk, $kk}' DotsData.csv
 %
-% Select dots above 20000
-% awk -F ',' '$7>20000 {print}' DotsData.csv
-% ...
+%  Select dots above 20000
+%  awk -F ',' '$7>20000 {print}' DotsData.csv
+%  ...
 %
-% 'UserDots' export user dots, not all dots
-% 'fwhm'     calculate fwhm if not already calculated
+%  'UserDots' export user dots, not all dots
+%  'fwhm'     calculate fwhm if not already calculated
 %
-% Example:
-% T = df_exportDots('fwhm');
-% dfwhm = cell2mat(T(:,8));
-% fprintf('fwhm calculated for %d/%d dots.\n', numel(dfwhm)-sum(dfwhm<0), numel(dfwhm));
-% dfwhmf = dfwhm(dfwhm>0); % filter out dots with no fwhm info
-% histogram(dfwhmf)
+%  Examples
+%  --------
+%       T = df_exportDots('fwhm');
+%       dfwhm = cell2mat(T(:,8));
+%       fprintf('fwhm calculated for %d/%d dots.\n', numel(dfwhm)-sum(dfwhm<0), numel(dfwhm));
+%       dfwhmf = dfwhm(dfwhm>0); % filter out dots with no fwhm info
+%       histogram(dfwhmf)
 %
-% Notes:
-% - Only exports dots from G1 nuclei (dapisum < dapiTh)
+%  Notes
+%  -----
+%  - Only exports dots from G1 nuclei (dapisum < dapiTh)
 %
-% see also df_exportUserDots
-%
+%   See also DF_EXPORTDOTS_UI
 
 % 2017-08-21
 % Asking to calculate FWHM in a dialog.
@@ -82,8 +96,6 @@ for kk = 1:numel(varargin)
     end
 end
 
-
-
 if strcmpi(s.fitting, 'centre of mass')
     s.fitting = 'com3w';
 end
@@ -114,10 +126,8 @@ if exist('ccFile', 'var')
     end
 end
 
-
-fprintf('%d Files: \n, numel(files)')
+fprintf('%d Files: \n', numel(files));
 fprintf('%s ... \n', files{1});
-
 
 if s.calcFWHM < 0 % if not set;
     a = questdlg('Calculate FWHM from at the dot locations in the images? That will take a lot of time','FWHM', 'Yes', 'No', 'No');
@@ -338,8 +348,7 @@ for nn = 1:numel(N)
         % Handle missing intensity values by setting to zero
         if size(dots,2)==3
             dots = [dots, zeros(size(dots,1),1)];
-        end            
-        
+        end                    
         
         if s.calcFWHM
             fprintf(s.logFile, ' + Calculating FWHM\n');
@@ -348,12 +357,12 @@ for nn = 1:numel(N)
             dfwhm = -2*ones(size(dots,1), 1);
         end
         
-        if strcmpi(s.fitting, 'com3w');
+        if strcmpi(s.fitting, 'com3w')
             fprintf(s.logFile, ' + Fitting with com3w\n');
             dots(:,1:3) = df_com3(imFile, dots(:,1:3)', 1)';
         end
         
-        if strcmpi(s.fitting, 'dotFitting');
+        if strcmpi(s.fitting, 'dotFitting')
             fprintf(s.logFile, ' + Fitting with dotFitting\n');
             dotFittingSettings = dotFitting();
             lambda = df_getEmission(M.channels{cc});
@@ -363,8 +372,7 @@ for nn = 1:numel(N)
             F=dotFitting(imFile, dots(:,1:3), dotFittingSettings);
             dots(:,1:3) = F(:,1:3);
         end
-        
-        
+                
         %% Apply cc-correction
         if isfield(s, 'ccData')
             fprintf(s.logFile, ' + Applying cc\n');
@@ -372,8 +380,7 @@ for nn = 1:numel(N)
                 df_cc_apply_dots('dots', dots(:,1:3), ...
                 'from', M.channels{cc}, ... % From
                 'to', 'dapi', ... % To
-                'ccData', s.ccData);
-            
+                'ccData', s.ccData);            
         end
         
         TFC = [TFC; dots, dfwhm, N{nn}.userDotsLabels{cc}(:)];
@@ -399,12 +406,12 @@ else
     dfwhm = -2*ones(size(TFC,1),1);
 end
 
-if strcmpi(s.fitting, 'com3w');
+if strcmpi(s.fitting, 'com3w')
     fprintf(s.logFile, ' + Fitting with com3\n');
     TFC(:,1:3) = df_com3(imFile, TFC(:,1:3)', 1)';
 end
 
-if strcmpi(s.fitting, 'dotFitting');
+if strcmpi(s.fitting, 'dotFitting')
     fprintf(s.logFile, ' + Fitting with dotFitting\n');
     dotFittingSettings = dotFitting();
     lambda = df_getEmission(M.channels{cc});

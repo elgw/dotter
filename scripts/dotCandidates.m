@@ -17,7 +17,9 @@ function [ P, meta ] = dotCandidates(varargin)
 % s = dotCandidates('getDefaults')
 %
 % Outputs columns:
-%  x,y,z,dog,intensity
+%  x,y,z,value,intensity
+%   where x,y,z are the integer coordinates of the dots, value is the value
+%   from the ranking method and intensity is I(x,y,z).
 %
 % Reminder:
 %   3D DoG, not per plane

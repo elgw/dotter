@@ -8,6 +8,9 @@
 
 # Changes to DOTTER 
 
+## 0.594
+ * Updated `bfmatlab` from 5.7.3 to 5.9.1. 
+
 ## 0.567
 
 * Fixed a serious bug in `setUserDotsDNA` that would overwrite the wrong NM file when switching fields of view fast. Lock variables are used to prevent this happening in the future but more care could be taken also to other parts of the code. This [discussion](https://undocumentedmatlab.com/blog/controlling-callback-re-entrancy) contains a few alternatives:
