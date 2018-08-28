@@ -16,6 +16,7 @@ function NC = df_nkmeans(varargin)
 % A figure will be produced for each nuclei, press <enter> to see the next
 % one. At the end, a histogram is shown over the number of clusters per
 % nuclei.
+% See also: evalclusters
 
 msgbox(help('df_nkmeans'))
 
