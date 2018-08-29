@@ -164,6 +164,8 @@ uimenu(mDNA, 'Label', 'Basic plots', 'Callback', @run_plot);
 
 uimenu(mDNA, 'Label', 'Export dots', 'Callback', @run_exportDots, ...
     'Separator','on');
+uimenu(mDNA, 'Label', 'Export 2D masks', 'Callback', @run_exportMasks, ...
+    'Separator','on');
 
 %mDNA_CSV = uimenu(mDNA, 'Label', 'Export');
 %uimenu(mDNA_CSV, 'Label', 'Get basic properties of clusters/alleles', 'Callback', @userDotsAlleles);
@@ -665,4 +667,8 @@ uimenu(mDNA, 'Label', 'Export dots', 'Callback', @run_exportDots, ...
         gui.win.Position = pos;
     end
 
+end
+
+function run_exportMasks(varargin)
+    df_exportMasks();
 end

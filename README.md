@@ -8,6 +8,9 @@
 
 # Changes to DOTTER 
 
+## 0.597
+ * Added the option to export 2D masks from NM files
+
 ## 0.594
  * Updated `bfmatlab` from 5.7.3 to 5.9.1. 
 

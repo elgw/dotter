@@ -19,7 +19,7 @@ if exist(filename, 'file')
         value = config.(key);
     end
 else    
-    error('> %s does not exist.\n', filename);
+    warning('> %s does not exist.\n', filename);
 end
 
 if ~exist('value', 'var')
