@@ -25,7 +25,7 @@ uicontrol('Style', 'pushbutton', ...
     'Position',[30 200 150 30], ...
     'Parent', filePanel);
 
-GUI.inFiles = uicontrol('Style', 'popupmenu', ...
+GUI.inFolders = uicontrol('Style', 'popupmenu', ...
     'String', ['none'], ...
     'Position',[30 150 300 30], ...
     'Parent', filePanel);
@@ -84,7 +84,7 @@ refreshGUI();
         if iscell(files)
             s.inputFolders = {};
             for kk = 1:numel(files)
-                if(isdir(files{kk}))
+                if(isfolder(files{kk}))
                     fprintf('Folder: %s\n', files{kk});
                     s.inputFolders{end+1} = files{kk};
                 end
@@ -110,11 +110,16 @@ refreshGUI();
     end
 
     function refreshGUI(varargin)
-        s.inputFolders
-        s.outputDir
+        %s.inputFolders
+        %s.outputDir
         s.pre = GUI.pre.String;
         s.post = GUI.post.String;
         GUI.exampleName.String = sprintf('%s001%s.tif', s.pre, s.post);
+        if numel(s.inputFolders) == 0
+            GUI.inFolders.String = {''};
+        else
+            GUI.inFolders.String = s.inputFolders;
+        end
     end
 
 
@@ -140,7 +145,7 @@ refreshGUI();
             if numel(files) == 0
                 warning('%s has no NM files\n', inFolder);
             else
-                if ~isdir(outFolder)
+                if ~isfolder(outFolder)
                     mkdir(outFolder)
                 end    
             end
