@@ -172,6 +172,21 @@ for ff = 1:numel(files)
     M{ff} = D.M;
     M{ff}.nmFile = nmFile;
     
+    [from, to] = regexpi(M{ff}.nmFile, '\d\d\d\.NM', 'start', 'end');
+    nm_file_number = M{ff}.nmFile(from:to-3); 
+    [from, to] = regexpi(M{ff}.dapifile, 'dapi_\d\d\d\.tif', 'start', 'end');
+    dapi_file_number = M{ff}.dapifile(from+5:end-4);
+    
+    if(~strcmp(nm_file_number, dapi_file_number))
+        fprintf('DAPI:%s NM:%s\n', dapi_file_number, nm_file_number);
+        fprintf('%s\n', M{ff}.dapifile);
+        fprintf('%s\n', M{ff}.nmFile);        
+        warning('Mismatch between DAPI file and NM file numbers! -- Either rename the calc files or change the dapifile field')        
+        disp('Press enter to update the dapifile field')
+        pause
+        M{ff}.dapifile(from+5:end-4) = nm_file_number
+    end            
+    
     for nn = 1:numel(D.N)
         D.N{nn}.file = fname;
         D.N{nn}.nucleiNr = nn;
