@@ -8,6 +8,9 @@
 
 # Changes to DOTTER 
 
+## 0.598
+ * Added a check to see that dapi file matches the nm file number (for exporting).
+
 ## 0.597
  * Added the option to export 2D masks from NM files
 
