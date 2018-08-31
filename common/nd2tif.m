@@ -141,7 +141,7 @@ for kk = 1:nSeries
                 slice_mode = 2;
             end
             
-            V = zeros(reader.getSizeX(), reader.getSizeY(), nSlices, 'uint16');
+            V = zeros(reader.getSizeY(), reader.getSizeX(), nSlices, 'uint16');
                             
             for ll = 1:nSlices
                 % getSeries(z,c,t);
