@@ -1,14 +1,15 @@
 function df_eudist_ut()
+%% distance_map = df_eudist(image, voxel_size)
 
-compile()
+%compile()
 
 test_correct_2D()
-test_speed_image()
+%test_speed_image()
 
-test_speed_2D()
-dprintpdf('timings_2D', 'w', 20, 'h', 10)
-test_speed_3D()
-dprintpdf('timings_3D', 'w', 20, 'h', 10)
+%test_speed_2D()
+%dprintpdf('timings_2D', 'w', 20, 'h', 10)
+%test_speed_3D()
+%dprintpdf('timings_3D', 'w', 20, 'h', 10)
 end
 
 function test_correct_2D()
