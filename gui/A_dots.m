@@ -162,6 +162,7 @@ for kk = 1:numel(dapifiles)
     M.dotSettings = s.dotSettings;
     M.pixelSize = s.pixelSize;
     M.dotsMeta = dotsMeta;
+    M.DOTTER_version = df_version();
     
     save(datafile, 'N', 'M');
 end
