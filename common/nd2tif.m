@@ -169,9 +169,11 @@ for kk = 1:nSeries
             % TODO: put meta data in tif files
             metaOutFileName = sprintf('%s%s_%03d.txt', outFolder, cName, kk);
             metaFile = fopen(metaOutFileName, 'w');
+            
             fprintf(metaFile, '%s\n', omeMeta.getPixelsPhysicalSizeX(0).toString());           
             fprintf(metaFile, '%s\n', omeMeta.getPixelsPhysicalSizeY(0).toString());
             fprintf(metaFile, '%s\n', omeMeta.getPixelsPhysicalSizeZ(0).toString());
+            
             fclose(metaFile);
 
             
