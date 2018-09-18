@@ -70,6 +70,25 @@ visplot();
         end
         assert(gotError == 1);
         
+        gotError = 0;
+        try
+            df_volumesSpheresIntersection(0, [1,1,1], [2,2,2])
+        catch e
+            gotError = 1;
+        end
+        assert(gotError == 1);
+        
+        gotError = 0;
+        try
+            df_volumesSpheresIntersection(-1, [1,1,1], [2,2,2])
+        catch e
+            gotError = 1;
+        end
+        assert(gotError == 1);
+        
+        vol = df_volumesSpheresIntersection(1, [], [2,2,2]);
+        assert(vol == 0);
+        
     end
 
     function test_rotational_invariance()
