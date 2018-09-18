@@ -35,6 +35,8 @@ void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[])
 
   double * r = (double *) mxGetPr(prhs[0]);
   double radius = r[0];
+  if(radius<=0)
+      mexErrMsgTxt("radius has to be positive");
 
   const mwSize out_size [] = {1,1,1};
   plhs[0] = mxCreateNumericArray(3,  out_size, mxDOUBLE_CLASS, mxREAL);
