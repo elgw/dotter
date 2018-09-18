@@ -1,6 +1,8 @@
 #include "mex.h"
 #include <math.h>
 
+/* Create a sphere in a volumetric image */
+
 double min(double a, double b)
 {
   if(a<b)
@@ -31,7 +33,10 @@ double vmax(double * restrict V, const size_t stride, const size_t N)
   return m;
 }
 
-void sphere3(double * restrict B, const size_t M, const size_t N, const size_t P, double * restrict D, const size_t nD, const double radius, const double offset)
+void sphere3(double * restrict B, 
+    const size_t M, const size_t N, const size_t P, 
+    double * restrict D, const size_t nD, const double radius, 
+    const double offset)
 {
   //printf("M: %zu, N: %zu, P: %zu ,nD: %zu\n", M, N, P, nD);
   //printf("%f\n", radius);

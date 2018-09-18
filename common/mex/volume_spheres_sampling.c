@@ -6,7 +6,6 @@
 #include <stdint.h>
 #include <assert.h>
 
-
 #ifndef M_PI
 #define M_PI 3.14159265358979323846 
 #endif
@@ -38,56 +37,85 @@ void getRange(const double * restrict A, size_t nA, double * min, double * max)
 
   min[0] = min_value;
   max[0] = max_value;
-
 }
 
 
 void getRangeIntersection(const double * restrict A, size_t nA,
     const double * restrict B, size_t nB,
-    double * min, double * max)
+    double * min, double * max, double radius)
 {
 
-  // TODO: This is not correct, see df_bbx3_intersection.m in DOTTER
+  //  see also df_bbx3_intersection.m in DOTTER
   double min_a = 0; double max_a = 0;
   double min_b = 0; double max_b = 0;
   getRange(A, nA, &min_a, &max_a);
   getRange(B, nB, &min_b, &max_b);
 
+  min_a -= radius;  max_a += radius;
+  min_b -= radius;  max_b += radius;
+
+  //  printf("min_a %f, max_a, %f, min_b, %f, max_b %f\n", min_a, max_a, min_b, max_b);
+
   // Cases with no intersection
+  //     AAAAA
+  //           BBBBB
   if(max_a <= min_b)
     return;
 
+  //          AAAAA
+  //   BBBBB
   if(max_b <= min_a)
     return;
 
-  // [min_b,  max_a]
-  if(max_a > min_b)
+  // One interval encloses the other
+  //    AAAAAAAAAAA
+  //      BBBBBB
+  if(min_a < min_b && max_a>max_b)
+  {
+    min[0] = min_b;
+    max[0] = max_b;
+    return;
+  }
+  // One interval encloses the other
+  //     AAAAAAA
+  //  BBBBBBBBBBBB
+  if(min_a > min_b && max_a < max_b)
+  {
+    min[0] = min_a;
+    max[0] = max_a;
+    return;
+  }
+
+  // Partial overlap
+  //   AAAAAAA
+  //      BBBBBB
+  if( (min_b >= min_a && min_b <= max_a) && max_b >= max_a)
   {
     min[0] = min_b;
     max[0] = max_a;
     return;
   }
 
-  // [min_a, max_b]
-  if(max_b > min_a)
+  //     AAAAAAA
+  //   BBBBBB
+  if(max_b >= min_a && min_a >= min_b)
   {
     min[0] = min_a;
     max[0] = max_b;
     return;
   }
 
+  // All cases should be covered
   assert(0);
   return;
-
 }
 
 
-double sphere3_sampling_intersection(const size_t n_samples, double radius,
-    double * A, size_t nA,
-    double * B, size_t nB)
+double sphere3_sampling_intersection(const size_t n_samples, const double radius,
+    const double * restrict A, const size_t nA,
+    const double * restrict B, const size_t nB)
   /* Intersecting volume between A and B */
 {
-
 
   const size_t stride = 3;
   const double radius2 = pow(radius,2);
@@ -96,15 +124,23 @@ double sphere3_sampling_intersection(const size_t n_samples, double radius,
   double x0 = 0; double x1 = 0;
   double y0 = 0; double y1 = 0;
   double z0 = 0; double z1 = 0;
-  getRangeIntersection(A, nA, B, nB, &x0, &x1);
-  getRangeIntersection(A+1, nA, B+1, nB, &y0, &y1);
-  getRangeIntersection(A+2, nA, B+2, nB, &z0, &z1);
 
+  getRangeIntersection(A,   nA, B,   nB, &x0, &x1, radius);
+  getRangeIntersection(A+1, nA, B+1, nB, &y0, &y1, radius);
+  getRangeIntersection(A+2, nA, B+2, nB, &z0, &z1, radius);
+
+  //  printf("%zu %zu\n", nA, nB);
+  //  printf("%f,%f, %f,%f, %f,%f\n", x0, x1, y0, y1, z0, z1);
 
   // volume of enclosing box 
-  double volume_box =  (x1-x0+2*radius)*(y1-y0+2*radius)*(z1-z0+2*radius);
+  double volume_box =  (x1-x0)*(y1-y0)*(z1-z0);
+
+  // If empty, nothing to do
+  if(volume_box == 0)
+    return 0;
+
   //  size_t n_samples = 10e7;
-  double delta = cbrt((double) volume_box/ (double) n_samples);
+  double delta = cbrt((double) volume_box / (double) n_samples);
 
   // Prepare for main loop
   size_t n_points = 0;
@@ -114,9 +150,9 @@ double sphere3_sampling_intersection(const size_t n_samples, double radius,
   double yy = 0;
   double zz = 0;
 
-  for(double xx = x0-radius; xx<x1+radius+delta; xx=xx+delta)
-    for(double yy = y0-radius; yy<y1+radius+delta; yy=yy+delta)
-      for(double zz = z0-radius; zz<z1+radius+delta; zz=zz+delta)
+  for(double xx = x0; xx<=x1; xx=xx+delta)
+    for(double yy = y0; yy<=y1; yy=yy+delta)
+      for(double zz = z0; zz<=z1; zz=zz+delta)
       {
         int in_A = 0;
         for(size_t aa = 0; aa<nA; aa++)
@@ -138,10 +174,7 @@ double sphere3_sampling_intersection(const size_t n_samples, double radius,
               bb = nB; // don't count twice
             }
           }
-
-
         }
-
         n_points++;
       }
 
@@ -171,7 +204,7 @@ double sphere3_sampling(const size_t n_samples, double radius,
   getRange(A, nA, &x0, &x1);
   getRange(A+1, nA, &y0, &y1);
   getRange(A+2, nA, &z0, &z1);
-//  mexPrintf("Ranges: %f %f %f %f %f %f\n", x0, x1, y0, y1, z0, z1);
+  //  mexPrintf("Ranges: %f %f %f %f %f %f\n", x0, x1, y0, y1, z0, z1);
 
   // volume of enclosing box 
   double volume_box =  (x1-x0+2*radius)*(y1-y0+2*radius)*(z1-z0+2*radius);
@@ -226,5 +259,3 @@ double sphere3_sampling(const size_t n_samples, double radius,
   return ((double) n_inside)*pow(delta, 3);
   // (double) n_inside * (double) n_points * volume_box;
 }
-
-

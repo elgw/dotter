@@ -66,6 +66,9 @@ mex  df_imshift.c CFLAGS='-g $CFLAGS -std=c99 -march=native `pkg-config gsl --cf
 % fwhm
 mex  CFLAGS='$CFLAGS -std=c99 -march=native -Wall `pkg-config gsl --cflags --libs`' COPTIMFLAGS='-DNDEBUG -O3' LINKLIBS='$LINKLIBS -lgsl -lgslcblas' df_fwhm1d.c
 
+% volumesSpheresIntersection
+mex df_volumesSpheresIntersection.c COPTIMFLAGS='-O3 -DNDEBUG -march=native' LDOPTIMFLAGS='-O3 -flto -DNDEBUG'
+
 cd(DOTTER_PATH)
 
 end
