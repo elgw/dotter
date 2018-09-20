@@ -1,5 +1,5 @@
 /*
- * ML fitting of N 3D Gaussian kernels against a volumetric image
+ * Simultaneous ML fitting of N 3D Gaussian kernels against a volumetric image
  * MATLAB interface in df_mlfitN.c
  *
  * TODO: 

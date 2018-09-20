@@ -13,8 +13,11 @@
  * Memory accesses can also be checked with Valgrind or the gcc -fmudflap memory protection option. 
  *
  * MATLAB interface in df_mlfit1.c
- *
  * 2017.04.12. Valgrind ok.
+ *
+ * TODO: 
+ *  - Fitting in Z after X and Y.
+ *
  */
 
 

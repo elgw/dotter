@@ -51,6 +51,7 @@ tic
 F = df_mlfit1(V, D'); F = F';
 tval = toc;
 fprintf('  --> df_mlfit1 took %.3f s for a %dx%dx%d image and %d dots\n', tval, size(V,1), size(V,2), size(V,3), size(D,1));
+fprintf('      i.e., %d dots/s\n', round(size(D,1)/tval));
 
 if 0
     % About 30x faster, no z-fitting or clustering

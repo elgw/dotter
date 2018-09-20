@@ -1,7 +1,5 @@
 function df_mlfitN_ut(varargin)
 
-
-
 doCompile = 0;
 doPlot = 0;
 
