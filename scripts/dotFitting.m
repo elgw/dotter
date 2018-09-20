@@ -7,7 +7,7 @@ function [ PFIT ] = dotFitting(V, P, s)
 % s.sigmafitZ
 %   size of Gaussian profile to be fitted
 %
-% PFIT:
+% PFIT Columns
 % 1 x coordinate
 % 2 y coordinate
 % 3 z coordinate
@@ -15,7 +15,7 @@ function [ PFIT ] = dotFitting(V, P, s)
 % 5 Fitting error
 % 6 xy-sigma (-1 mo convergence), constant if s.sigmafitXY=0
 %   fwhm of Gaussians are sigma*2*sqrt(2*log(2))
-% 7 status, 0 = normal, 1 = no sigma, 2 = cluster
+% 7 status, 0 = normal, 1 = no sigma, 2 = cluster, -1 Too close to boundary
 %
 %
 % Note that the fitting algorithm isn't scale invariant, i.e.
@@ -34,11 +34,6 @@ function [ PFIT ] = dotFitting(V, P, s)
 % - Handle "blobs", dots that don't look like dots, i.e., big things.
 
 
-codedir = getenv('DOTTER_PATH');
-if strcmp(codedir, '')
-    codedir = '~/code/';
-end
-
 if ~exist('s', 'var')
     s = [];
     s.useClustering = 1;
@@ -46,7 +41,7 @@ if ~exist('s', 'var')
     s.sigmafitZ = 3;
     s.fitSigma = 1;
     s.verbose = 0;
-    s.clusterMinDist = 5;    
+    s.clusterMinDist = 5;
 end
 
 if(nargin == 0)
@@ -60,60 +55,25 @@ if ~isfield('s', 'verbose')
 end
 
 %% Clustering
+% incluster(kk) indicates if point kk is in a cluster of points
+% C: labels the clusters
 if s.useClustering
-    %save beforeClustering.mat
-    if s.verbose
-        fprintf('Clustering, ')
-    end
-    
-    C = df_bcluster(double(P(:,1:3)), s.clusterMinDist);
-    
-    if 0
-        % Plot cluster pairs
-        figure, imagesc(sum(I,3)), colormap gray, axis image
-        hold on
-        for kk = 1:numel(C)-3
-            if C(kk)==0 && C(kk+3) == 0
-                %C(kk:kk+3);
-                pa = C(kk+1); pb = C(kk+2);
-                plot([P(pa, 2),  P(pb, 2)],[P(pa, 1),  P(pb, 1)], 'r');
-            end
-        end
-    end
-    
-    % Set up a list of all points that are in a cluster
-    incluster = zeros(size(P,1),1);
-    for kk=1:size(C)
-        if(C(kk)>0)
-            incluster(C(kk))=1;
-        end
-    end
-    
-    if s.verbose
-        fprintf('%d/%d points in clusters\n', sum(incluster), size(P,1));
-    end
-    
+    [incluster, C] = getClusters(P, s);
 else
     incluster = zeros(size(P,1),1);
 end
 
 fittedxy = 0*incluster;
-fittedz = 0*incluster;
 
 V = double(V);
 
-%% Sub pixel precision localization.
-PFIT = double(P); % Stores location of fitted points
-S = NaN(size(P,1),1);
+% Pre-allocated for the fitted points
+PFIT = zeros(size(P,1), 7);
+PFIT(:,1:3) = double(P(:,1:3));
 
 %% XY-FITTING
-if s.verbose
-    tic
-    fprintf('Fitting, XY, estimated time %d s\n', round(size(P,1)*9.2/125));
-end
-
 for kk=1:size(P,1)
-    if(fittedxy(kk) == 0)
+    if(fittedxy(kk) == 0)        
         if(incluster(kk))
             % Move this part into a separate file
             % I.e. the points in the same cluster should be fitted
@@ -129,7 +89,7 @@ for kk=1:size(P,1)
                     fprintf('C: %d -- %d \n', CP(1), CP(2))
                 end
                 % determine the region to cut out, i.e. patch
-                padding = 4;
+                
                 rmuu = round([P(CP(1), 1:2), P(CP(2), 1:2)]);
                 xmin = min(rmuu(1), rmuu(3))-4;
                 xmax = max(rmuu(1), rmuu(3))+4;
@@ -151,8 +111,9 @@ for kk=1:size(P,1)
                     muup(3)=muup(3)-xmin+1;
                     muup(4)=muup(4)-ymin+1;
                     
-                    if 0
-                        f2=figure, imagesc(patch), colormap gray, axis image
+                    if s.verbose>2
+                        figure();
+                        imagesc(patch), colormap gray, axis image
                         hold on
                         plot(muup(2), muup(1), 'rx')
                         plot(muup(4), muup(3), 'rx')
@@ -164,7 +125,7 @@ for kk=1:size(P,1)
                     x2=gaussFit2multi(patch, s.sigmafitXY, muup);
                     
                     % Put back the results
-                    if 0
+                    if s.verbose>2
                         figure,
                         imagesc(sumV), axis image, colormap gray
                         hold on
@@ -182,115 +143,156 @@ for kk=1:size(P,1)
             else
                 if s.verbose
                     fprintf('E: ')
+                    for aa = 1:numel(CP)
+                        fprintf('%d-', CP(aa))
+                    end
+                    fprintf('\n')
                 end
-                for aa = 1:numel(CP)
-                    fprintf('%d-', CP(aa))
-                end
-                fprintf('\n')
             end
         else % If not in cluster
-            side = 4;
-            px = round(P(kk,1));
-            py = round(P(kk,2));
-            pz = round(P(kk,3));
-            
-            
-            if(px-side>0 && py-side>0 && px+side<=size(V,1) && py+side<=size(V,2))
-                
-                patch = V(px-side:px+side, py-side:py+side, pz);
-                %[x,fval] = gaussFit2(patch, s.sigmafit);
-                [x,fval, exitflag, sigmafitted] = LH2G(patch, s.sigmafitXY, s.fitSigma);
-      %          keyboard
-                S(kk)=sigmafitted;
-                PFIT(kk,7) = 0;
-                if exitflag ~= 1
-                    sigmafitted = -1;
-                    [x,fval, exitflag] = LH2G(patch, s.sigmafitXY, 0);
-                    if s.verbose
-                        if exitflag == 0
-                            fprintf('F:%d\n', kk);
-                        else
-                            fprintf('R:%d\n', kk);
-                        end
-                    end
-                    PFIT(kk,7) = 1;
-                end
-                
-                
-                PFIT(kk,1)=px+x(1)-(side+1); % x coordinate
-                PFIT(kk,2)=py+x(2)-(side+1); % y coordinate
-                % PFIT(ll,3) will be set below
-                PFIT(kk,4)=x(3); % Number of photons
-                PFIT(kk,5)=fval; % Fitting error
-                PFIT(kk,6)=sigmafitted;
-                fittedxy(kk) = 1;
-            else
-                disp('Dot To Close to boundary');
-            end
-            
+            FIT = fitxy(V, s, round(P(kk,1:3)));
+            PFIT(kk,:) = FIT;
         end
     end
-end
-if s.verbose
-    fprintf('\n');
 end
 
 % plot order vs order
 % figure, plot(1:s.NPFIT, sort(...PFIT(1:s.NPFIT, 5), 'x')
 
-% Are there a few preferred distinct number of bins when counting the
-% number of fitted photons?
 % figure, hist(PFIT(1:s.NPFIT, 4),400)
 
 %% Z-FITTING
 if(size(V,3)>3)
-    if s.verbose
-        fprintf('Fitting, Z, estimated time %d s\n', round(size(P,1)*2/125));
-        tic
-    end
-    for kk=1:size(P,1)
-        if fittedz(kk)==0
-            vz = 1:size(V,3);
-            vx = PFIT(kk,1)*ones(size(vz));
-            vy = PFIT(kk,2)*ones(size(vz));
-            y = trilinear(V, vy, vx, vz);
-            [fit, fitError] = gaussFit1(y, PFIT(kk,3), s.sigmafitZ);
-            
-            if kk<0
-                figure(7), clf, subplot(1,2,1),
-                %plot(vz, y), hold on, plot(PDOG(kk,3)*[1,1], [min(y), max(y)])
-                imagesc(y), axis image, colormap gray, hold on,
-                plot(PFIG(kk,3)*[1 1], [.6, 1.4], 'g');
-                plot([fit(1), fit(1)], [.5, 1.5], 'r');
-                subplot(1,2,2)
-                imagesc(V(:,:,round(PFIT(kk,3))))
-                axis image, colormap gray
-                hold on
-                plot(P(kk,2), P(kk,1), 'go')
-                plot(PFIT(kk,2), PFIT(kk,1), 'rx')
-                set(gca, 'XLim', [PFIT(kk,2)-10, PFIT(kk,2)+10])
-                set(gca, 'YLim', [PFIT(kk,1)-10, PFIT(kk,1)+10])
-                pause
-            end
-            
-            PFIT(kk,3)=fit(1);
-            fittedz(kk)=1;
-            
-        end
-    end
-    
-    if s.verbose
-        toc
-    end
-    
+    PFIT = fitz(PFIT, V, s);
 end
 
 %% Move back dots that moved more than one pixel in z-direction
 % In some situations the z-fitting fails quite much, then to fallback on
 % the original location:
 
-PFIT = d_stickyz(PFIT, P, 1);
-
+maxDist = 1;
+PFIT = retrieveOutliers(PFIT, P, maxDist);
 
 end
 
+function FC = retrieveOutliers(F, D, maxDist)
+% Dots that have moved more than maxDist in any dimension are replaced by
+% their unfitted position
+% Arguments:
+%  F: list of fitted dots
+%  D: integer coordinates before fitting
+% Returns:
+%  FC: F where dots that have moved too far gets their coordinates from D
+
+FC = F;
+delta = max(abs(D(:,1:3)-F(:,1:3)),[],2);
+FC(delta>maxDist,1:3) = D(delta>maxDist,1:3);
+
+end
+
+function PFIT = fitz(PFIT, V, s)
+for kk=1:size(PFIT,1)
+    
+    vz = 1:size(V,3);
+    vx = PFIT(kk,1)*ones(size(vz));
+    vy = PFIT(kk,2)*ones(size(vz));
+    y = trilinear(V, vy, vx, vz);
+    [fit, ~] = gaussFit1(y, PFIT(kk,3), s.sigmafitZ);
+    
+    if kk<0
+        figure(7), clf, subplot(1,2,1),
+        %plot(vz, y), hold on, plot(PDOG(kk,3)*[1,1], [min(y), max(y)])
+        imagesc(y), axis image, colormap gray, hold on,
+        plot(PFIG(kk,3)*[1 1], [.6, 1.4], 'g');
+        plot([fit(1), fit(1)], [.5, 1.5], 'r');
+        subplot(1,2,2)
+        imagesc(V(:,:,round(PFIT(kk,3))))
+        axis image, colormap gray
+        hold on
+        plot(P(kk,2), P(kk,1), 'go')
+        plot(PFIT(kk,2), PFIT(kk,1), 'rx')
+        set(gca, 'XLim', [PFIT(kk,2)-10, PFIT(kk,2)+10])
+        set(gca, 'YLim', [PFIT(kk,1)-10, PFIT(kk,1)+10])
+        pause
+    end
+    
+    PFIT(kk,3)=fit(1);
+    
+end
+end
+
+function [FIT, fitted] = fitxy(V, s, X)
+% Fit the point X in the (x-y)-plane at z=X(3)
+
+px = X(1); py = X(2); pz = X(3);
+
+fitted = 0;
+side = 4;
+
+FIT = zeros(1,7);
+FIT(1:3) = X;
+
+% Check if there is enough clearing around the dot
+if(px-side>0 && py-side>0 && px+side<=size(V,1) && py+side<=size(V,2))
+    
+    patch = V(px-side:px+side, py-side:py+side, pz);  % Take out a 2D sub image
+    
+    % Fit (x,y) and possibly also the sigma
+    if s.fitSigma == 1
+        [F,fval, exitflag, sigmafitted] = LH2G(patch, s.sigmafitXY, 1); 
+    
+        if exitflag ~= 1 % If the fitting failed, try without fitting sigma
+            sigmafitted = -1;
+            [F,fval, exitflag] = LH2G(patch, s.sigmafitXY, 0);        
+            FIT(7) = 1;
+        end
+    else
+        [F,fval, exitflag, sigmafitted] = LH2G(patch, s.sigmafitXY, 0); 
+    end
+            
+    FIT(1)=px+F(1)-(side+1); % x coordinate
+    FIT(2)=py+F(2)-(side+1); % y coordinate    
+    FIT(4)=F(3); % Number of photons
+    FIT(5)=fval; % Fitting error
+    FIT(6)=sigmafitted;
+    FIT(7) = 0;
+else   
+    FIT(7) = -1; % Too close to boundary
+end
+
+end
+
+
+function [incluster, C] = getClusters(P,s)
+% Find groups of dots that are in clusters
+if s.verbose
+    fprintf('Clustering, ')
+end
+
+C = df_bcluster(double(P(:,1:3)), s.clusterMinDist);
+
+if s.verbose>2
+    % Plot cluster pairs
+    figure, imagesc(sum(I,3)), colormap gray, axis image
+    hold on
+    for kk = 1:numel(C)-3
+        if C(kk)==0 && C(kk+3) == 0
+            %C(kk:kk+3);
+            pa = C(kk+1); pb = C(kk+2);
+            plot([P(pa, 2),  P(pb, 2)],[P(pa, 1),  P(pb, 1)], 'r');
+        end
+    end
+end
+
+% Set up a list of all points that are in a cluster
+incluster = zeros(size(P,1),1);
+for kk=1:size(C)
+    if(C(kk)>0)
+        incluster(C(kk))=1;
+    end
+end
+
+if s.verbose
+    fprintf('%d/%d points in clusters\n', sum(incluster), size(P,1));
+end
+end

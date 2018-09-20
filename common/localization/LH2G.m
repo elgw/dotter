@@ -1,7 +1,13 @@
 function [x, val, exitflag, sigmafitted]=LH2G(patch, sigma0, fitSigma)
-%whos, sigma0, fitSigma
-%pause
-% mu0 = (size(patch)+1)/2;
+% Fit a gaussian to the 2D image 'patch'
+% Parameters:
+%   fitSigma - Fit sigma or not, 1=yes, 0=no
+%   sigma0 = initial sigma to use (also final if fitSigma=0)
+% Returns:
+%   x - fitted coordinate
+%   val - ?
+%   exitflag - the return value from fminsearch
+
 mu0 = [0,0];
 if min(patch(:))<5
     bg_add = 5;
@@ -18,12 +24,6 @@ GI = df_gaussianInt2(mu0, [sigma0,sigma0], (size(patch, 1)-1)/2);
 N0 = (patch-bg0)./GI;
 N0 = N0((size(patch,1)+1)/2, (size(patch,1)+1)/2);
 
-if 0
-    model = bg0+N0*df_gaussianInt2(mu0, sigma0, (size(patch, 1)-1)/2);
-    figure,
-    imagesc([patch, model, patch-model])
-    pause
-end
 %x = fminsearch(LL2, [mu0, bg0, N0], optimset('Display', 'final', 'TolX', 10^-9, 'TolFun', 10^-9));
 sigmafitted = NaN;
 if fitSigma
@@ -40,4 +40,3 @@ x(1:2)=x(1:2)+(size(patch)+1)/2;
 x(3) = x(3)-bg_add;
 
 end
-

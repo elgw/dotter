@@ -29,6 +29,12 @@ if(size(I,3)==1)
     error('The external mask is not 3D');
 end
 
+% If the nuclei are not labelled, label them
+if numel(unique(I(:))) == 2
+    fprintf('Labelling the 3D mask\n');
+    I = bwlabeln(I);
+end
+
 if size(I,3)>1
     fprintf('  Projecting 3D mask to 2D\n');    
     I(I(:)==0) = nan;
@@ -54,11 +60,6 @@ if(~(max(m(:)) +1 == numel(u))) % If one or more labels are skipped
     m = uint16(...
         interp1(double(u'), double(0:numel(u)-1), double(m), 'nearest')...
         );
-end
-
-% If the nuclei are not labelled, label them
-if max(m(:)) == 1
-    m = uint16(bwlabeln(m));
 end
 
 assert( (max(m(:)) +1 == numel(unique(m(:)))));

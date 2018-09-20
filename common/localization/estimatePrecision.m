@@ -2,7 +2,6 @@
 % two images, of the same dots, which are slighly shifted between the
 % acquisitions
 
-
 sample = 'iJC249_280216_002';
 channel = 'a594';
 channel = 'cy5';

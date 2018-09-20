@@ -9,4 +9,25 @@ assert(eudist(F(1,1:3), [14,15,16])<.5);
 t = toc;
 fprintf('  Took %f s\n', t);
 
+
+test_precision()
+
+end
+
+function test_precision()
+% P: some positions
+P = linspace(50,200.5,11)';
+P = [P P];
+
+W = zeros(212,212);
+for kk = 1:size(P,1)
+    W = blitGauss(W, P(kk,1:2), 1);
+end
+
+W = 100*W;
+
+F = dotFitting(W, round(D));
+E = F(:,1:2) - P;
+E = (sum(E.^2,2).^(1/2));
+assert(max(E)<0.1);
 end
