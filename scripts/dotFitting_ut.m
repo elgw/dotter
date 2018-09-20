@@ -17,7 +17,8 @@ end
 function test_precision()
 % P: some positions
 P = linspace(50,200.5,11)';
-P = [P P];
+P = [P,P];
+P(:,3) = ones(size(P,1),1);
 
 W = zeros(212,212);
 for kk = 1:size(P,1)
@@ -26,8 +27,8 @@ end
 
 W = 100*W;
 
-F = dotFitting(W, round(D));
-E = F(:,1:2) - P;
+F = dotFitting(W, round(P));
+E = F(:,1:2) - P(:,1:2);
 E = (sum(E.^2,2).^(1/2));
 assert(max(E)<0.1);
 end
