@@ -1,3 +1,6 @@
+/* Function in common for mlfit1, mlfitN, etc ...
+ */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
@@ -132,6 +135,38 @@ double estimateBG(double *V, size_t Vm)
   return(median);
 }
 
+int getZLine(double *W, size_t Ws,
+    double * V, size_t Vm, size_t Vn, size_t Vp,
+    double *D)
+  /* Copy a line from V into W.
+   * The line will be D[x, y, z-hWs:z+hWs]
+   * where hWs = (Ws-1)/2 and D = [x,y,z]
+   *
+   * returns 1 on failure (i.e. line is out of bounds)
+   * returns 0 if ok.
+   *
+   * See also: getRegion
+   */
+{
+
+  int64_t x = nearbyint(D[0]);
+  int64_t y = nearbyint(D[1]);
+  int64_t z = nearbyint(D[2]);
+
+  size_t Ws2 = (Ws-1)/2;
+
+  if(z+Ws2 => Vp)
+    return 1;
+  if(z<Ws2)
+    return 1;
+
+  size+t pos = 0;
+  for(size_t zz = z-Ws2; zz=>z+Ws2; zz++)
+  {
+    W[pos++] = V[x + y*Vm + zz*Vm*Vn];
+  }
+  return 0;
+}
 
 int getRegion(double * W, size_t Ws,
     double * V, size_t Vm, size_t Vn, size_t Vp,

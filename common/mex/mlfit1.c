@@ -57,13 +57,15 @@
 #endif
 
 // Globals
-uint32_t maxIterations = 1000;
-double convCriteria = 1e-6;
-// In theory also the window size, denoted Ws in most places
+const int32_t maxIterations = 1000;
+const double convCriteria = 1e-6;
+// Possibly, add the window size, denoted Ws in most places
 
 // Headers
-double my_f (const gsl_vector *, void *);
-int localizeDot(double *, size_t, double *,  double *);
+double lxy (const gsl_vector *, void *);
+double lz (const gsl_vector *, void *);
+int localizeDotXY(double *, size_t, double *,  double *);
+int localizeDotZ(double *, size_t, double *,  double *);
 int localize(double *, size_t, size_t, size_t, double *, size_t, double *);
 int unit_tests(void);
 
@@ -77,9 +79,62 @@ typedef struct {
 } optParams;
 
 
-double my_f (const gsl_vector *v, void *params)
-  // The function to optimize
-  // NOTE: not re-entrant
+double lz (const gsl_vector *v, void *params)
+{
+  double x;
+
+  optParams *p = (optParams *) params;
+
+  size_t Rw = p->Rw;
+  double * R = p->R;
+  double * GI = p->G;
+  double sigma = p->sigma;
+  double bg = p->bg;
+
+#if verbose > 2
+  printf("Rw: %lu\n", Rw);
+  printf("Nphot: %lu\n", Nphot);
+  printf("sigma: %f\n", sigma);
+  printf("bg   : %f\n", bg);
+#endif
+
+  // Get the other parameters ...  
+  x = gsl_vector_get(v, 0);
+  double Nphot = gsl_vector_get(v,2);
+
+  // Create Gaussian ...
+  double mu[] = {x,y};
+  gaussianInt(GI, mu, &sigma, Rw);
+  for(size_t kk = 0; kk<Rw; kk++)
+    GI[kk] = bg+Nphot*GI[kk];
+#if verbose
+  printf("GI:\n");
+  showRegion(GI, Rw);
+#endif 
+
+  /* 
+   * from LL2PG.m
+   *   model = x(3)+x(4)*gaussianInt2([x(1), x(2)], x(5), (size(patch, 1)-1)/2);
+   *   mask = disk2d((size(patch,1)-1)/2);
+   *   %L = -sum(sum(-(patch-model).^2./model - .5*log(model)));
+   *   L = -sum(sum(mask.*(-(patch-model).^2./model - .5*log(model))));
+   */
+
+  double E = 0;
+  for (size_t kk=0; kk<Rw; kk++)
+    E+= (GI[kk]-R[kk])*(GI[kk]-R[kk])/GI[kk] - .5*log(GI[kk]);
+  //  E = -E;
+
+  /* Quadratic
+   * for (size_t kk=0; kk<Rw*Rw; kk++)
+   * E+= (GI[kk]-R[kk])*(GI[kk]-R[kk]);
+   */
+
+  return E;
+}
+
+double lxy (const gsl_vector *v, void *params)
+  // likelihood in xy, function to optimize
 {
 
   double x, y;
@@ -135,7 +190,7 @@ double my_f (const gsl_vector *v, void *params)
   return E;
 } 
 
-int localizeDot(double * V, size_t Vm, 
+int localizeDotXY(double * V, size_t Vm, 
     double * D,  double * F)
   // Localization for a dot roughly centered in V of size Vm x Vm
   // D[0], D[1], D[3] are the global coordinates of the dot
@@ -173,7 +228,7 @@ int localizeDot(double * V, size_t Vm,
 
   /* Initialize method and iterate */
   minex_func.n = 3;
-  minex_func.f = my_f;
+  minex_func.f = lxy;
   minex_func.params = &par;
 
   s = gsl_multimin_fminimizer_alloc (T, 3);
@@ -239,10 +294,10 @@ int localize(double * V, size_t Vm, size_t Vn, size_t Vp,
 #endif
       // Local fitting in W
 #if verbose > 0
-      int status = localizeDot(W,  Ws, D+kk*3, F+kk*3);
+      int status = localizeDotXY(W,  Ws, D+kk*3, F+kk*3);
       printf("Status: %d\n", status);
 #else
-      localizeDot(W,  Ws, D+kk*3, F+kk*3);
+      localizeDotXY(W,  Ws, D+kk*3, F+kk*3);
 #endif
     }
     else

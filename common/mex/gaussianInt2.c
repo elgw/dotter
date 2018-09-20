@@ -1,6 +1,7 @@
 #ifndef gaussianInt2_c
 #define gaussianInt2_c
 
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "string.h"
@@ -70,7 +71,30 @@ int gaussianInt3(double * GI, double * mu, double * sigma, int w)
   return 1;
 }
 
-void gaussianInt2(double * GI, double * mu, double * sigma, int w)
+int gaussianInt1(double * GI, double * mu, double * sigma, int w)
+{
+
+  double mux = mu[0];
+
+  double * erfx = malloc((w+1)*sizeof(double));
+
+  double x0 = -(double) w/2;
+
+  for(int kk=0; kk<w+1; kk++)
+  {
+    erfx[kk] = .5*(1+erf((x0++-mux)/sqrt(2)/sigma[0]));
+  }
+
+  for(int xx=0; xx<w; xx++) 
+  {
+    GI[xx]=erfx[xx+1]-erfx[xx];
+  }
+
+  free(erfx);
+  return 0;
+}
+
+int gaussianInt2(double * GI, double * mu, double * sigma, int w)
 {
 
   double mux = mu[0];
@@ -101,22 +125,78 @@ void gaussianInt2(double * GI, double * mu, double * sigma, int w)
 
   free(erfy);
   free(erfx);
+  return(0);
+}
+
+void gaussianInt1_ut()
+{
+  // Test correct sum
+  int w = 11;
+
+  double sigma[] = {1};
+  double mu[] = {0};
+
+  double * V = malloc(w*sizeof(double));
+  int status = gaussianInt1(V, mu, sigma, w);
+  printf("G(%.1f, %.1f)=", sigma[0], mu[0]);
+  double sum = 0;
+  for(int kk = 0; kk<w; kk++)
+  {
+    printf("%.4f ", V[kk]);
+    sum += V[kk];
+  }
+  printf("\n");
+
+  printf("sum: %f\n", sum);
+  assert(fabs(sum-1)<10e-6);
+
+  free(V);
+}
+
+void gaussianInt2_ut()
+{
+  // Test correct sum
+  int w = 11;
+
+  double sigma[] = {1,1};
+  double mu[] = {0,0};
+
+  double * V = malloc(w*w*sizeof(double));
+  int status = gaussianInt2(V, mu, sigma, w);
+  double sum = 0;
+  for(size_t kk = 0; kk<w*w; kk++)
+    sum+=V[kk];
+  assert(fabs(sum-1)<10e-6);
+
+  free(V);
+}
+
+void gaussianInt3_ut()
+{
+  // Test correct sum
+  int w = 11;
+
+  double sigma[] = {1,1,1};
+  double mu[] = {0,0,0};
+
+  double * V = malloc(w*w*w*sizeof(double));
+  int status = gaussianInt3(V, mu, sigma, w);
+double sum = 0;
+  for(size_t kk = 0; kk<w*w*w; kk++)
+    sum+=V[kk];
+  assert(fabs(sum-1)<10e-6);
+
+  free(V);
 }
 
 #ifdef testme
 int main(int argc, char ** argv)
 {
 
-  int w = 11;
-
-  double sigma[] = {1,3,1234144};
-  double mu[] = {123,43,-124.1};
-
-  double * V = malloc(w*w*w*sizeof(double));
-  int status = gaussianInt3(V, sigma, mu, w);
-
-  free(V);
-  return status;
+  gaussianInt1_ut();
+  gaussianInt2_ut();
+  gaussianInt3_ut();
+  return 0;
 
 }
 
