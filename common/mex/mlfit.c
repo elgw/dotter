@@ -155,13 +155,13 @@ int getZLine(double *W, size_t Ws,
 
   size_t Ws2 = (Ws-1)/2;
 
-  if(z+Ws2 => Vp)
+  if(z+Ws2 >= Vp)
     return 1;
   if(z<Ws2)
     return 1;
 
-  size+t pos = 0;
-  for(size_t zz = z-Ws2; zz=>z+Ws2; zz++)
+  size_t pos = 0;
+  for(size_t zz = z-Ws2; zz>=z+Ws2; zz++)
   {
     W[pos++] = V[x + y*Vm + zz*Vm*Vn];
   }

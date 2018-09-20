@@ -103,8 +103,8 @@ double lz (const gsl_vector *v, void *params)
   double Nphot = gsl_vector_get(v,2);
 
   // Create Gaussian ...
-  double mu[] = {x,y};
-  gaussianInt(GI, mu, &sigma, Rw);
+  double mu[] = {x};
+  gaussianInt1(GI, mu, &sigma, Rw);
   for(size_t kk = 0; kk<Rw; kk++)
     GI[kk] = bg+Nphot*GI[kk];
 #if verbose
