@@ -9,7 +9,7 @@ void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[])
   int verbosive = 0;
 
   if (!(nrhs==2 || nrhs==3)) {
-     mexErrMsgTxt("There should be two or three inputs: Volumetric image, List of dots, sigma");
+    mexErrMsgTxt("There should be two or three inputs: Volumetric image, List of dots, sigma");
   }
 
   /* Check data types of the input arguments. */
@@ -21,12 +21,32 @@ void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[])
     mexErrMsgTxt("Second argument must be of type double.");
   }
 
-  double sigma = 1;
+  double sigmaxy = 1;
+  double sigmaz = 1;
+
   if(nrhs==3)
   {
-    double * s = mxGetPr(plhs[2]);
-    sigma = s[0];
+    double * s = mxGetPr(prhs[2]);
+    sigmaxy = s[0];
+    sigmaz = sigmaxy;
   }
+
+  if(sigmaxy<0.5)
+    mexErrMsgTxt("Sigma has to be > .5");
+  if(sigmaxy>4)
+    mexErrMsgTxt("Sigma has to be > 4");
+
+  if(nrhs==4)
+  {
+    double * s = mxGetPr(prhs[3]);
+    sigmaz = s[0];
+  }
+
+  if(sigmaz<0.5)
+    mexErrMsgTxt("Sigma has to be > .5");
+  if(sigmaz>4)
+    mexErrMsgTxt("Sigma has to be > 4");
+
 
   double * V = (double *) mxGetPr(prhs[0]);
   mwSize VnDim = mxGetNumberOfDimensions(prhs[0]);
@@ -46,14 +66,21 @@ void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[])
   if(!(Pdim[0] == 3))
     mexErrMsgTxt("List of dots has to be of size [3xN]");
 
+  for(size_t kk = 0; kk<Vdim[0]*Vdim[1]*Vdim[2]; kk++)
+  {
+    if(V[kk]<=0)
+        mexErrMsgTxt("V has to be postive");
+  }
+
+
   // Prepare the output matrix
   mwSize Cdim[] = {0,0};
   Cdim[0] = 3; Cdim[1] = Pnel/3;
- 
- if(verbosive) { 
-  printf("V: %dx%dx%d\n", Vdim[0], Vdim[1], Vdim[2]);
-  printf("C: %dx%d\n", Cdim[0], Cdim[1]);
- }
+
+  if(verbosive) { 
+    printf("V: %dx%dx%d\n", Vdim[0], Vdim[1], Vdim[2]);
+    printf("C: %dx%d\n", Cdim[0], Cdim[1]);
+  }
 
   plhs[0] = mxCreateNumericArray(2,  Cdim, mxDOUBLE_CLASS, mxREAL);
   double * C = (double *) mxGetPr(plhs[0]);
@@ -62,11 +89,17 @@ void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[])
   // 0-based
   double * Q = malloc(Pdim[1]*Pdim[0]*sizeof(double));
   for(size_t kk = 0; kk<Pdim[0]*Pdim[1]; kk++)
+  {
     Q[kk] = P[kk]-1;
+  }
+
+
+
+
 
   if(1)
     localize(V, Vdim[0], Vdim[1], Vdim[2], 
-      Q, Pdim[1], C, sigma);
+        Q, Pdim[1], C, sigmaxy, sigmaz);
 
   // Fix offsets to MATLAB 1-indexing
   for(size_t kk =0; kk<Pnel; kk++)

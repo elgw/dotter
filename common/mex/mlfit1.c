@@ -70,7 +70,7 @@ int localizeDotXY(double *, size_t, double *,  double *,
 int localizeDotZ(double *, size_t, double *,  double *, 
     double); // sigma
 int localize(double *, size_t, size_t, size_t, double *, size_t, double *, 
-    double); // sigma -- size of dot
+    double, double); // sigma_xy, sigma_z -- size of dot
 int unit_tests(void);
 
 // Optimization constants
@@ -106,7 +106,7 @@ double lz (const gsl_vector *v, void *params)
   x = gsl_vector_get(v, 0);
   double Nphot = gsl_vector_get(v,1);
 
-//  printf("bg: %f, Nphot: %f, sigma: %f z: %f\n", bg, Nphot, sigma, x);
+  //  printf("bg: %f, Nphot: %f, sigma: %f z: %f\n", bg, Nphot, sigma, x);
 
   // Create Gaussian ...
   double mu[] = {x};
@@ -134,19 +134,19 @@ double lz (const gsl_vector *v, void *params)
   //  E = -E;
 
   if(0){
-  printf("R=[");
-for (size_t kk=0; kk<Rw; kk++)
-  {
-    printf("%f ", R[kk]);
-  }
-printf("]\n");
-printf("G = [");
-for (size_t kk=0; kk<Rw; kk++)
-  {
-    printf("%f ", GI[kk]);
-  }
-printf("]\n");
-  printf("E: %f, mu: %f\n", E, mu[0]);
+    printf("R=[");
+    for (size_t kk=0; kk<Rw; kk++)
+    {
+      printf("%f ", R[kk]);
+    }
+    printf("]\n");
+    printf("G = [");
+    for (size_t kk=0; kk<Rw; kk++)
+    {
+      printf("%f ", GI[kk]);
+    }
+    printf("]\n");
+    printf("E: %f, mu: %f\n", E, mu[0]);
   }
 
   /* Quadratic
@@ -342,30 +342,30 @@ int localizeDotZ(double * V, size_t Vm,
   minex_func.params = &par;
 
   //printf(".\n"); fflush(stdout);
-  
+
   s = gsl_multimin_fminimizer_alloc (T, 2);
 
-//  printf("..\n"); fflush(stdout);
+  //  printf("..\n"); fflush(stdout);
   int error = gsl_multimin_fminimizer_set(s,
       &minex_func,
       x, // starting point
       ss); // Step sizes
   if(error>0)
     printf("error: %d\n", error);
- // printf("...\n"); fflush(stdout);
+  // printf("...\n"); fflush(stdout);
 
   do
   {
     iter++;
     status = gsl_multimin_fminimizer_iterate(s);
-//  printf("....\n"); fflush(stdout);
+    //  printf("....\n"); fflush(stdout);
 
     if (status)
       break;
 
     size = gsl_multimin_fminimizer_size(s);
     status = gsl_multimin_test_size(size, convCriteria);
-//  printf(".....\n"); fflush(stdout);
+    //  printf(".....\n"); fflush(stdout);
 
     if (status == GSL_SUCCESS)
     {
@@ -393,11 +393,16 @@ int localizeDotZ(double * V, size_t Vm,
   return status;
 }
 int localize(double * V, size_t Vm, size_t Vn, size_t Vp, 
-    double * D, size_t Dm, double * F, double sigma)
+    double * D, size_t Dm, double * F, double sigma_xy, double sigma_z)
   // run the localization routine for a list of dots
 {
 
-  int Ws = 7; // Window size
+  /* The window size is a very important parameter. Small windows can not capture the full signals and that results in 
+   * bad fittings. 
+   * Ws = 7 is good until sigma = 1.1
+   * Ws = 9 is good at least until sigma = 1.6 
+   */
+  int Ws = 9; // Window size
   double * W = malloc(Ws*Ws*sizeof(double));
 
   for(size_t kk =0; kk<Dm; kk++)
@@ -412,16 +417,16 @@ int localize(double * V, size_t Vm, size_t Vn, size_t Vp,
 #endif
       // Local fitting in W
 #if verbose > 0
-      int status = localizeDotXY(W,  Ws, D+kk*3, F+kk*3, sigma);
+      int status = localizeDotXY(W,  Ws, D+kk*3, F+kk*3, sigma_xy);
       printf("Status: %d\n", status);
 #else
-      localizeDotXY(W,  Ws, D+kk*3, F+kk*3, sigma);
+      localizeDotXY(W,  Ws, D+kk*3, F+kk*3, sigma_xy);
 #endif
 
       if(getZLine(W,Ws, 
             V, Vm, Vn, Vp, D+kk*3) == 0)
       {
-        localizeDotZ(W, Ws, D+kk*3, F+kk*3, sigma);
+        localizeDotZ(W, Ws, D+kk*3, F+kk*3, sigma_z);
       }
 
     }
@@ -447,9 +452,9 @@ int unit_tests(){
   printf("Image size: %dx%dx%d\n", Vm, Vn, Vp);
   printf("Localizing %lu dots\n", Dm);
 
-  V = malloc(Vm*Vn*Vp*sizeof(double));
-  D = malloc(3*Dm*sizeof(double));
-  F = malloc(3*Dm*sizeof(double));
+  V = (double *) malloc(Vm*Vn*Vp*sizeof(double));
+  D = (double *) malloc(3*Dm*sizeof(double));
+  F = (double *) malloc(3*Dm*sizeof(double));
 
   // Initialize the data
   for(int kk=0; kk<Vm*Vn*Vp; kk++)
@@ -482,8 +487,15 @@ int unit_tests(){
   V[(int) D[0]+(int) D[1]*Vm+(int) D[2]*Vm*Vn] = 7;
   V[(int) D[0]+1+(int) D[1]*Vm+(int) D[2]*Vm*Vn] = 6;
 
-  // Run the optimization
-  localize(V, Vm, Vn, Vp, D, Dm, F, 1);
+  // Run the optimization  
+  localize(V, Vm, Vn, Vp, D, Dm, F, 1.1, 1.1);
+
+  if(1)
+  {
+    for(double sigma = 0.1; sigma<2; sigma=sigma+0.1)
+      localize(V, Vm, Vn, Vp, D, Dm, F, sigma, sigma);
+  }
+
 
   // In next version, also supply clustering information
 

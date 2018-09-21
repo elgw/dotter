@@ -135,8 +135,8 @@ void gaussianInt1_ut()
   // Test correct sum
   int w = 11;
 
-  double sigma[] = {1};
-  double mu[] = {0};
+  double sigma[] = {.2};
+  double mu[] = {-1};
 
   double * V = malloc(w*sizeof(double));
   int status = gaussianInt1(V, mu, sigma, w);
