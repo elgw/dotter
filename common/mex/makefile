@@ -48,7 +48,7 @@ com3: com3.c
 mlfit: mlfit.c
 	$(CC) $(FLAGS) `pkg-config gsl --cflags --libs` mlfit.c -lm -c -o mlfit.o
 
-mlfit1: mlfit1.c mlfit blit3
+mlfit1: mlfit1.c mlfit blit3 gaussianInt2
 	$(CC) $(FLAGS) mlfit1.c mlfit.o blit3.o gaussianInt2.o -lm -o mlfit1sn `pkg-config --libs --cflags gsl` -o mlfit1 
 
 mlfit1sn: mlfit1sn.c mlfit

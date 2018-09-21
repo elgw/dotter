@@ -157,11 +157,11 @@ int getZLine(double *W, size_t Ws,
 
   if(z+Ws2 >= Vp)
     return 1;
-  if(z<Ws2)
+  if(z<(int64_t) Ws2)
     return 1;
 
   size_t pos = 0;
-  for(size_t zz = z-Ws2; zz>=z+Ws2; zz++)
+  for(size_t zz = z-Ws2; zz<=z+Ws2; zz++)
   {
     W[pos++] = V[x + y*Vm + zz*Vm*Vn];
   }
@@ -190,13 +190,13 @@ int getRegion(double * W, size_t Ws,
     return 1;
   if(y-(int64_t) Ws2 < 0)
     return 1;
-  if(x+(uint64_t) Ws2 + 1 >= Vm)
+  if(x+(uint64_t) Ws2  >= Vm)
     return 1;
-  if(y+(uint64_t) Ws2 + 1 >= Vn)
+  if(y+(uint64_t) Ws2  >= Vn)
     return 1;
   if(z<0)
     return 1;
-  if((size_t) z>Vp)
+  if((size_t) z>=Vp)
     return 1;
 
 #if verbose > 1

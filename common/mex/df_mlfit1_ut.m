@@ -1,10 +1,18 @@
 function df_mlfit1_ut()
-disp('--> Testing df_mlfit1')
-%{
-cd /home/erikw/code/dotter_matlab/common/mex
-mex df_mlfit1.c CFLAGS='$CFLAGS -std=c99 ' COPTIMFLAGS='-DNDEBUG -O3 -D verbose=0' LINKLIBS='$LINKLIBS -lgsl -lgslcblas'
-%}
+% Fitting of dots in volumetric image
 
+disp('--> Testing df_mlfit1')
+
+test_invalid_input()
+test_correct_localization()
+test_behaviour_wrong_init()
+test_realistic_timing()
+test_noise()
+
+disp('  -- done');
+end
+
+function test_invalid_input()
 disp('  no input')
 error = false;
 try
@@ -24,22 +32,13 @@ catch e
     error = true;
 end
 assert(error)
-
-disp('  Correct localization');
-P = [8,8,8];
-V = df_blit3(zeros(15,15,15), [], [P , 1, 1, 1, 1]');
-F = df_mlfit1(V, P');
-assert(eudist(P, F')<1e-3);
-
-F = df_mlfit1(V+1000, P');
-assert(eudist(P, F')<1e-3);
-
-disp('  right size of output')
+end
 
 
-disp('  timing in a realistic case')
-nD = 5000;
-V = zeros(1024,1024,60);
+function test_realistic_timing()
+disp('  > worst case timings -- no convergence')
+nD = 1000;
+V = 1000+1000*rand(1024,1024,60);
 D0 = round([(size(V,1)-6)*rand(nD,1), (size(V,2)-6)*rand(nD,1), size(V,3)*rand(nD,1)]);
 D0(D0<7) = 7;
 D = round(D0);
@@ -89,6 +88,69 @@ if 0
     figure, scatter(eml, ecom), xlabel('E ML'), ylabel('E COM'), axis equal, grid on
     title('Errors are correlated')
 end
+end
 
-disp('  -- done');
+
+function test_noise()
+disp('  > Random input (better that it crashes here than in a shart situation)');
+
+for kk = 1:100
+    V = rand(round(125*rand([3,1]))'); % Input volume of random size
+    P = 200*rand(100,3); % Dots that might be outside of V
+    try
+        F = df_mlfit1(V, P');
+    catch e
+        % Ok if some errors are generated since the input
+        % isn't always valid
+    end
+end
+
+
+end
+
+function test_behaviour_wrong_init()
+disp('  > Testing initial positions far from dot')
+
+for delta = 0:5
+    P0 = [8,8,8];
+    P = [8,8,8]+delta;
+    V = df_blit3(zeros(15,15,15), [], [P , 1, 1, 1, 1]');
+    F = df_mlfit1(V, P');
+end
+
+% When it does not converge, F is set to [0,0,0]
+
+end
+
+function test_correct_localization()
+disp('  > Correct localization');
+
+% Basic integer case
+P = [8,8,8];
+V = 1000*df_blit3(zeros(15,15,15), [], [P , 1, 1, 1, 1]');
+F = df_mlfit1(V, P');
+assert(eudist(P, F')<1e-3);
+
+% +0.1 from integer
+P = [8.1,8.2,8.3];
+V = 10000*df_blit3(zeros(15,15,15), [], [P , 1, 1, 1, 1]');
+F = df_mlfit1(V, round(P'));
+assert(eudist(P, F')<1e-2);
+
+% Random offset -- correct initial position
+for kk = 1:1000
+    P = [8,8,8] + .5*(1-rand(1,3));
+    V = 1000+100000*df_blit3(zeros(15,15,15), [], [P , 1, 1, 1, 1]');
+    F = df_mlfit1(V, P');    
+    assert(eudist(P, F')<2e-2);
+end
+% Random offset -- rounded initial position
+for kk = 1:1000
+    P = [8,8,8] + .5*(1-rand(1,3));
+    V = 10+10000*df_blit3(zeros(15,15,15), [], [P , 1, 1, 1, 1]');
+    F = df_mlfit1(V, round(P'));
+    assert(eudist(P, F')<1e-2);
+end
+
+
 end

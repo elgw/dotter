@@ -128,6 +128,8 @@ int gaussianInt2(double * GI, double * mu, double * sigma, int w)
   return(0);
 }
 
+#ifdef testme
+
 void gaussianInt1_ut()
 {
   // Test correct sum
@@ -189,7 +191,6 @@ double sum = 0;
   free(V);
 }
 
-#ifdef testme
 int main(int argc, char ** argv)
 {
 

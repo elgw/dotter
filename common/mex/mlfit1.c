@@ -16,8 +16,9 @@
  * 2017.04.12. Valgrind ok.
  *
  * TODO: 
- *  - Fitting in Z after X and Y.
- *
+ *  - What are good step sizes?
+ *  - Set the initial positions with higher than integer precision if possible.
+ *  
  */
 
 
@@ -57,16 +58,19 @@
 #endif
 
 // Globals
-const int32_t maxIterations = 1000;
-const double convCriteria = 1e-6;
+const size_t maxIterations = 10000;
+const double convCriteria = 1e-7;
 // Possibly, add the window size, denoted Ws in most places
 
 // Headers
 double lxy (const gsl_vector *, void *);
 double lz (const gsl_vector *, void *);
-int localizeDotXY(double *, size_t, double *,  double *);
-int localizeDotZ(double *, size_t, double *,  double *);
-int localize(double *, size_t, size_t, size_t, double *, size_t, double *);
+int localizeDotXY(double *, size_t, double *,  double *, 
+    double); // sigma
+int localizeDotZ(double *, size_t, double *,  double *, 
+    double); // sigma
+int localize(double *, size_t, size_t, size_t, double *, size_t, double *, 
+    double); // sigma -- size of dot
 int unit_tests(void);
 
 // Optimization constants
@@ -100,14 +104,16 @@ double lz (const gsl_vector *v, void *params)
 
   // Get the other parameters ...  
   x = gsl_vector_get(v, 0);
-  double Nphot = gsl_vector_get(v,2);
+  double Nphot = gsl_vector_get(v,1);
+
+//  printf("bg: %f, Nphot: %f, sigma: %f z: %f\n", bg, Nphot, sigma, x);
 
   // Create Gaussian ...
   double mu[] = {x};
   gaussianInt1(GI, mu, &sigma, Rw);
   for(size_t kk = 0; kk<Rw; kk++)
     GI[kk] = bg+Nphot*GI[kk];
-#if verbose
+#if verbose>2
   printf("GI:\n");
   showRegion(GI, Rw);
 #endif 
@@ -122,13 +128,34 @@ double lz (const gsl_vector *v, void *params)
 
   double E = 0;
   for (size_t kk=0; kk<Rw; kk++)
+  {
     E+= (GI[kk]-R[kk])*(GI[kk]-R[kk])/GI[kk] - .5*log(GI[kk]);
+  }
   //  E = -E;
+
+  if(0){
+  printf("R=[");
+for (size_t kk=0; kk<Rw; kk++)
+  {
+    printf("%f ", R[kk]);
+  }
+printf("]\n");
+printf("G = [");
+for (size_t kk=0; kk<Rw; kk++)
+  {
+    printf("%f ", GI[kk]);
+  }
+printf("]\n");
+  printf("E: %f, mu: %f\n", E, mu[0]);
+  }
 
   /* Quadratic
    * for (size_t kk=0; kk<Rw*Rw; kk++)
    * E+= (GI[kk]-R[kk])*(GI[kk]-R[kk]);
    */
+
+  if(!isfinite(E))
+    E = 10e99;
 
   return E;
 }
@@ -164,7 +191,7 @@ double lxy (const gsl_vector *v, void *params)
   gaussianInt2(GI, mu, &sigma, Rw);
   for(size_t kk = 0; kk<Rw*Rw; kk++)
     GI[kk] = bg+Nphot*GI[kk];
-#if verbose
+#if verbose>2
   printf("GI:\n");
   showRegion(GI, Rw);
 #endif 
@@ -191,7 +218,7 @@ double lxy (const gsl_vector *v, void *params)
 } 
 
 int localizeDotXY(double * V, size_t Vm, 
-    double * D,  double * F)
+    double * D,  double * F, double sigma)
   // Localization for a dot roughly centered in V of size Vm x Vm
   // D[0], D[1], D[3] are the global coordinates of the dot
   // F are the fitted coordinates
@@ -201,9 +228,9 @@ int localizeDotXY(double * V, size_t Vm,
   optParams par;
   par.R = V;
   par.Rw = Vm;
-  par.sigma = 1.6;
+  par.sigma = sigma;
   par.bg = estimateBG(V, Vm);
-  par.G = malloc(Vm*Vm*sizeof(double));
+  par.G = (double *) malloc(Vm*Vm*sizeof(double));
 
   const gsl_multimin_fminimizer_type *T = 
     gsl_multimin_fminimizer_nmsimplex2;
@@ -260,8 +287,9 @@ int localizeDotXY(double * V, size_t Vm,
   }
   while (status == GSL_CONTINUE && iter < maxIterations);
 
-  F[0] = gsl_vector_get (s->x, 0)+D[0];
-  F[1] = gsl_vector_get (s->x, 1)+D[1];
+  // F is always written even if the convergence failed
+  F[0] = gsl_vector_get (s->x, 0)+nearbyint(D[0]);
+  F[1] = gsl_vector_get (s->x, 1)+nearbyint(D[1]);
   F[2] = D[2]; // Not optimized
 
   gsl_vector_free(x);
@@ -273,9 +301,99 @@ int localizeDotXY(double * V, size_t Vm,
   return status;
 }
 
+int localizeDotZ(double * V, size_t Vm,
+    double * D,  double * F, double sigma)
+  // Localization for a dot roughly centered in V of size Vm x Vm
+  // D[0], D[1], D[3] are the global coordinates of the dot
+  // F are the fitted coordinates
+{
 
+  // Non-optimized parameters
+  optParams par;
+  par.R = V;
+  par.Rw = Vm;
+  par.sigma = sigma;
+  par.bg = estimateBG(V, Vm);
+  par.G = (double *) malloc(Vm*sizeof(double));
+
+  const gsl_multimin_fminimizer_type *T =
+    gsl_multimin_fminimizer_nmsimplex2;
+  gsl_multimin_fminimizer *s = NULL;
+  gsl_vector *ss, *x;
+  gsl_multimin_function minex_func;
+
+  size_t iter = 0;
+  int status;
+  double size;
+
+  /* Starting point */
+  x = gsl_vector_alloc (2);
+  gsl_vector_set(x, 0, 0); // z position
+  gsl_vector_set(x, 1, estimateNphot(V, Vm)); // Nphot
+
+  /* Set initial step sizes */
+  ss = gsl_vector_alloc(2);
+  gsl_vector_set_all(ss, 0.1);
+  gsl_vector_set(ss, 1, 10); // Number of photons
+
+  /* Initialize method and iterate */
+  minex_func.n = 2;
+  minex_func.f = lz;
+  minex_func.params = &par;
+
+  //printf(".\n"); fflush(stdout);
+  
+  s = gsl_multimin_fminimizer_alloc (T, 2);
+
+//  printf("..\n"); fflush(stdout);
+  int error = gsl_multimin_fminimizer_set(s,
+      &minex_func,
+      x, // starting point
+      ss); // Step sizes
+  if(error>0)
+    printf("error: %d\n", error);
+ // printf("...\n"); fflush(stdout);
+
+  do
+  {
+    iter++;
+    status = gsl_multimin_fminimizer_iterate(s);
+//  printf("....\n"); fflush(stdout);
+
+    if (status)
+      break;
+
+    size = gsl_multimin_fminimizer_size(s);
+    status = gsl_multimin_test_size(size, convCriteria);
+//  printf(".....\n"); fflush(stdout);
+
+    if (status == GSL_SUCCESS)
+    {
+#if verbose > 0
+      printf ("converged to minimum at\n");
+      printf ("%5lu z:%10.3e NP:%6.1f f() = %7.3f size = %10.3e\n",
+          iter,
+          gsl_vector_get (s->x, 0),
+          gsl_vector_get (s->x, 1),
+          s->fval, size);
+#endif
+    }
+  }
+  while (status == GSL_CONTINUE && iter < maxIterations);
+
+  // Always Update Z position -- even if convergence failed
+  F[2] = gsl_vector_get (s->x, 0)+nearbyint(D[2]);
+
+  gsl_vector_free(x);
+  gsl_vector_free(ss);
+  gsl_multimin_fminimizer_free (s);
+
+  free(par.G);
+
+  return status;
+}
 int localize(double * V, size_t Vm, size_t Vn, size_t Vp, 
-    double * D, size_t Dm, double * F)
+    double * D, size_t Dm, double * F, double sigma)
   // run the localization routine for a list of dots
 {
 
@@ -294,11 +412,18 @@ int localize(double * V, size_t Vm, size_t Vn, size_t Vp,
 #endif
       // Local fitting in W
 #if verbose > 0
-      int status = localizeDotXY(W,  Ws, D+kk*3, F+kk*3);
+      int status = localizeDotXY(W,  Ws, D+kk*3, F+kk*3, sigma);
       printf("Status: %d\n", status);
 #else
-      localizeDotXY(W,  Ws, D+kk*3, F+kk*3);
+      localizeDotXY(W,  Ws, D+kk*3, F+kk*3, sigma);
 #endif
+
+      if(getZLine(W,Ws, 
+            V, Vm, Vn, Vp, D+kk*3) == 0)
+      {
+        localizeDotZ(W, Ws, D+kk*3, F+kk*3, sigma);
+      }
+
     }
     else
     {
@@ -316,7 +441,7 @@ int unit_tests(){
   double * V; // image
   int Vm = 1024; int Vn = 1024; int Vp = 60;
   double * D; // list of dots
-  size_t Dm = 1000; // number of dots
+  size_t Dm = 5; // number of dots
   double * F; // fitted dots
 
   printf("Image size: %dx%dx%d\n", Vm, Vn, Vp);
@@ -358,7 +483,7 @@ int unit_tests(){
   V[(int) D[0]+1+(int) D[1]*Vm+(int) D[2]*Vm*Vn] = 6;
 
   // Run the optimization
-  localize(V, Vm, Vn, Vp, D, Dm, F);
+  localize(V, Vm, Vn, Vp, D, Dm, F, 1);
 
   // In next version, also supply clustering information
 

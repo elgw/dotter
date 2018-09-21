@@ -8,8 +8,8 @@ void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[])
 
   int verbosive = 0;
 
-  if (!(nrhs==2)) {
-     mexErrMsgTxt("There should be two inputs.");
+  if (!(nrhs==2 || nrhs==3)) {
+     mexErrMsgTxt("There should be two or three inputs: Volumetric image, List of dots, sigma");
   }
 
   /* Check data types of the input arguments. */
@@ -19,6 +19,13 @@ void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[])
 
   if (!(mxIsDouble(prhs[1]))) {
     mexErrMsgTxt("Second argument must be of type double.");
+  }
+
+  double sigma = 1;
+  if(nrhs==3)
+  {
+    double * s = mxGetPr(plhs[2]);
+    sigma = s[0];
   }
 
   double * V = (double *) mxGetPr(prhs[0]);
@@ -59,8 +66,9 @@ void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[])
 
   if(1)
     localize(V, Vdim[0], Vdim[1], Vdim[2], 
-      Q, Pdim[1], C);
+      Q, Pdim[1], C, sigma);
 
+  // Fix offsets to MATLAB 1-indexing
   for(size_t kk =0; kk<Pnel; kk++)
     C[kk]++;
 
