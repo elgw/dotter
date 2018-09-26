@@ -2,6 +2,10 @@ function varargout = df_cc_apply_dots(varargin)
 % Apply correction for chromatic aberration
 % dots in D are in channel 'from' and they are
 % transformed to match channel 'to'
+%
+% Example:
+% CD = df_cc_apply_dots('dots', D, 'from', 'a594', 'to', 'dapi', 'ccFile',
+% 'cc_20160722.mat');
 
 s.verbose = 0;
 

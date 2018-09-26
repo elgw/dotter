@@ -48,6 +48,7 @@
 #include "gaussianInt2.h"
 #include "mlfit.h"
 #include "blit3.h"
+#include "mlfit1.h"
 
 // use the compile flag -D verbose=0 etc
 // 0 = no information

@@ -8,6 +8,7 @@ function w = df_fwhm(V, D, varargin)
 % Options:
 %  'interpolation', : 'linear', 'cubic', ... see interpn
 %  'verbose', turns extra output on
+% 'z' get fwhm in z
 
 if numel(D)==0
     w = [];
