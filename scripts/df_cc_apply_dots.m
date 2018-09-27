@@ -66,15 +66,17 @@ if ifrom == ito
     return; % D not changed
 end
 
-Cx = cc.Cx{ifrom, ito};
+% Coefficients
+Cx = cc.Cx{ifrom, ito}; 
 Cy = cc.Cy{ifrom, ito};
 
 if numel(Cx) == 6
-    polyorder = 2;
-    
-    D(:,1) = poly2mat(D(:,1:2), polyorder)*Cx;
+    polyorder = 2;    
+    D(:,1) = poly2mat(D(:,1:2), polyorder)*Cx; % 2nd order correction
     D(:,2) = poly2mat(D(:,1:2), polyorder)*Cy;
-    D(:,3) = D(:,3) + cc.dz{ifrom, ito};
+    D(:,3) = D(:,3) + cc.dz{ifrom, ito}; % Just a constant offset
+else
+    warning('Wrong number of coefficients, not doing anything!')
 end
 
 varargout{1} = D;
