@@ -55,24 +55,29 @@ class reader():
         D = self.M['dots'][0][0][0][chan]
         return(D)
 
-    def getPatch(self, im, dt):
-        s = 2
+    def getPatch(self, im, dt, side):
+        """ Extract a 2D single patch from the image im encoded as a np.ndarray
+        Uses the 0-indexed coordinate given by dt.
+        The size of the patch will be [side x side]
+        """
+        s = (side-1)/2  # side = s+1+s
+        s = int(s)
         dt = dt.round()
         dt = dt.astype('int')
         patch = im[dt[2], dt[0]-s:dt[0]+s+1, dt[1]-s:dt[1]+s+1]
         # import ipdb; ipdb.set_trace()
         return(patch.astype('float'))
 
-    def getPatches(self, imfile, D, side=5):
+    def getPatches(self, chan, D, side=5):
         """ Grab [side x side] large patches
         around the dots specified in D by x,y,z
         #  TODO: skip those close to boundary
         """
-        im = io.imread(imfile)
+        im = io.imread(self.imfiles[chan])
         P = np.ndarray([0, side, side])
         for idx in range(0, D.shape[0]-1):
             d = D[idx, :]
-            patch = self.getPatch(im, d-1)
+            patch = self.getPatch(im, d-1, side)
             patch = np.expand_dims(patch, 0)
             P = np.concatenate((P, patch), axis=0)
 

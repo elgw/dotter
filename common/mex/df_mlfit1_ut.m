@@ -203,6 +203,7 @@ for kk = 1:1000
     F = df_mlfit1(V, P');    
     assert(eudist(P, F')<2e-2);
 end
+
 % Random offset -- rounded initial position
 for kk = 1:1000
     P = [8,8,8] + .5*(1-rand(1,3));
