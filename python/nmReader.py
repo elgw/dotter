@@ -6,7 +6,7 @@ Functionality to read NM files produced by DOTTER
 import scipy.io as sio
 import numpy as np
 from skimage import io
-
+from skimage import measure
 
 class reader():
     """Class to read NM files
@@ -82,6 +82,17 @@ class reader():
             P = np.concatenate((P, patch), axis=0)
 
         return(P)
+
+    def getMask(self):
+        """ Returns the nuclei mask
+        """
+        return(self.M['mask'][0][0])
+
+    def getMaskContours(self):
+        mask = self.getMask()
+        contours = measure.find_contours(mask, 0.5)
+        # list of numpy.ndarray
+        return(contours)
 
     def loadNM(self, nmFile):
         self.nmFile = nmFile
