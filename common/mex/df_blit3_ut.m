@@ -131,6 +131,11 @@ if 0
 end
 
 if 0
+    vidObj = VideoWriter('ml_vs_com.avi', 'Grayscale AVI');
+    vidObj.FrameRate = 20;
+    open(vidObj);
+
+
     % This should look smooth
    s = linspace(0,2*pi, 200);
    r = 2;
@@ -150,7 +155,7 @@ if 0
     G = padarray(G, [2,2,2]);
    for kk = 1:numel(s)
        % Integrate gaussian
-       V = df_blit3(zeros(13,13,13), [], [x(kk), y(kk), 7, 1, 1, 1, 1]');
+       V = 1000+1000*df_blit3(zeros(13,13,13), [], [x(kk), y(kk), 7, 1, 1, 1, 1]');
        % To see how it looks when a gaussian is shifted:
        %V = df_blit3(zeros(13,13,13),  G, [x(kk), y(kk), 7, 1, 1, 1, 1]');
        
@@ -167,7 +172,12 @@ if 0
        E(kk,1) = eudist([x(kk), y(kk)], [D(1), D(2)]);
        E(kk,2) = eudist([x(kk), y(kk)], [Dml(1), Dml(2)]);
        S(kk) = sn(1);
+        currFrame = getframe;
+    currFrame.cdata = currFrame.cdata(:,:,1);
+    writeVideo(vidObj,currFrame);
    end
+   
+   close(vidObj);
     
    figure,
    subplot(1,2,1)

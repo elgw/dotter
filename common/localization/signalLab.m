@@ -1,4 +1,4 @@
-% Try different filters for dot localization 
+% Try different filters for dot localization
 % and especially for relevance ordering
 
 close all
@@ -7,8 +7,8 @@ addpath('../df_gaussianInt2')
 TG = [];
 gsigma = .9:.1:2;
 for ll = 1:numel(gsigma)
-    tg = 10000*df_gaussianInt2([0,0], gsigma(ll), 11);
-    tg = [tg; 10000*df_gaussianInt2([.5,.5], gsigma(ll), 11)];
+    tg = 10000*df_gaussianInt2([0,0], gsigma(ll)*[1, 1], 11);
+    tg = [tg; 10000*df_gaussianInt2([.5,.5], gsigma(ll)*[1, 1], 11)];
     TG = [TG, tg];
 end
 
@@ -32,9 +32,9 @@ imagesc(TG + gsmooth(TG,1)), axis image
 
 PP = [];
 for kk = 1:numel(gsigma)
-PP = [PP; [0*23+12, (kk-1)*23+12, 1]];
+    PP = [PP; [0*23+12, (kk-1)*23+12, 1]];
 end
-    
+
 TG2 = 5000+TG; %+50*randn(size(TG,1), size(TG,2));
 sigmaerror = gaussianSize(TG2, PP, gsigma);
 figure, imagesc(sqrt(sigmaerror))
@@ -45,9 +45,10 @@ figure, imshow2((TG2))
 vidObj = VideoWriter('1nm_per_frame.avi', 'Grayscale AVI');
 vidObj.FrameRate = 20;
 open(vidObj);
-    
+
 fig = figure
 img = imagesc()
+
 clear M
 axis image
 axis off
@@ -58,13 +59,13 @@ xpos = cos(theta);
 ypos = sin(theta);
 d = ((xpos(2)-xpos(1)).^2+(ypos(2)-ypos(1)).^2).^(1/2);
 
-for kk=1:numel(xpos)    
-    gint = df_gaussianInt2([ypos(kk),xpos(kk)], 1.2, 11);
+for kk=1:numel(xpos)
+    gint = df_gaussianInt2([ypos(kk),xpos(kk)], [1.2, 1.2], 11);
     set(img, 'CData', gint);
     %drawnow()
     currFrame = getframe;
     currFrame.cdata = currFrame.cdata(:,:,1);
-       writeVideo(vidObj,currFrame);
+    writeVideo(vidObj,currFrame);
 end
-   close(vidObj);
-   
+close(vidObj);
+
