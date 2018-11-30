@@ -35,7 +35,7 @@ for kk = 1:numel(varargin)
         driver = varargin{kk+1};
     end
     if strcmpi(varargin{kk}, 'publish')
-        driver = {'-dpdf', '-depsc'};
+        driver = {'-dpdf', '-depsc', '-dpng'};
     end
 end
 
