@@ -6,7 +6,7 @@ disp('--> Testing df_mlfit1')
 % compile()
 
 test_invalid_input()
-test_correct_localization()
+test_correct_localization(0)
 test_behaviour_wrong_init()
 test_realistic_timing()
 test_noise()
@@ -16,7 +16,7 @@ test_noise()
 
 % To do: 
 % Noise!
-
+test_correct_localization(1)
 % compile()
 
 disp('  -- done');
@@ -96,8 +96,8 @@ end
 
 
 function test_realistic_timing()
-disp('  > worst case timings -- no convergence')
-nD = 1000;
+disp('  > worst case timings -- no convergence (only noise)')
+nD = 100;
 V = 1000+1000*rand(1024,1024,60);
 D0 = round([(size(V,1)-6)*rand(nD,1), (size(V,2)-6)*rand(nD,1), size(V,3)*rand(nD,1)]);
 D0(D0<7) = 7;
@@ -112,11 +112,11 @@ tval = toc;
 fprintf('  --> df_mlfit1 took %.3f s for a %dx%dx%d image and %d dots\n', tval, size(V,1), size(V,2), size(V,3), size(D,1));
 fprintf('      i.e., %d dots/s\n', round(size(D,1)/tval));
 
-if 0
+if 1
     % About 30x faster
     tic
     dotFitting(V,D);
-    tval2 = toc;
+    tval2 = toc
 end
 
 if 0
@@ -181,8 +181,13 @@ end
 
 end
 
-function test_correct_localization()
-disp('  > Correct localization');
+function test_correct_localization(noise)
+fprintf('  > Correct localization');
+if noise
+    fprintf(' -- with noise\n');
+else
+    fprintf(' -- no noise\n');
+end
 
 % Basic integer case
 P = [8,8,8];
@@ -196,21 +201,49 @@ V = 100+10000*df_blit3(zeros(15,15,15), [], [P , 1, 1, 1, 1]');
 F = df_mlfit1(V, round(P'));
 assert(eudist(P, F')<1e-2);
 
-% Random offset -- correct initial position
-for kk = 1:1000
-    P = [8,8,8] + .5*(1-rand(1,3));
-    V = 1000+100000*df_blit3(zeros(15,15,15), [], [P , 1, 1, 1, 1]');
-    F = df_mlfit1(V, P');    
-    assert(eudist(P, F')<2e-2);
+disp(' Random offset -- correct initial position')
+N = 1000;
+E = zeros(N,1);
+for kk = 1:N
+    P = [8,8,8] + .4*(1-rand(1,3));
+    V = 1000+100000*df_blit3(zeros(15,15,15), [], [P , 1, 1, 1, 1]');    
+    if(noise>0)        
+        V = V + poissrnd(V);
+    end
+    F = df_mlfit1(V, P');        
+    E(kk) = norm(F-P');
+    %dotterSlide(V,[F', 1])
+end
+fprintf('Sum of errors: %f, max error: %f\n', sum(E), max(E));
+
+%figure, histogram(E)
+if noise
+    assert(max(E)<1e-1)
+else
+    assert(max(E)<1e-2)
 end
 
-% Random offset -- rounded initial position
-for kk = 1:1000
-    P = [8,8,8] + .5*(1-rand(1,3));
-    V = 10+10000*df_blit3(zeros(15,15,15), [], [P , 1, 1, 1, 1]');
+
+%assert(eudist(P, F')<2e-1);
+
+disp(' Random offset -- rounded initial position')
+rng(0)
+for kk = 1:N
+    P = [8,8,8] + .4*(1-rand(1,3));
+    V = 100+10000*df_blit3(zeros(15,15,15), [], [P , 1, 1, 1, 1]');
+    if(noise>0)        
+        V = V + poissrnd(V);
+    end
     F = df_mlfit1(V, round(P'));
-    assert(eudist(P, F')<1e-2);
+    E(kk) = eudist(P, F');
 end
+%figure, histogram(E)
+fprintf('Sum of errors: %f, max error: %f\n', sum(E), max(E));
 
+if noise == 0
+    assert(max(E)<1e-2);
+else
+    assert(max(E)<1e-1);
+end
 
 end

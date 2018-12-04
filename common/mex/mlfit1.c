@@ -74,6 +74,9 @@ int localize(double *, size_t, size_t, size_t, double *, size_t, double *,
     double, double); // sigma_xy, sigma_z -- size of dot
 int unit_tests(void);
 
+void lxy_df (const gsl_vector *v, void *params, gsl_vector * df);
+void lxy_fdf (const gsl_vector *v, void *params, double * f, gsl_vector *df);
+
 // Optimization constants
 typedef struct {
   double * R; // local region
@@ -214,9 +217,35 @@ double lxy (const gsl_vector *v, void *params)
    * for (size_t kk=0; kk<Rw*Rw; kk++)
    * E+= (GI[kk]-R[kk])*(GI[kk]-R[kk]);
    */
-
+//  printf("E = %f\n", E);
   return E;
 } 
+
+void lxy_df (const gsl_vector *v, void *params, gsl_vector * df)
+{
+  double h = 1e-8; // step size
+  gsl_vector * dv = gsl_vector_alloc(3);
+  gsl_vector_memcpy(dv, v);
+
+  for(int kk = 0; kk<3; kk++)
+  {
+    gsl_vector_set(dv, kk, gsl_vector_get(v, kk) + h); // Set
+    gsl_vector_set(df, kk, (lxy(dv, params)-lxy(v, params))/h);
+   // printf("%f ", gsl_vector_get(df, kk));
+    gsl_vector_set(dv, kk, gsl_vector_get(v, kk)); // Reset
+  }
+//  printf("\n");
+
+
+  gsl_vector_free(dv);
+
+}
+
+void lxy_fdf (const gsl_vector *v, void *params, double * f, gsl_vector *df)
+{
+  *f = lxy(v, params);
+  lxy_df(v, params, df);
+}
 
 int localizeDotXY(double * V, size_t Vm, 
     double * D,  double * F, double sigma)
@@ -225,7 +254,7 @@ int localizeDotXY(double * V, size_t Vm,
   // F are the fitted coordinates
 {
 
-  // Non-optimized parameters
+  /* Parameters that will not be optimized */
   optParams par;
   par.R = V;
   par.Rw = Vm;
@@ -233,45 +262,82 @@ int localizeDotXY(double * V, size_t Vm,
   par.bg = estimateBG(V, Vm);
   par.G = (double *) malloc(Vm*Vm*sizeof(double));
 
-  const gsl_multimin_fminimizer_type *T = 
-    gsl_multimin_fminimizer_nmsimplex2;
-  gsl_multimin_fminimizer *s = NULL;
+  const gsl_multimin_fdfminimizer_type *T = 
+    gsl_multimin_fdfminimizer_vector_bfgs;
+  //const gsl_multimin_fminimizer_type *T = 
+    //  gsl_multimin_fminimizer_nmsimplex2;
+  
+  gsl_multimin_fdfminimizer *s = NULL;
   gsl_vector *ss, *x;
-  gsl_multimin_function minex_func;
+  gsl_multimin_function_fdf minex_func;
 
   size_t iter = 0;
   int status;
   double size;
 
-  /* Starting point */
+  /* Starting point for parameters to be optimized */
   x = gsl_vector_alloc (3);
   gsl_vector_set(x, 0, 0); // x position
   gsl_vector_set(x, 1, 0); // y position
   gsl_vector_set(x, 2, estimateNphot(V, Vm)); // Nphot
 
+  /* Grid search to find a reasonable starting point
+   * for (x,y) to avoid local minima */
+
+  if(1) {
+  double xmin = 0;
+  double ymin = 0;
+  double emin = 10e9;
+  for(double dx = -.4; dx<.4; dx=dx+0.8/3)
+    for(double dy = -.4; dy<.4; dy=dy+0.8/3)
+    {
+      gsl_vector_set(x, 0, dx); // x position
+      gsl_vector_set(x, 1, dy); // y position
+
+      double err = lxy(x, (void *) &par);
+//    printf("%f %f :  %f\n", dx, dy, err);
+      if( err < emin)
+      {
+        emin = err;
+        xmin = dx;
+        ymin = dy;
+      }
+    }
+   gsl_vector_set(x, 0, xmin); // x position
+   gsl_vector_set(x, 1, ymin); // y position
+ //  printf("Initial position: %f %f\n", xmin, ymin);
+  }
+
   /* Set initial step sizes */
   ss = gsl_vector_alloc(3);
   gsl_vector_set_all(ss, 0.1);
-  gsl_vector_set(x, 2, 10); // Number of photons
 
   /* Initialize method and iterate */
   minex_func.n = 3;
-  minex_func.f = lxy;
+  minex_func.f = lxy; // Error
+  minex_func.df = lxy_df; // Derivative
+  minex_func.fdf = lxy_fdf; // Error and Derivative
   minex_func.params = &par;
 
-  s = gsl_multimin_fminimizer_alloc (T, 3);
-  gsl_multimin_fminimizer_set (s, &minex_func, x, ss);
+  s = gsl_multimin_fdfminimizer_alloc (T, 3);
+  gsl_multimin_fdfminimizer_set (s, // Optimizer
+      &minex_func, // Function to optimize
+      x, // Start point
+      0.1, // Default step size of the line search
+      0); // 0 = exact line search
+
+size_t maxIterationsQN = 500; // abort if more iterations
 
   do
   {
     iter++;
-    status = gsl_multimin_fminimizer_iterate(s);
+    status = gsl_multimin_fdfminimizer_iterate(s);
 
     if (status) 
       break;
 
-    size = gsl_multimin_fminimizer_size(s);
-    status = gsl_multimin_test_size(size, convCriteria);
+    size = 0; //gsl_multimin_fdfminimizer_size(s);
+    status = gsl_multimin_test_gradient (s->gradient, 1e-3);
 
     if (status == GSL_SUCCESS)
     {
@@ -282,11 +348,11 @@ int localizeDotXY(double * V, size_t Vm,
           gsl_vector_get (s->x, 0), 
           gsl_vector_get (s->x, 1), 
           gsl_vector_get (s->x, 2), 
-          s->fval, size);
+          0.0, size);
 #endif
     }
   }
-  while (status == GSL_CONTINUE && iter < maxIterations);
+  while (status == GSL_CONTINUE && iter < maxIterationsQN);
 
   // F is always written even if the convergence failed
   F[0] = gsl_vector_get (s->x, 0)+nearbyint(D[0]);
@@ -295,7 +361,7 @@ int localizeDotXY(double * V, size_t Vm,
 
   gsl_vector_free(x);
   gsl_vector_free(ss);
-  gsl_multimin_fminimizer_free (s);
+  gsl_multimin_fdfminimizer_free (s);
 
   free(par.G);
 
@@ -459,7 +525,7 @@ int unit_tests(){
 
   // Initialize the data
   for(int kk=0; kk<Vm*Vn*Vp; kk++)
-    V[kk] = rand_range(0,0);
+    V[kk] = 1000+rand_range(0,0);
 
   for(uint32_t kk=0; kk<Dm; kk++)
   {
@@ -481,7 +547,7 @@ int unit_tests(){
   for(uint32_t kk=0; kk<Dm; kk++)
   {
     size_t pos = D[kk*3] + D[kk*3+1]*Vm + D[kk*3+2]*Vm*Vn;
-    V[pos] = 5;
+    V[pos] = V[pos]+5;
   }
 
   D[0] = 100; D[1] = 100; D[2] = 30;
