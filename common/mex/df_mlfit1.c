@@ -1,7 +1,9 @@
 #include "mex.h"
 #include "mlfit1.c"
 
-// Provides a MATLAB interface to mlfit1 
+/* Provides a MATLAB interface to mlfit1 
+ * which provides dot fitting
+ */
 
 void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[]) 
 {
@@ -47,7 +49,6 @@ void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[])
   if(sigmaz>4)
     mexErrMsgTxt("Sigma has to be > 4");
 
-
   double * V = (double *) mxGetPr(prhs[0]);
   mwSize VnDim = mxGetNumberOfDimensions(prhs[0]);
   const mwSize * Vdim = mxGetDimensions(prhs[0]);
@@ -72,7 +73,6 @@ void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[])
         mexErrMsgTxt("V has to be postive");
   }
 
-
   // Prepare the output matrix
   mwSize Cdim[] = {0,0};
   Cdim[0] = 3; Cdim[1] = Pnel/3;
@@ -92,10 +92,6 @@ void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[])
   {
     Q[kk] = P[kk]-1;
   }
-
-
-
-
 
   if(1)
     localize(V, Vdim[0], Vdim[1], Vdim[2], 

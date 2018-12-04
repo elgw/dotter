@@ -59,8 +59,9 @@
 #endif
 
 // Globals
-const size_t maxIterations = 10000;
-const double convCriteria = 1e-7;
+const size_t maxIterations = 10000; // for z-fitting
+const double convCriteria = 1e-7; // for z-fitting
+
 // Possibly, add the window size, denoted Ws in most places
 
 // Headers
@@ -223,7 +224,7 @@ double lxy (const gsl_vector *v, void *params)
 
 void lxy_df (const gsl_vector *v, void *params, gsl_vector * df)
 {
-  double h = 1e-8; // step size
+  double h = 1.49e-8; // step size
   gsl_vector * dv = gsl_vector_alloc(3);
   gsl_vector_memcpy(dv, v);
 
@@ -287,9 +288,10 @@ int localizeDotXY(double * V, size_t Vm,
   if(1) {
   double xmin = 0;
   double ymin = 0;
-  double emin = 10e9;
-  for(double dx = -.4; dx<.4; dx=dx+0.8/3)
-    for(double dy = -.4; dy<.4; dy=dy+0.8/3)
+  double emin = 10e99;
+  int ng = 5; // ng*ng grid points
+  for(double dx = -.4; dx<.4; dx=dx+0.8/ng)
+    for(double dy = -.4; dy<.4; dy=dy+0.8/ng)
     {
       gsl_vector_set(x, 0, dx); // x position
       gsl_vector_set(x, 1, dy); // y position
@@ -324,7 +326,10 @@ int localizeDotXY(double * V, size_t Vm,
       &minex_func, // Function to optimize
       x, // Start point
       0.1, // Default step size of the line search
-      0); // 0 = exact line search
+      0.1); // tol. 0 = exact line search 0.1 = recommended from GSL manual
+
+  /* tol=0.1 was about twice as fast as tol=0 for this problem with no noticeable 
+   * regression in accuracy */
 
 size_t maxIterationsQN = 500; // abort if more iterations
 
@@ -337,7 +342,7 @@ size_t maxIterationsQN = 500; // abort if more iterations
       break;
 
     size = 0; //gsl_multimin_fdfminimizer_size(s);
-    status = gsl_multimin_test_gradient (s->gradient, 1e-3);
+    status = gsl_multimin_test_gradient (s->gradient, 1e-4);
 
     if (status == GSL_SUCCESS)
     {

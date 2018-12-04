@@ -6,7 +6,9 @@ disp('--> Testing df_mlfit1')
 % compile()
 
 test_invalid_input()
-test_correct_localization(0)
+
+test_correct_localization(1) % Noise!
+test_correct_localization(0) % No noise
 test_behaviour_wrong_init()
 test_realistic_timing()
 test_noise()
@@ -14,10 +16,9 @@ test_noise()
 % Produce a plot with error vs sigma.
 % test_sigma()
 
-% To do: 
-% Noise!
-test_correct_localization(1)
-% compile()
+
+
+
 
 disp('  -- done');
 end
@@ -202,7 +203,7 @@ F = df_mlfit1(V, round(P'));
 assert(eudist(P, F')<1e-2);
 
 disp(' Random offset -- correct initial position')
-N = 1000;
+N = 100;
 E = zeros(N,1);
 for kk = 1:N
     P = [8,8,8] + .4*(1-rand(1,3));
@@ -226,19 +227,32 @@ end
 
 %assert(eudist(P, F')<2e-1);
 
+% Settings for dotFitting which we compare against
+s = [];
+s.useClustering = 0;
+s.sigmafitXY = 1;
+s.sigmafitZ = 1;
+s.fitSigma = 0;
+s.verbose = 0;
+s.clusterMinDist = 5;
+
 disp(' Random offset -- rounded initial position')
-rng(0)
+rng(192)
 for kk = 1:N
-    P = [8,8,8] + .4*(1-rand(1,3));
+    P = [8,8,8] + .4*(1-2*rand(1,3));    
     V = 100+10000*df_blit3(zeros(15,15,15), [], [P , 1, 1, 1, 1]');
     if(noise>0)        
         V = V + poissrnd(V);
     end
+    
     F = df_mlfit1(V, round(P'));
+    G = dotFitting(V, round(P), s); G = G(1:3);
     E(kk) = eudist(P, F');
+    E2(kk) = eudist(P, G);
 end
 %figure, histogram(E)
-fprintf('Sum of errors: %f, max error: %f\n', sum(E), max(E));
+fprintf('  Sum of errors: %f, max error: %f\n', sum(E), max(E));
+fprintf('    vs. dotFitting: Sum of errors: %f, max error: %f\n', sum(E2), max(E2));
 
 if noise == 0
     assert(max(E)<1e-2);

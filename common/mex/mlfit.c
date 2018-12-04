@@ -118,7 +118,7 @@ double estimateBG(double *V, size_t Vm)
     printf("\n");
   }
 
-  qsort(ePixels, nEdge, sizeof(double),  double_cmp);
+//  qsort(ePixels, nEdge, sizeof(double),  double_cmp);
 
   if(0) {
     for(uint32_t kk = 0; kk<nEdge; kk++)
@@ -128,6 +128,7 @@ double estimateBG(double *V, size_t Vm)
 
   gsl_sort(ePixels, 1, nEdge);
   double median = gsl_stats_median_from_sorted_data(ePixels, 1, nEdge);
+  // double mean = gsl_stats_mean(ePixels, 1, nEdge);
 #if verbose > 0
   printf("Median: %f\n", median);
 #endif 
