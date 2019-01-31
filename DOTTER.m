@@ -55,7 +55,7 @@ bugsFile = ['file://' unRelFileName(bugsFile)];
 
 fprintf('DOTTER version %s\n<a href="%s">Changes</a>|<a href="%s">Bugs</a>|<a href="%s">Help</a>\n', ...
     df_version(), chFile, bugsFile, helpFile);
-fprintf('<a href="https://bienkocrosettolabs.org/">BiCroLabs</a> 2015-2018\n');
+fprintf('<a href="https://bienkocrosettolabs.org/">BiCroLabs</a> 2015-2019\n');
 disp(['Session started ' datestr(datetime('now'),'yyyy-mm-dd HH:MM:ss')])
 disp(['MATLAB ' version()])
 
@@ -63,12 +63,12 @@ disp(['MATLAB ' version()])
 if exist('logo.jpg', 'file')
     I = imread('logo.jpg');
 else
-    disp('logo.jpg could not be loaded from disk. Please verify the installation')
+    disp('''logo.jpg'' could not be loaded from disk. Please verify the installation!')
     return
 end
 
 res = get(0, 'ScreenSize');
-xres = res(3);
+% xres = res(3);
 yres = res(4);
 
 pos = df_getConfig('DOTTER', 'winPos', []);
@@ -91,7 +91,6 @@ gui.win = figure('Position', pos, 'Menubar', 'none', ...
 
 gui.tabs = uitabgroup();
 gui.tabs.Visible = 'off';
-
 
 set(0, 'PointerLocation', [pos(1), pos(2)]);
 

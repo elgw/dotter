@@ -88,7 +88,6 @@ end
 
 s.nChan = numel(M{1}.channels);
 
-
 %% Extract dots
 %keyboard
 P = extractDots(N, s);
@@ -97,7 +96,7 @@ P = extractDots(N, s);
 % Do this in two steps, first relaxed and then at the value that is of
 % interest.
 st = s;
-st.curve_max_dist =st.curve_max_dist+0.1;
+st.curve_max_dist = st.curve_max_dist+0.1;
 
 PS = select_curves(P, st);
 PS = select_curves(PS, s);
@@ -135,8 +134,7 @@ if s.plot
             
             subplot(s.nChan, 4, cc*4-4+2)
             plot(PS{cc}')
-            axis(a);
-            
+            axis(a);            
             
             title(sprintf('Selected nuclei, %d', size(PS{cc},1)));
             subplot(s.nChan, 4, cc*4-4+3)
@@ -154,15 +152,8 @@ if s.plot
             xlabel('Dots')
             ylabel('#')
         end
-        %plot(THS{cc}, Q{cc});
     end
 end
-
-%dprintpdf('/home/erikw/profiles_iEG458.pdf', 'w', 45, 'h', 10);
-%dprintpdf('/home/erikw/profiles_iXL217.pdf', 'w', nChan*10, 'h', 10);
-%dprintpdf('/home/erikw/profiles_iAM24.pdf', 'w', nChan*10, 'h', 10);
-%dprintpdf('/home/erikw/profiles_iJC1041.pdf', 'w', nChan*10, 'h', 10);
-%dprintpdf('/home/erikw/profiles_iJC1024.pdf', 'w', nChan*10, 'h', 10);
 
 end
 
@@ -289,8 +280,6 @@ for pp = floor(s.nTrue(cc)):ceil(s.nTrue(cc))
     weight(pp+1) = 1-abs((pp-s.nTrue(cc)));
 end
 
-
-%keyboard
 if 0
     plot(0:numel(weight)-1, weight, 'k')
     hold on
@@ -300,7 +289,6 @@ if 0
     ylabel('Weight')
     
 end
-%keyboard
 q = sum(C'.*weight);
 
 end

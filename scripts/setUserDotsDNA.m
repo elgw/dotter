@@ -1466,9 +1466,11 @@ fig_menu_delete()
                     d = [d; N{kk}.userDots{s.channel}(homolog==ll-2,:)];
                 end
                 style = s.dotMarkers{ll};
+                if numel(d)>0
                 DH{ll} = plot(d(:,2), d(:,1), ...
                     style.shape, 'Color', style.color, 'MarkerSize', style.size, 'ButtonDownFcn', @gui_dotClick, ...
                     'Visible', style.visible);
+                end
             end
             
             
@@ -1720,7 +1722,9 @@ fig_menu_delete()
         
         nDots = 0;
         for kk = 1:numel(N)
-            nDots = nDots + size(N{kk}.userDots{channel}, 1);
+            if numel(N{kk}.userDots{channel} > 0)
+                nDots = nDots + size(N{kk}.userDots{channel}, 1);
+            end
         end
         if numel(N)>0
             n = nDots/numel(N);
