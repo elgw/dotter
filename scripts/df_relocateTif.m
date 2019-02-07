@@ -46,8 +46,9 @@ for kk =1:numel(files)
     fo = strsplit(fo, filesep());
     
     cFolder = fo{end};
-    cFolder = cFolder(1:end-5); % remove trailing '_calc'
+    cFolder = cFolder(1:17); % remove trailing '_calc'
         
+    
     relocated_image = [TIFfolder filesep() cFolder filesep() fn];
         
     fprintf('%s\n -> %s\n', M.dapifile, relocated_image);    

@@ -1,6 +1,8 @@
-function importIMA(file)
+function df_ima2nm_file(imafile, nmfile, outFolder)
 % Import dots from .ima-files, i.e., that
 % are produced by ImageM
+
+% SERVER>projects>iFISH>FOR REVISION
 
 %{
                         stack_range: [1 65]
@@ -47,8 +49,12 @@ function importIMA(file)
                   full_channel_name: {'Cy5_'  'a594_'  'ir800_'  'tmr_'}
 %}
 
-file = '/home/erikw/data/current_images/iEG/ieg642_001_ima/ieg642_310119_001.001.ima';
-D = load(file, '-mat');
+
+%imafile = '/home/erikw/data/current_images/iEG/ieg642_001_ima/ieg642_310119_001.001.ima';
+%nmfile = '/home/erikw/data/current_images/iEG/ieg642_310119_001_calc/001.NM';
+
+D = load(imafile, '-mat'); % Domain
+T = load(nmfile, '-mat'); % Target
 
 %% Dot detection
 fprintf('-> DOT DETECTION\n');
@@ -64,19 +70,28 @@ end
 %TMR_SIGMA: 8.5000
 
 %% Channels
-fprintf('-> CHANNELS\n');
+fprintf('-> Verifying that the channels are the same\n');
 % Note that the names does not have the same cases as the _SIGMA fields
 % Remove trailing '_'
 % D.UserData.channel_name
 for kk = 1:numel(D.UserData.channel_name)
-    fprintf('%s\n', D.UserData.channel_name{kk})
+    cima = D.UserData.channel_name{kk};
+    cnm = T.M.channels{kk};
+    fprintf('IMA: %s, NM: %s\n', cima, cnm )    
+    ncnm = numel(cnm);
+    assert(strcmp(cnm(1:ncnm), cima(1:ncnm)) == 1)
 end
+fprintf('ok!\n');
 
+if 0
 figure,
 imagesc(D.UserData.I)
 axis image
 colormap gray
-title('UserData.I (max projection of nuclei staining)')
+hold on, contour(T.M.mask, [.5, .5], 'Color', 'green')
+title('UserData.I (max projection of nuclei staining). Mask from NM')
+end
+
 % UserData.I2 seems to be a temporary image from one of the channels
 
 %% Nuclei
@@ -99,6 +114,26 @@ fprintf('-> DOTS\n');
 for kk = 1:numel(D.UserData.channel_name)
     ndots = sum(D.UserData.dots(:,4) == kk);
     fprintf('%s : %f dots\n', D.UserData.channel_name{kk}, ndots);
+    % The IMA files does not contain either pixel values of filter response
+    % etc...
+    % While the NM file expects: T.M.dotsMeta:
+    %  {'x'}    {'y'}    {'z'}    {'fvalue'}    {'pixel'}    {'fwhm'}
+    
+    dots = D.UserData.dots( D.UserData.dots(:,4) == kk, [2,1,3]);
+    dots = [dots, fliplr(1:size(dots,1))']; % fvalue
+    dots = [dots, fliplr(1:size(dots,1))']; % pixel
+    dots = [dots, -2*ones(size(dots,1), 1)]; % fwhm
+    T.M.dots{kk} = dots;
 end
 
+s.dots.th = cell(1, numel(T.M.channels));
+s.dots.Z = [-inf, inf];
+s.dots.FWHM = [-inf, inf];
+s.dots.maxDots = inf;
+s.dilationRadius = 5;
+s.dots.fwhm = [];
+
+[M, N] = df_resetUserDots(T.M, T.N, s)
+
+save([outFolder nmfile(end-5:end)], 'M', 'N');
 end

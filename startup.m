@@ -20,5 +20,5 @@ addpath([codedir 'common/cCorr/'])
 %addpath([codedir 'csvScripts/'])
 addpath([codedir 'common/piccs/'])
 addpath([codedir 'common/volBucket/'])
-
+webutils.htmlrenderer('basic');
 fprintf('version %s initialized.\n', df_version());
