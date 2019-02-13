@@ -41,17 +41,20 @@ Cy = cell(size(D,1));
 dz = cell(size(D,1));
 E0 = zeros(size(D,1)); % MSE errors before
 E = zeros(size(D,1)); % MSE errors after fitting
+E3 = zeros(size(D,1)); % MSE errors after fitting (3D)
 N = zeros(size(D,1)); % Number of dots
 
+
+%% channel aa vs channel bb
 for aa = 1:size(D,1)
     % Create matrix for the polynomial model from D{aa}
                 
     for bb=1:size(D,1)        
         if aa ~= bb
             
+            
         Daa = D{aa,bb}(:,1:3);
-        Dbb = D{aa,bb}(:,4:6);
-        
+        Dbb = D{aa,bb}(:,4:6);                
         
         N(aa,bb) = size(D{aa,bb}, 1);
         
@@ -79,14 +82,55 @@ for aa = 1:size(D,1)
         Ft = zeros(size(MXY1,1), 2);
         Ft(:,1)=MXY1*Cx{aa,bb};
         Ft(:,2)=MXY1*Cy{aa,bb};        
+        Ft(:,3) = (Daa(:,3)+dz{aa,bb})*300/130;
         
         D2 = eudist(Ft(:,1:2), Dbb(:,1:2));
+        D3 = eudist(Ft(:,1:3), [Dbb(:,1:2), Dbb(:,3)*300/130]);
         D20 = eudist(Daa(:,1:2), Dbb(:,1:2));
+        D30 = eudist([Daa(:, 1:2), 300/130*Daa(:,3)], [Dbb(:,1:2), Dbb(:,3)*300/130]);
+        
+        if 1
+           error_before_2 = D20;
+           error_after_xy = D2;
+           error_before_xyz = D30;
+           error_after_xyz = D3;
+           
+            figure,             
+            subplot(2,2,1), histogram(130*error_before_2)
+            title('Before. XY')
+            xlabel('distance [nm]')
+            ylabel('# bead pairs')
+            legend({sprintf('mean: %1.f nm', mean(130*error_before_2) )});
+            
+            subplot(2,2,2), histogram(130*error_after_xy)
+            title('After. XY')
+            xlabel('distance [nm]')
+            ylabel('# bead pairs')
+            legend({sprintf('mean: %1.f nm', mean(130*error_after_xy) )});
+            
+            subplot(2,2,3), 
+            histogram(130*error_before_xyz)
+            title('Before. XYZ')
+            xlabel('distance [nm]')
+            ylabel('# bead pairs')
+            legend({sprintf('mean: %1.f nm', mean(error_before_xyz*130) )});
+            
+            subplot(2,2,4), 
+            histogram(130*error_after_xyz)
+            title('After. XYZ')
+            xlabel('distance [nm]')
+            ylabel('# bead pairs')
+            legend({sprintf('mean: %1.f nm', mean(error_after_xyz*130) )});
+            dprintpdf(sprintf('%s_vs_%s', channels{aa}, channels{bb}), '--publish')
+        end
+        
         if size(D{aa,bb},1) < 10
             E(aa,bb) = nan;
             E0(aa,bb) = nan;
+            E3(aa,bb) = nan;
         else
             E(aa,bb) = mean(D2.^2);                
+            E3(aa,bb) = mean(D3.^2);                
             E0(aa,bb) = mean(D20.^2);
         end
             
@@ -99,7 +143,7 @@ M.dotterVersion = df_version();
 
 if isfield(s, 'filename')
     fprintf('Writing to %s\n', s.filename)
-    save(s.filename, 'Cx', 'Cy', 'dz', 'E', 'channels', 'M', 'E0', 'N');
+    save(s.filename, 'Cx', 'Cy', 'dz', 'E', 'channels', 'M', 'E0', 'N', 'E3');
     varargout{1} = s.filename;
 else
     varargout{1} = '';

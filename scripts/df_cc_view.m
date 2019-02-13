@@ -21,9 +21,16 @@ E = cc.E;
 fprintf('\ncc file: %s\n', filename);
 fprintf('created %s with DOTTER %s\n', M.creationDate, M.dotterVersion);
 
-fprintf('\n\nMSE Errors after correction (pixels):\n\n')
+fprintf('\n\n2D MSE Errors after correction (pixels):\n\n')
 TE = array2table(E, 'VariableNames', channels, 'RowNames', channels);
 disp(TE);
+
+
+if isfield(cc, 'E3')
+fprintf('\n\n3D MSE Errors after correction (pixels):\n\n')
+TE = array2table(cc.E3, 'VariableNames', channels, 'RowNames', channels);
+disp(TE);
+end
 
 if isfield(cc, 'E0')
     fprintf('\n\nErrors before correction:\n\n');
@@ -56,6 +63,12 @@ disp(TD);
 fprintf('\n\nDisplacement in centre (pixels):\n\n')
 TVD = cell2table(VD, 'VariableNames', channels, 'RowNames', channels);
 disp(TVD);
+
+if isfield(cc, 'dz')
+    fprintf('\n\nAxial displacement (z, in pixels):\n\n');
+    TVD = cell2table(cc.dz, 'VariableNames', channels, 'RowNames', channels);
+    disp(TVD);
+end
 
 if isfield(cc, 'N')
     fprintf('\n\nNumber of dots:\n\n');
