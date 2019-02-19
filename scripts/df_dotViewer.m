@@ -109,8 +109,8 @@ end
             s.currentFile = s.fileNo;
         end
         
-        if isfield(s.D.M, 'pixelSize')
-            s.res = s.D.M.pixelSize;
+        if isfield(s.D.M, 'voxelSize')
+            s.res = s.D.M.voxelSize;
         else
             warning('Using default pixel size');
             s.res = [130,130,300];

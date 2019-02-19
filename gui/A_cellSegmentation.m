@@ -19,7 +19,7 @@ if nargin == 0
     s.nTrueDots = [];
     s.channels = [];
     s.threeD = 0;
-    s.pixelSize = [130,130,300];
+    s.voxelSize = [130,130,300];
 end
 
 %% Parse input arguments
@@ -76,7 +76,7 @@ for kk = 1:numel(dapifiles)
     M.nTrueDots = s.nTrueDots;
     M.channels = s.channels;
     M.nkmers = s.nkmers;
-    M.pixelSize = s.pixelSize;
+    M.voxelSize = s.voxelSize;
     
     %% Things on DAPI
     idapi = df_readTif(dapif);
@@ -84,7 +84,7 @@ for kk = 1:numel(dapifiles)
     
     M.imageSize = size(idapi);
     dapisettings.useWatershed = s.dapiWS;
-    dapisettings.pixelSize = s.pixelSize;
+    dapisettings.voxelSize = s.voxelSize;
     
     if isfield(s, 'masks')
         mask = s.masks{kk};

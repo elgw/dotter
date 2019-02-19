@@ -57,6 +57,7 @@ if(numel(size(V))==3)
     k1=reshape(ggaussian(d(1), sigma(1)), [d(1),1,1]);
     k2=reshape(ggaussian(d(2), sigma(2)), [1, d(2),1]);
     k3=reshape(ggaussian(d(3), sigma(3)), [1,1,d(3)]);
+    
     %fprintf('1... ');
     %figure, plot(k1)
     V=convf(V, k1, 'same');

@@ -17,7 +17,7 @@ else
             t.M.dapiTh = th;
             M = t.M; N = t.N;
             
-            if ~isfield(M, 'pixelSize')
+            if ~isfield(M, 'voxelSize')
                 if ~exist('vsize', 'var')
                 answer = {};
                 while(numel(answer) == 0)
@@ -33,7 +33,7 @@ else
                 vsize(2) = vsize(1);
                 vsize(3) = str2num(answer{2});
                 end
-                M.pixelSize = vsize;
+                M.voxelSize = vsize;
             end
             
             

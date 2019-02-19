@@ -8,7 +8,7 @@ s.channel = 'tmr'; % a594 cy5, tmr, a647, ir800
 
 s.translate = 0; % Center each nuclei to (0,0,0)
 s.scale = 1;     % Scale by pixel size
-s.pixelSize = [132,132,300];
+s.voxelSize = [132,132,300];
 s.plot = 0;
 
 s.disrupt = 0;   % Disturb the positions? (For debugging)
@@ -82,9 +82,9 @@ for ff = 1:max(A(:,1)) % field
                     CL(:,3) = CL(:,3) - mean(CL(:,3));
                 end
                 if s.scale
-                    CL(:,1) = CL(:,1)*s.pixelSize(1);
-                    CL(:,2) = CL(:,2)*s.pixelSize(2);
-                    CL(:,3) = CL(:,3)*s.pixelSize(3);
+                    CL(:,1) = CL(:,1)*s.voxelSize(1);
+                    CL(:,2) = CL(:,2)*s.voxelSize(2);
+                    CL(:,3) = CL(:,3)*s.voxelSize(3);
                 end
                 if s.disrupt
                     for kk = 1:size(CL,1)

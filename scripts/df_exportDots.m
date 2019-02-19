@@ -366,8 +366,8 @@ for nn = 1:numel(N)
             fprintf(s.logFile, ' + Fitting with dotFitting\n');
             dotFittingSettings = dotFitting();
             lambda = df_getEmission(M.channels{cc});
-            dotFittingSettings.sigmaXY = 1.2*lambda/M.pixelSize(1);
-            dotFittingSettings.sigmaZ = 1.2*lambda/M.pixelSize(3);
+            dotFittingSettings.sigmaXY = 1.2*lambda/M.voxelSize(1);
+            dotFittingSettings.sigmaZ = 1.2*lambda/M.voxelSize(3);
             dotFittingSettings.sigmaXY = df_getEmission(M.channels{cc});
             F=dotFitting(imFile, dots(:,1:3), dotFittingSettings);
             dots(:,1:3) = F(:,1:3);
@@ -415,8 +415,8 @@ if strcmpi(s.fitting, 'dotFitting')
     fprintf(s.logFile, ' + Fitting with dotFitting\n');
     dotFittingSettings = dotFitting();
     lambda = df_getEmission(M.channels{cc});
-    dotFittingSettings.sigmaXY = 1.2*lambda/M.pixelSize(1);
-    dotFittingSettings.sigmaZ = 1.2*lambda/M.pixelSize(3);
+    dotFittingSettings.sigmaXY = 1.2*lambda/M.voxelSize(1);
+    dotFittingSettings.sigmaZ = 1.2*lambda/M.voxelSize(3);
     dotFittingSettings.sigmaXY = df_getEmission(M.channels{cc});
     F=dotFitting(imFile, TFC(:,1:3), dotFittingSettings);
     TFC(:,1:3) = F(:,1:3);

@@ -91,6 +91,8 @@ for kk = 1:numel(dapifiles)
         % Load the volumetric images, one per channel
         ichannel  = df_readTif(channelf);
         
+        s.dotSettings{cc}.voxelSize = s.voxelSize;
+        
         %% Deconvolution
         if s.deconvolveVolumes
             temp = [wfolder dapifiles(kk).name];
@@ -107,9 +109,9 @@ for kk = 1:numel(dapifiles)
                 load(dchannelf);
             end
             
-            [dots, dotsMeta] = dotCandidates('image', dichannel, 'settings', s.dotSettings{cc});
+            [dots, dotsMeta] = df_getDots('image', dichannel, 'settings', s.dotSettings{cc});
         else
-            [dots, dotsMeta] = dotCandidates('image', ichannel, 'settings', s.dotSettings{cc});
+            [dots, dotsMeta] = df_getDots('image', ichannel, 'settings', s.dotSettings{cc});
         end
         %pause
         %dotterSlide(ichannel, dots)

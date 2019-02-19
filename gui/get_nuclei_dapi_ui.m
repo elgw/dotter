@@ -58,9 +58,9 @@ s.minarea = 500;
 s.maxarea = 60000;
 
 
-if isfield(s, 'pixelSize')
-    s.minarea = s.minarea*(130^2/s.pixelSize(1)^2);
-    s.maxarea = s.maxarea*(130^2/s.pixelSize(1)^2);
+if isfield(s, 'voxelSize')
+    s.minarea = s.minarea*(130^2/s.voxelSize(1)^2);
+    s.maxarea = s.maxarea*(130^2/s.voxelSize(1)^2);
 end
 
 gui.win = figure('Position', [300,200,1024,1024], 'Menubar', 'none', ...

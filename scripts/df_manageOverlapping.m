@@ -103,13 +103,13 @@ if s.apply_MetaDots
         D = [D; M.dots{kk} kk*ones(size(M.dots{kk}))];
     end
     % Rescale them
-    if isfield(M, 'pixelSize')
-        pixelSize = M.pixelSize;
+    if isfield(M, 'voxelSize')
+        voxelSize = M.voxelSize;
     else
         fprintf(s.logFile, 'WARNING: No pixel size set in the metadata, assuming [130,130,300]\n');
-        pixelSize = [130,130,300];
+        voxelSize = [130,130,300];
     end
-    D = df_rescale_dots(D, pixelSize);
+    D = df_rescale_dots(D, voxelSize);
     
     
     
@@ -182,11 +182,11 @@ if s.apply_UserDots
         fprintf(s.logFile, 'File: %s\n', file);
     end
     
-    if isfield(M, 'pixelSize')
-        pixelSize = M.pixelSize;
+    if isfield(M, 'voxelSize')
+        voxelSize = M.voxelSize;
     else
         fprintf(s.logFile, 'WARNING: No pixel size set in the metadata, assuming [130,130,300]\n');
-        pixelSize = [130,130,300];
+        voxelSize = [130,130,300];
     end
     
     M = M{1};
@@ -230,7 +230,7 @@ if s.apply_UserDots
             D = [D; N.userDots{kk} kk*ones(size(N.userDots{kk},1), 1)];
         end
         
-        D = df_rescale_dots(D, pixelSize);
+        D = df_rescale_dots(D, voxelSize);
         
         X = df_nn(D', s.radius);
         for kk = 1:numel(N.userDots)

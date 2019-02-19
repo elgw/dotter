@@ -1,17 +1,8 @@
-function [ P, meta ] = dotCandidates(varargin)
-%dotCandidates(I, s)
+function [ P, meta ] = df_getDots(varargin)
+%df_getDots(varargin)
+%
 % Locates local maxias in I according to the settings in s
 % s.maxNpoints maximum number of points to be returned, 0 - no limit
-% s.sigmadog size of kernel for DoG filter, typical 1.2
-%
-% Step 1: Local maximas are identified
-% Step 2: Dots are ordered by some property
-%
-% Typical settings
-%   s.sigmadog = 1.2;
-%   s.xypadding = 5;
-%   s.localization = 'DoG'; or 'intensity'
-%   s.maxNpoints = 10000;
 %
 % To get default settings, use
 % s = dotCandidates('getDefaults')
@@ -25,8 +16,7 @@ function [ P, meta ] = dotCandidates(varargin)
 %   3D DoG, not per plane
 %
 % See also:
-%  df_fwhm, dotFitting, (A_settings, A_cells)
-%
+%  df_fwhm, df_createNM_getDots
 %
 
 % grep --include=*.m -rnw '/home/erikw/code/dotter_matlab/' -e "dotCandidates"
@@ -79,7 +69,6 @@ if nargin == 1
     end
 end
 
-
 if returnDefaults
     if ~exist('s', 'var')
         s = struct();
@@ -88,18 +77,13 @@ if returnDefaults
     if numel(voxelSize) == 0
         voxelSize = df_getVoxelSize();
     end
+    
     if ~isfield(s, 'lambda')
         s.lambda = df_getEmission(defaultsChannel);
     end
-    
-    % for a594 lambda = 617 nm pixel size, [130,130,300]
-    % s.sigmadog = [1.1, 1.1, 1.24];
-    s.sigmadog = [1.1*s.lambda/617*130/voxelSize(1)*[1,1], ...
-        1.24*s.lambda/617*300/voxelSize(3)];
-    
+                
     s.xypadding = 5;
     s.localizationMethods = {'DoG', 'intensity', 'gaussian'};
-    s.rankingMethods = {'DoG', 'intensity', 'gaussian'};
     s.localization = 'DoG';
     s.ranking = 'gaussian';
     s.refinementMethods = {'none', 'Weighted Centre of Mass'};
@@ -124,8 +108,8 @@ s.verbose = 0;
 % Spot saturated pixels etc
 verify_image(I); 
 
-
 I = double(I);
+
 
 %% Step 1: localization
 if s.verbose
@@ -137,7 +121,8 @@ if strcmpi(s.localization, 'DoG')
         disp('DoG localization')
     end
     % DOG - Difference of Gaussians, i.e., approximation of Laplacian
-    J = dog3(I, s.sigmadog);
+    sigmadog = 1.013*s.dotFWHM./s.voxelSize;
+    J = dog3(I, sigmadog);
 end
 
 if strcmpi(s.localization, 'intensity')
@@ -224,8 +209,9 @@ if strcmpi(s.ranking,'gaussian')
     if s.verbose
     disp('Ranking based on gaussian correlation')
     end
-    % Gaussian correlation    
-    V = gcorr(I, s.sigmadog); % 
+    % Gaussian correlation
+    sigma = s.dotFWHM./s.voxelSize/2.35; 
+    V = gcorr(I, sigma); % TODO: Should be dot-dog here, not sigma-dog
     if ~isreal(V)
         warning('V is not real!')
         keyboard

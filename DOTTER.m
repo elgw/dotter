@@ -136,11 +136,13 @@ uimenu(mDots, 'Label', 'Manage colocalized dots', 'Callback', @run_manageOverlap
 mCells = uimenu(gui.win, 'Label', 'Detect');
 uimenu(mCells, 'Label', 'Find nuclei and dots (image -> calc)', 'Callback', @run_A_cells, ...
     'Accelerator','F');
+uimenu(mCells, 'Label', '(TEST) Find nuclei and dots (image -> calc)', 'Callback', @run_createNM, ...
+    'Accelerator','F');
 %uimenu(mCells, 'Label', 'Get nuclei DAPI intensity and area from NE files', ...
 %    'Callback', @dapiDistribution, ...
 %    'Separator','on');
 %uimenu(mCells, 'Label', 'Integral Intensity in nuclei -- all channels', 'Callback', @integralIntensity);
-uimenu(mCells, 'Label', 'Add missing dapiTh and pixelSize for calc folder', 'Callback', @setDapiThFolder);
+uimenu(mCells, 'Label', 'Add missing dapiTh and voxelSize for calc folder', 'Callback', @setDapiThFolder);
 
 
 mDots = uimenu(gui.win, 'Label', 'Select');
@@ -566,6 +568,13 @@ uimenu(mDNA, 'Label', 'Export 2D masks', 'Callback', @run_exportMasks, ...
         mex -setup c
         run('df_buildExternals');
     end
+
+function run_createNM(varargin)
+        disp('Running df_createNM')
+        set(gui.win, 'Pointer', 'watch');
+        df_createNM
+        set(gui.win, 'Pointer', 'arrow');
+end
 
     function run_A_cells(varargin)
         disp('Running A_cells')

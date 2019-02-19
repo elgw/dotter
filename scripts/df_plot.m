@@ -295,8 +295,8 @@ nucChangeSelection();
 %% GUI functions
     function loadFolder(folder)
         [N, M] = df_getNucleiFromNM('folder', folder);
-        if isfield(M{1}, 'pixelSize')
-            d.resolution = M{1}.pixelSize;
+        if isfield(M{1}, 'voxelSize')
+            d.resolution = M{1}.voxelSize;
         end
         updateGUI();
     end
@@ -324,8 +324,8 @@ nucChangeSelection();
         [N, M] = df_getNucleiFromNM('ccFile', ccFile);
         
         if numel(N) >0
-            if isfield(M{1}, 'pixelSize')
-                d.resolution = M{1}.pixelSize;
+            if isfield(M{1}, 'voxelSize')
+                d.resolution = M{1}.voxelSize;
             else
                 warning('No pixel size in meta data')
             end
@@ -358,8 +358,8 @@ nucChangeSelection();
                 dstring = '';
             end
             
-            if isfield(M{1}, 'pixelSize');
-                rstring = sprintf('Resolution: %d x %d x %d nm\n', M{1}.pixelSize(1), M{1}.pixelSize(2), M{1}.pixelSize(3));
+            if isfield(M{1}, 'voxelSize');
+                rstring = sprintf('Resolution: %d x %d x %d nm\n', M{1}.voxelSize(1), M{1}.voxelSize(2), M{1}.voxelSize(3));
             else
                 rstring = sprintf('! pixel size not available\n');
             end

@@ -26,7 +26,7 @@ while(size(G,3)>size(I,3))
 end
 
 G = G-mean(G(:));
-G = G/(sum(G(:).^2).^(1/2));
+G = G/(sum(G(:).^2).^(1/2)); % norm(G) == 1
 
 %G(:)'*G(:)
 %FGG = ifftn(fftn(G, size(I)));

@@ -1,3 +1,26 @@
+I = df_readTif('a594_001.tif');
+s = dotCandidates('getDefaults')
+I = double(I);
+D1 = dotCandidates(I, s);
+s2 = s;
+s2.sigmadog = 4.2*s.sigmadog/min(s.sigmadog);
+s.ranking = 'DoG'
+D2 = dotCandidates(I, s2);
+V = gsmooth(I, sigma, 'normalized')-gsmooth(I, sigma+0.001, 'normalized');
+
+
+D2 = dotCandidates(I, s2);
+
+V = gsmooth(I, sigma, 'normalized')-gsmooth(I, sigma, 'normalized');
+
+V2 = gsmooth(I, sigma)-gsmooth(I, sigma+0.001);
+volumeSlide(V2-V)
+
+s2.sigmadog = 4.2*s.sigmadog/min(s.sigmadog)/1.72;
+s2.ranking = 'gaussian';
+D3 = dotCandidates(I, s2);
+
+
 function test()
 close all
 
