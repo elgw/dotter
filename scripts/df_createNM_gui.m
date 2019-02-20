@@ -23,7 +23,7 @@ end
 % before returning
 
 if ~isfield(s, 'voxelSize')
-    s.voxelSize = [120,120,300];
+    s.voxelSize = [130,130,300];
 end
 
 s.dotSettings = {};
@@ -33,7 +33,7 @@ end
 
 exptype = 1;
 localizationMethods = s.dotSettings{1}.localizationMethods;
-defaultLocalizationMethod = 3;
+defaultLocalizationMethod = 1;
 
 
 gui.win = figure('Position', [000,000,500,600], 'Menubar', 'none', ...
@@ -331,7 +331,7 @@ for kk = 1:numel(s.channels)
         'Position', [.4 offset-(kk)*delta .2 .1], ...
         'Parent', gui.dotCPanel);
     
-    fwhmxyz = fwhm_from_lambda(df_getEmission(s.channels{kk}), s.NA);
+    fwhmxyz = df_fwhm_from_lambda(df_getEmission(s.channels{kk}), s.NA);
     
     gui.fwhmxy(kk) = uicontrol('Style', 'edit', ...
         'String', sprintf('%.2f', fwhmxyz(1)), ...
@@ -563,20 +563,6 @@ end
         end
     end
 
-    function fwhm = fwhm_from_lambda(lambda, numerical_aperture)
-        % Return the THEORETICAL fwhm of the zeroth-order diffraction spot.
-        %
-        % https://www.microscopyu.com/techniques/super-resolution/the-diffraction-barrier-in-optical-microscopy
-        % - Abbe resolution:
-        %   xy: lambda/(2*NA)
-        %   z: 2*lambda/(NA^2)
-        %
-        % - Rayleigh Resolution (equal to FWHM)
-        %    xy = 0.61λ/NA
-        
-        fwhm(1) = 0.61*lambda/numerical_aperture;
-        fwhm(1) = 0.61*lambda/numerical_aperture;
-        fwhm(3) = 0.61/0.5 * 2*lambda/(numerical_aperture^2);
-    end
+    
 
 end

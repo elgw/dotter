@@ -5,7 +5,7 @@ function [ P, meta ] = df_getDots(varargin)
 % s.maxNpoints maximum number of points to be returned, 0 - no limit
 %
 % To get default settings, use
-% s = dotCandidates('getDefaults')
+% s = df_getDots('getDefaults')
 %
 % Outputs columns:
 %  x,y,z,value,intensity
@@ -19,10 +19,10 @@ function [ P, meta ] = df_getDots(varargin)
 %  df_fwhm, df_createNM_getDots
 %
 
-% grep --include=*.m -rnw '/home/erikw/code/dotter_matlab/' -e "dotCandidates"
+% grep --include=*.m -rnw '/home/erikw/code/dotter_matlab/' -e "df_getDots"
 
 if nargin == 0
-    help dotCandidates
+    help df_getDots
     return
 end
 
@@ -52,7 +52,6 @@ for kk = 1:numel(varargin)
     end
 end
 
-
 if nargin == 2
     if isnumeric(varargin{1})
         warning('Legacy mode')
@@ -65,7 +64,7 @@ if nargin == 1
     if isnumeric(varargin{1})
         warning('Legacy mode')
         I = varargin{1};
-        s = dotCandidates('getDefaults');
+        s = df_getDots('getDefaults');
     end
 end
 
@@ -75,7 +74,7 @@ if returnDefaults
     end
     
     if numel(voxelSize) == 0
-        voxelSize = df_getVoxelSize();
+        s.voxelSize = df_getVoxelSize();
     end
     
     if ~isfield(s, 'lambda')
@@ -83,7 +82,7 @@ if returnDefaults
     end
                 
     s.xypadding = 5;
-    s.localizationMethods = {'DoG', 'intensity', 'gaussian'};
+    s.localizationMethods = {'DoG_XY+Z','gaussian', 'DoG_3D','DoG_2D', 'intensity'};
     s.localization = 'DoG';
     s.ranking = 'gaussian';
     s.refinementMethods = {'none', 'Weighted Centre of Mass'};
@@ -94,6 +93,7 @@ if returnDefaults
     s.dogDimension = 2;
     s.channel = defaultsChannel;
     s.calcFWHM = 0;
+    s.dotFWHM = df_fwhm_from_lambda(s.lambda);
     
     P = s;
     return
@@ -111,18 +111,40 @@ verify_image(I);
 I = double(I);
 
 
-%% Step 1: localization
+%% Basic Localization
+% Kind of least squares
+
 if s.verbose
     disp('Finding local maximas')
 end
+s.verbose = 1;
+fprintf('FWHM for dot: %f %f %f\n', s.dotFWHM(1), s.dotFWHM(2), s.dotFWHM(3));
+sigma = s.dotFWHM./s.voxelSize/2.35;
+fprintf('sigma for dot: %f %f %f\n', sigma(1), sigma(2), sigma(3));
+sigmadog = 1.72*sigma;
+fprintf('Sigma for DoG: %f %f %f\n', sigmadog(1), sigmadog(2), sigmadog(3));
 
-if strcmpi(s.localization, 'DoG')
-    if s.verbose
-        disp('DoG localization')
-    end
-    % DOG - Difference of Gaussians, i.e., approximation of Laplacian
-    sigmadog = 1.013*s.dotFWHM./s.voxelSize;
-    J = dog3(I, sigmadog);
+if s.verbose
+        disp(s.localization)
+end
+
+
+if strcmpi(s.localization, 'DoG_2D')    
+    % DOG - Difference of Gaussians, i.e., approximation of Laplacian        
+    J = dog2(I, sigmadog);        
+end
+
+if strcmpi(s.localization, 'DoG_3D')
+    % DOG - Difference of Gaussians, i.e., approximation of Laplacian        
+    J = dog3(I, sigmadog);        
+end
+
+if strcmpi(s.localization, 'DoG_XY+Z')    
+    % DOG - Difference of Gaussians, i.e., approximation of Laplacian        
+    %J = dog3(I, sigmadog);
+    DXY = dog2(I, sigmadog);
+    DZ = dogz(I, sigmadog);    
+    J = DXY+DZ;    
 end
 
 if strcmpi(s.localization, 'intensity')
@@ -136,7 +158,8 @@ if strcmpi(s.localization, 'gaussian')
     if s.verbose
     disp('Gaussian correlation localization')
     end
-    J = gcorr(I, s.sigmadog);
+    
+    J = gcorr(I, sigma);
 end
 
 if ~exist('J', 'var')
@@ -144,9 +167,7 @@ if ~exist('J', 'var')
 end
 
 % D: Dilation of J, to find the local maximas
-if size(I,3)>1
-    
-    
+if size(I,3)>1        
     sel = ones(3,3,3);
     for z = [1,3] % Corners in z = 1,3 removed
         sel(1,1,z) = 0;
@@ -183,42 +204,6 @@ J = removeSaturatedPixels(I,J);
 Pos = find(J>D);
 [PX, PY, PZ]=ind2sub(size(I), Pos);
 
-%%  Step 2: Ordering
-if strcmpi(s.ranking, 'DoG')
-    if s.verbose
-        disp('Ranking based on DoG')    
-    end
-    if s.dogDimension == 2
-        V = dog2(I, s.sigmadog);            
-    end    
-    
-    if s.dogDimension == 3
-        V = dog3(I, s.sigmadog);    
-    end
-end
-
-if strcmpi(s.ranking, 'intensity')
-    if s.verbose
-        disp('Ranking based on intensity')
-    end
-    % Intensity - median
-    V = I;
-end
-
-if strcmpi(s.ranking,'gaussian')
-    if s.verbose
-    disp('Ranking based on gaussian correlation')
-    end
-    % Gaussian correlation
-    sigma = s.dotFWHM./s.voxelSize/2.35; 
-    V = gcorr(I, sigma); % TODO: Should be dot-dog here, not sigma-dog
-    if ~isreal(V)
-        warning('V is not real!')
-        keyboard
-    end
-end
-
-
 %% Refinement should go here
 
 if strcmpi(s.refinement, 'none')
@@ -238,7 +223,7 @@ end
 %% Step 3: build the output
 
 P(:,1)=PX; P(:,2)=PY; P(:,3)=PZ;
-P(:,4)=V(Pos); % filter values
+P(:,4)=D(Pos); % filter values
 P(:,5)=I(Pos); % pixel values
 
 % sort by the V-value
@@ -275,8 +260,7 @@ if s.maxNpoints > 0
     end
 end
 
-return; %done
-
+return; 
 end
 
 function nSat = verify_image(I)
@@ -306,17 +290,21 @@ end
 
 end
 
+function V = dogz(I, sigma)
+sigma = [0,0,1].*sigma;
+    V = gsmooth(I, sigma, 'normalized')-gsmooth(I, sigma+0.001, 'normalized');    
+end
+
 function V = dog2(I, sigma)
 % Difference of gaussians, per 2D plane
 for kk = 1:size(I,3)
-    V(:,:,kk) = gsmooth(I(:,:,kk), sigma/sqrt(2), 'normalized')-gsmooth(I(:,:,kk), sigma/sqrt(2)+0.001, 'normalized');
+    V(:,:,kk) = gsmooth(I(:,:,kk), sigma, 'normalized')-gsmooth(I(:,:,kk), sigma+0.001, 'normalized');
 end
 end
 
 function V = dog3(I, sigma)
 % Difference of gaussians, 3D
-sigma/sqrt(2)
-V = gsmooth(I, sigma/sqrt(2), 'normalized')-gsmooth(I, sigma/sqrt(2)+0.01, 'normalized');
+V = gsmooth(I, sigma, 'normalized')-gsmooth(I, sigma+0.001, 'normalized');
 end
 
 

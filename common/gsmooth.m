@@ -54,33 +54,45 @@ convf=@convn;
 if(numel(size(V))==3)
     d=2*radius+1;
     %k=fspecial('gaussian', [d, 1], sigma);
-    k1=reshape(ggaussian(d(1), sigma(1)), [d(1),1,1]);
-    k2=reshape(ggaussian(d(2), sigma(2)), [1, d(2),1]);
-    k3=reshape(ggaussian(d(3), sigma(3)), [1,1,d(3)]);
+    if(sigma(1)>0)
+        k1=reshape(ggaussian(d(1), sigma(1)), [d(1),1,1]);
+    else
+        k1 = 1;
+    end
+    if sigma(2)>0
+        k2=reshape(ggaussian(d(2), sigma(2)), [1, d(2),1]);
+    else
+        k2 = 1;
+    end
+    if sigma(3)>0
+        k3=reshape(ggaussian(d(3), sigma(3)), [1,1,d(3)]);
+    else
+        k3 = 1;
+    end
     
-    %fprintf('1... ');
-    %figure, plot(k1)
-    V=convf(V, k1, 'same');
-    if normalized
-        V=V./convf(0*V+1, k1, 'same');
+    if sigma(1) > 0
+        V=convf(V, k1, 'same');
+        if normalized
+            V=V./convf(0*V+1, k1, 'same');
+        end
     end
-    %    figure, imshow2(V(:,:,1));
-    %fprintf('2... ');
-    V=convf(V, k2, 'same');
-    if normalized
-        V=V./convf(0*V+1, k2, 'same');
-    end
-    %   figure, imshow2(V(:,:,1));
-    %fprintf('3... ');
-    V=convf(V, k3, 'same');
-    if normalized
-        V=V./convf(0*V+1, k3, 'same');
-    end
-    %  figure, imshow2(V(:,:,1));
-    %fprintf('\n');
     
-    if normalized2
-        V=V./gnorm(size(V), [numel(k1), numel(k2), numel(k3)], sigma);
+    if sigma(2) > 0
+        V=convf(V, k2, 'same');
+        if normalized
+            V=V./convf(0*V+1, k2, 'same');
+        end
+    end
+    
+    if sigma(3) > 0
+        V=convf(V, k3, 'same');
+        if normalized
+            V=V./convf(0*V+1, k3, 'same');
+        end
+    end
+    
+    if normalized2        
+        V=V./gnorm(size(V), [numel(k1), numel(k2), numel(k3)], max(sigma, [0.1, 0.1, 0.1]));
     end
     
 end

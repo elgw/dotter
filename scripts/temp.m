@@ -1,3 +1,12 @@
+I = df_readTif('/data/current_images/iEG/iEG613_190118_001/a594_001.tif');
+I = I(130:290, 250:350,:);
+[P, meta] = df_getDots(I);
+dotterSlide(I, P(:,1:4))
+% Look at slice 22
+% Small dots ~ 316 nm
+% -> sigma = 316/2.35/130 = 1.0344
+% -> sigma_D = 1.72*1.0344 = 1.7792
+
 I = df_readTif('a594_001.tif');
 s = dotCandidates('getDefaults')
 I = double(I);

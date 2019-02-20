@@ -31,6 +31,8 @@ function [ P, meta ] = dotCandidates(varargin)
 
 % grep --include=*.m -rnw '/home/erikw/code/dotter_matlab/' -e "dotCandidates"
 
+disp('Depreciated, please switch to df_getDots')
+
 if nargin == 0
     help dotCandidates
     return
