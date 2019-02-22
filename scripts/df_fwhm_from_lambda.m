@@ -12,7 +12,7 @@ function fwhm = df_fwhm_from_lambda(lambda, numerical_aperture)
         if ~exist('numerical_aperture', 'var')
            numerical_aperture = df_getConfig('df_fwhm_from_lambda', 'NA', 0);
            if numerical_aperture == 0
-            qna = inputdlg('df_fwhm_from_lambda', 'What Numerical Aperture was used?', '1.45');
+            qna = inputdlg('What Numerical Aperture was used?', 'df_fwhm_from_lambda', 1, {'1.45'});
             if numel(qna) == 1
                 numerical_aperture = str2num(qna{1});
             end       

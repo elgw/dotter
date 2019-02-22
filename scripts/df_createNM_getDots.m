@@ -1,4 +1,4 @@
-function A_dots(varargin)
+function df_createNM_getDots(varargin)
 % Finds dot candidates and segments the nuclei,
 % Saves this data for further processing.
 %

@@ -83,7 +83,7 @@ if returnDefaults
                 
     s.xypadding = 5;
     s.localizationMethods = {'DoG_XY+Z','gaussian', 'DoG_3D','DoG_2D', 'intensity'};
-    s.localization = 'DoG';
+    s.localization = 'DoG_XY+Z';
     s.ranking = 'gaussian';
     s.refinementMethods = {'none', 'Weighted Centre of Mass'};
     s.refinement = 'none';
