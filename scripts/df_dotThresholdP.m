@@ -70,7 +70,12 @@ for kk = 1:numel(files)
     D = load([folder files(kk).name], '-mat');
     M = D.M;    
     N = D.N;
-    dapiThres = M.dapiTh;
+    if isfield(M, 'dapiTh')
+        dapiThres = M.dapiTh;
+    else
+        dapiThres = 0;
+    end
+    
     nNuclei = nNuclei + numel(N);
     for nn = 1:numel(N)
         
@@ -125,9 +130,13 @@ nExpDots = M.nTrueDots(chan); % number of expected dots per nuclei
 nKmers = M.nkmers;
 
 imgname = sprintf('%s/PvsE_%s.pdf', folder, M.channels{chan});
-[retth, retP, retp] = thVsP(nucleiDots, nExpDots, nKmers, imgname);
-fprintf('P: %.2f, p: %.3f, Threshold: %.2f\n', retP, retp, retth);
-th(chan) = retth;
+if numel(nucleiDots)>0
+    [retth, retP, retp] = thVsP(nucleiDots, nExpDots, nKmers, imgname);
+    fprintf('P: %.2f, p: %.3f, Threshold: %.2f\n', retP, retp, retth);
+    th(chan) = retth;
+else
+    th(chan) = 0;
+end
 end
 
     function [retth, retP, retp] = thVsP(values, N, nKmers, imgname)

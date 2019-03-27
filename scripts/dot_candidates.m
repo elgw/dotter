@@ -3,6 +3,9 @@ function P = dot_candidates(I, s)
 % Extracts dots from the stack I as local maximas and orders them according
 % to the DoG there
 % P: x, y, z, DoG value, intensity
+
+warning('Depreciated, use df_getDots')
+
 I = double(I);
 
 s.sigmadog = 1.2;

@@ -89,7 +89,7 @@ for aa = 1:size(D,1)
         D20 = eudist(Daa(:,1:2), Dbb(:,1:2));
         D30 = eudist([Daa(:, 1:2), 300/130*Daa(:,3)], [Dbb(:,1:2), Dbb(:,3)*300/130]);
         
-        if 1
+        if 0
            error_before_2 = D20;
            error_after_xy = D2;
            error_before_xyz = D30;

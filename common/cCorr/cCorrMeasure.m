@@ -65,8 +65,7 @@ GUI.pickFolder = uicontrol(GUI.fig, 'Style', 'pushbutton', ...
     'String', 'Pick tif folder', ...
     'Position',[30 450 150 30], ...
     'Callback', @gui_selectFolder, ...
-    'TooltipString', sprintf('Select a folder with tif-images of beads'), ...
-    'BackgroundColor', [0, 1, 0]);
+    'TooltipString', sprintf('Select a folder with tif-images of beads'));
 
 GUI.folder = uicontrol(GUI.fig, 'Style', 'text', ...
     'HorizontalAlignment', 'left', ...
@@ -148,7 +147,7 @@ GUI.fitDots  = uicontrol(GUI.fig, 'Style', 'pushbutton', ...
     'TooltipString', sprintf('Localize dots with subpixel precision\n will take some time\nrequres that the c-functions are compiled'));
 
 GUI.tryCC  = uicontrol(GUI.fig, 'Style', 'pushbutton', ...
-    'String', 'Try', ...
+    'String', 'Try/Export', ...
     'Position',[30 95 150 30], ...
     'Visible', 'off', ...
     'Callback', @gui_tryCC, ...
@@ -163,18 +162,8 @@ GUI.export  = uicontrol(GUI.fig, 'Style', 'pushbutton', ...
     'TooltipString', sprintf('Exports correction files to a folder\nthe final step of this tool'));
 
     function gui_showDots(varargin)
-        f2 = figure;
-        markers = 'ox+*sdv^<>ph';        
-        N = str2num(get(GUI.setN, 'String'));
-        for kk = 1:numel(s.chan)
-            D = s.D{kk};                                    
-            D = D(D(:,4)>s.th(kk), :);
-            Nk = min(size(D,1), N);
-            plot(D(1:Nk,1), D(1:Nk,2), markers(kk));
-            hold all
-        end
-        legend(s.chan);
-        axis equal
+        s.N = str2num(GUI.setN.String);        
+        cCorrMeasure_showDots(s);
     end
 
     function gui_makeSelection(varargin)
@@ -270,6 +259,7 @@ uicontrol(GUI.fig, 'Style', 'pushbutton', ...
         s.Cy = Cy;
         s.dz = dz;
         
+                
         figure;
         markers = 'ox+*sdv^<>ph';
         for kk = 1:numel(s.chan)
@@ -293,7 +283,7 @@ uicontrol(GUI.fig, 'Style', 'pushbutton', ...
         end        
         end
         
-        set(GUI.export, 'enable', 'on');
+        %set(GUI.export, 'enable', 'on');
         
     end
 
@@ -316,8 +306,8 @@ uicontrol(GUI.fig, 'Style', 'pushbutton', ...
         set(GUI.pickFolder, 'visible', 'off');
         set(GUI.folder, 'visible', 'on');
         set(GUI.setField, 'visible', 'on');
-        set(GUI.export, 'visible', 'on');        
-        set(GUI.export, 'enable', 'off');
+        %set(GUI.export, 'visible', 'on');        
+        %set(GUI.export, 'enable', 'off');
         
         gui_detectChannels();
         
@@ -349,9 +339,22 @@ uicontrol(GUI.fig, 'Style', 'pushbutton', ...
         
         gui_loadImages()
         
-        set(GUI.showSelection, 'Visible', 'on');
+        %set(GUI.showSelection, 'Visible', 'on');
         set(GUI.showDots, 'Visible', 'on');
-        set(GUI.referenceChannel, 'String', s.chan);
+        
+        
+        set(GUI.referenceChannel, 'String', s.chan{1});
+        clr = GUI.referenceChannel.ForegroundColor;
+        GUI.referenceChannel.ForegroundColor = 'red';
+        for cc = 1:numel(s.chan)
+            if(strcmpi(s.chan{cc}, 'dapi'))
+                set(GUI.referenceChannel, 'String', s.chan{cc});
+                % Revert to default if dapi found
+                GUI.referenceChannel.ForegroundColor = clr; 
+            end
+        end
+        
+        
         set(GUI.referenceChannel, 'Visible', 'on');
         set(GUI.showReferenceChannel, 'Visible', 'on');
         
@@ -376,6 +379,8 @@ uicontrol(GUI.fig, 'Style', 'pushbutton', ...
         
         w = waitbar(0, 'Loading images and detecting dots');
         s.D = cell(1,numel(s.chan));
+        
+       
         
         for kk = 1:numel(s.chan)
             
@@ -407,7 +412,12 @@ uicontrol(GUI.fig, 'Style', 'pushbutton', ...
             end
             
             if numel(s.D{kk}) == 0
-                s.D{kk} = dot_candidates(s.I{kk});
+                %keyboard
+                %s.D{kk} = dot_candidates(s.I{kk});%
+                
+                dotSettings = df_getDots('getDefaults', 'voxelSize', [130,130,300], 'lambda', df_getEmission(s.chan{kk}));
+                s.D{kk} = df_getDots('Image', s.I{kk}, 'settings', dotSettings);
+                
                 M.dots{kk} = s.D{kk};
                 [pathstr,~,~] = fileparts(nmFile);
                 if ~exist(pathstr, 'dir')
@@ -520,3 +530,4 @@ try
 end
 
 end
+

@@ -7,6 +7,9 @@ function [ P, meta ] = df_getDots(varargin)
 % To get default settings, use
 % s = df_getDots('getDefaults')
 %
+% To get dots, use:
+% D = df_getDots('Image', I, 'Settings', s);
+%
 % Outputs columns:
 %  x,y,z,value,intensity
 %   where x,y,z are the integer coordinates of the dots, value is the value
@@ -18,6 +21,7 @@ function [ P, meta ] = df_getDots(varargin)
 % See also:
 %  df_fwhm, df_createNM_getDots
 %
+% This function replaces dot_candidates.m
 
 % grep --include=*.m -rnw '/home/erikw/code/dotter_matlab/' -e "df_getDots"
 
@@ -25,6 +29,8 @@ if nargin == 0
     help df_getDots
     return
 end
+
+%keyboard % No voxel size supplied?
 
 returnDefaults = 0;
 defaultsChannel = 'unknown';
@@ -39,7 +45,7 @@ for kk = 1:numel(varargin)
     end
     % Used to set the defaults
     if strcmp(upper(varargin{kk}), 'VOXELSIZE')
-        voxelSize = varargin{kk+1};
+        s.voxelSize = varargin{kk+1};
     end
     if strcmp(upper(varargin{kk}), 'IMAGE')
         I = varargin{kk+1};
@@ -73,7 +79,7 @@ if returnDefaults
         s = struct();
     end
     
-    if numel(voxelSize) == 0
+    if numel(s.voxelSize) == 0
         s.voxelSize = df_getVoxelSize();
     end
     
@@ -235,7 +241,7 @@ P = P(IDX, :);
 
 
 %% FWHM
-if s.calcFWHM
+if s.calcFWHM    
     if isfield(s, 'nFWHM')
         nfwhm = s.nFWHM;
     else
@@ -245,7 +251,7 @@ if s.calcFWHM
     
     fprintf('fwhm for %d strongest dots...', nfwhm);
     nfwhm = min(nfwhm, size(P,1));
-    f = df_fwhm(V, P(1:min(nfwhm,size(P,1)),1:3));
+    f = df_fwhm(I, P(1:min(nfwhm,size(P,1)),1:3));
     P(1:nfwhm,6) = f(:,1);
     meta = {'x', 'y', 'z', 'fvalue', 'pixel', 'fwhm'};
     disp('        done');
