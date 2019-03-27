@@ -57,8 +57,8 @@ git clone git@github.com:elgw/dotter.git
 
 Install GSL and pkg-config (requires [brew](https://brew.sh/))
 ```
-sudo brew install gsl
-sudo brew install pkg-config
+brew install gsl
+brew install pkg-config
 ```
 
 Start MATLAB and add the path of DOTTER to the list of paths. Save and restart.
