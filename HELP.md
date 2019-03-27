@@ -51,37 +51,20 @@ already using it!.
 <a name="Instructions"/>
 
 ### Instructions
-Your machine has be recognized by the server that hosts the code, send your `.ssh/id_rsa.pub` to [erik.wernersson@scilifelab.se](). If you don't have such file, generate one with
-
-```
-ssh-keygen -t rsa
-```
-
-
 Get the code:
 ```
-git clone git@erikwfractal.scilifelab.se
-mv erikw.git dotter
+git clone git@github.com:elgw/dotter.git
 ```
-Note: your computer has to be connected by wire in the Scilifelab
-building or you have to connect using VPN.
 
-Install GSL and pkg-config
+Install GSL and pkg-config (requires [brew](https://brew.sh/))
 ```
 sudo brew install gsl
 sudo brew install pkg-config
 ```
 
-Make sure that MATLAB finds DOTTER when it starts, add the following lines to
-your `~/matlab/startup.m`:
+Start MATLAB and add the path of DOTTER to the list of pahts. Save and restart.
 
-```
-setenv('DOTTER_PATH', '~/dotter/');
-run([getenv('DOTTER_PATH') 'dotterStartup.m'])
-addpath(getenv('DOTTER_PATH'));
-```
-
-Then run this file or restart MATLAB. You should now be able to start
+You should now be able to start
 DOTTER with the command: `DOTTER` in MATLAB.
 
 Next you need to compile some function written in C. Do so from the
@@ -89,7 +72,7 @@ menu: _DOTTER->Maintenanace->Compile C Functions_.
 
 Most likely `mex` is not setup on you computer. How to do this varies
 but on a mac you should install `XCode` first. Then run `mex -setup`
-in MATLAB. Ask someone for help if you get stuck at this point.
+in MATLAB. Ask someone for help if you get stuck at this point. If you are on mac you might need to start MATLAB from command line (i.e., not using the icon) in order for the compiler to find all dependencies.
 
 <a name="KeepingUpdated" />
 
