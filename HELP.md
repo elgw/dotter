@@ -24,7 +24,6 @@
    * [Keeping Updated](#KeepingUpdated) 
  * [Workflow](#Workflow)
  * [Specific Topics](#SpecificTopics)
-   * [Dot detection](#DotDetection)
    * [Shifts and chromatic aberrations](#ShiftsCorrections)
  * [Troubleshooting](#Troubleshooting)
 
@@ -62,7 +61,7 @@ sudo brew install gsl
 sudo brew install pkg-config
 ```
 
-Start MATLAB and add the path of DOTTER to the list of pahts. Save and restart.
+Start MATLAB and add the path of DOTTER to the list of paths. Save and restart.
 
 You should now be able to start
 DOTTER with the command: `DOTTER` in MATLAB.
@@ -130,17 +129,6 @@ The general workflow is this:
 ## Specific Topics
 
 <a name="DotDetection"/>
-
-### Dot Detection
-
-Dot detection is done with `dotCandidates.m`, two key lines are
-
-```
-    s.sigmadog = [1.2*s.lambda/617*voxelSize(1)/130*[1,1], ...
-        1.7*s.lambda/617*voxelSize(3)/300];
-```
-
-<a name="ShiftsCorrections"/>
 
 ### Shifts and chromatic aberrations
 
