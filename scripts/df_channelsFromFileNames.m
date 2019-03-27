@@ -16,15 +16,14 @@ function [chan, dapichan] = df_channelsFromFileNames(folder)
 % [channels, dapichan] = df_channelsFromFileNames(folders(1).name);
 % channels{end+1} = dapichan;
 %
-%
 
-if (exist(folder, 'file') == 2)
-    % A single file was given
+% A single file was given
+if exist(folder, 'file') == 2    
     chan = chanFromFile(folder);
-    return;
-    
+    return;    
 end
 
+% A folder was given
 chan = {};
 dapichan = '';
 
@@ -40,39 +39,15 @@ if numel(files)==0
 end
 
 %keyboard
-for kk=1:numel(files)
+for kk=1:numel(files)        
+    channel = chanFromFile(files(kk).name);
     
-    fName = files(kk).name;
-    badName = 0;
-    
-    locations = find(fName == '_');
-    
-    if numel(locations) == 0
-        disp('No _ in the file name');
-        badName = 1;
+    if numel(strfind(upper(channel), 'DAPI'))==0
+        chan{end+1} = channel;
     else
-        if locations(end) == 1
-            disp('Only _ is at the start of the file name');
-            badName = 1;
-        end
-        
-        if badName
-            fprintf('Bad file name : %s\n', fName)
-            warning('File names should be formatted CHANNEL_XYZ.tif');
-            chan = {};
-            dapichan = '';
-            return
-        end
-        
-        lastLoc = locations(end);
-        channel = fName(1:lastLoc-1);
-        
-        if numel(strfind(upper(channel), 'DAPI'))==0
-            chan{end+1} = channel;
-        else
-            dapichan=channel;
-        end
+        dapichan=channel;
     end
+    
     chan = unique(chan);
 end
 
@@ -94,16 +69,16 @@ else
         disp('Only _ is at the start of the file name');
         badName = 1;
     end
-    
-    if badName
-        fprintf('Bad file name : %s\n', fName)
-        warning('File names should be formatted CHANNEL_XYZ.tif');
-        channel = [];
-        return
-    end
-    
-    lastLoc = locations(end);
-    channel = file(1:lastLoc-1);
 end
+
+if badName
+    fprintf('Bad file name : %s\n', fName)
+    warning('File names should be formatted CHANNEL_XYZ.tif');
+    channel = [];
+    return
+end
+
+lastLoc = locations(end);
+channel = file(1:lastLoc-1);
 
 end
