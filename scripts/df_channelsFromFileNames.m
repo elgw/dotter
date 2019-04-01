@@ -18,9 +18,9 @@ function [chan, dapichan] = df_channelsFromFileNames(folder)
 %
 
 % A single file was given
-if exist(folder, 'file') == 2    
+if exist(folder, 'file') == 2
     chan = chanFromFile(folder);
-    return;    
+    return;
 end
 
 % A folder was given
@@ -39,16 +39,19 @@ if numel(files)==0
 end
 
 %keyboard
-for kk=1:numel(files)        
+for kk=1:numel(files)
     channel = chanFromFile(files(kk).name);
-    
-    if numel(strfind(upper(channel), 'DAPI'))==0
-        chan{end+1} = channel;
-    else
-        dapichan=channel;
+    if numel(channel) > 0
+        if(channel(1) ~= '.') % Ignore hidden files
+            if numel(strfind(upper(channel), 'DAPI'))==0
+                chan{end+1} = channel;
+            else
+                dapichan=channel;
+            end
+            
+            chan = unique(chan);
+        end
     end
-    
-    chan = unique(chan);
 end
 
 if numel(dapichan) == 0
