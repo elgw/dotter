@@ -46,7 +46,12 @@ for kk =1:numel(files)
     fo = strsplit(fo, filesep());
     
     cFolder = fo{end};
-    cFolder = cFolder(1:17); % remove trailing '_calc'
+    pos = strfind(cFolder, '_calc');
+    if numel(pos) == 0
+        warndlg(sprintf('Can''t figure out what tif folder to use!'))
+    end
+        
+    cFolder = cFolder(1:pos-1); % remove trailing '_calc'
         
     
     relocated_image = [TIFfolder filesep() cFolder filesep() fn];

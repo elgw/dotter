@@ -7,11 +7,13 @@ function dprintpdf(filename, varargin)
 % 'fig', gcf
 % 'driver', '-dpdf', specify multiple drivers as {'-dpng', '-depsc', ...}
 
+if 0
 if numel(varargin)>0
     if contains(filename, '.')
         warning('Filename contains ''.'', replacing with ''_'' ');
         filename = strrep(filename, '.', '_');
     end
+end
 end
 
 w = 10; % target paper size

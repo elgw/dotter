@@ -1,3 +1,14 @@
+X = linspace(-1,1, 1000);
+nDiv = 3;
+
+v = (X+1)/2 * nDiv;
+
+plot(X, floor(v));
+
+A= [-0.077 0.591 0.755]
+B = [-0.051 0.595 0.748]
+norm(A-B)
+
 I = df_readTif('/data/current_images/iEG/iEG613_190118_001/a594_001.tif');
 %I = I(130:290, 250:350,:);
 [P, meta] = df_getDots(I);

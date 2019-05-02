@@ -79,8 +79,12 @@ if returnDefaults
         s = struct();
     end
     
-    if numel(s.voxelSize) == 0
+    if ~isfield(s, 'voxelsize')
         s.voxelSize = df_getVoxelSize();
+    end
+    
+    if numel(s.voxelSize) == 0
+       s.voxelSize = df_getVoxelSize();
     end
     
     if ~isfield(s, 'lambda')
@@ -147,10 +151,14 @@ end
 
 if strcmpi(s.localization, 'DoG_XY+Z')    
     % DOG - Difference of Gaussians, i.e., approximation of Laplacian        
-    %J = dog3(I, sigmadog);
+    %J = dog3(I, sigmadog);    
     DXY = dog2(I, sigmadog);
-    DZ = dogz(I, sigmadog);    
-    J = DXY+DZ;    
+    DZ = dogz(I, sigmadog);
+    
+    % TODO: balance these correct
+    % 20190502, change coefficient on DZ from 1 to .5
+    J = DXY+.5*DZ; 
+    
 end
 
 if strcmpi(s.localization, 'intensity')

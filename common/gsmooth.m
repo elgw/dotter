@@ -11,6 +11,10 @@ function V=gsmooth(V, sigma, varargin)
 % 2017-03-30, normalized almost as fast as non-normalized
 %             'normalized' now triggers the normalized2-algorithm
 
+if sigma == 0
+    return
+end
+
 if isvector(V)
     V = gsmooth1(V, sigma, varargin);
     return
