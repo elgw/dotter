@@ -1,6 +1,7 @@
 function df_plot(varargin)
 %% Plot this vs that for NM files and export data
-
+% Uses .m files located in plugins/measurements/
+%
 % Ideas:
 % - Drawings and descriptions to explain the properties
 

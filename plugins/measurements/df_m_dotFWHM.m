@@ -1,5 +1,5 @@
 function V = df_m_dotFWHM(varargin)
-% Calculates the FWHM for all dots in allele 1 or 2
+% Calculates the FWHM for all dots in cluster 1 and 2
 % Image data is required.
 
 if numel(varargin)==1
@@ -25,7 +25,7 @@ for nn = 1:numel(N)
     % If this nuclei belongs to another M than the last one, load images
     % from all channels
     if lastMeta ~= N{nn}.metaNo
-        for cc = 1:numel(M{N{nn}.metaNo}.channels);
+        for cc = 1:numel(M{N{nn}.metaNo}.channels)
             imFile = strrep(M{N{nn}.metaNo}.dapifile, 'dapi', M{N{nn}.metaNo}.channels{cc});
             disp(imFile);
             I{cc} = df_readTif(imFile);
