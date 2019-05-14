@@ -3,6 +3,8 @@ function AD = df_cc_cluster(varargin)
 % Output: associated dots in the sense that
 % A{a,b}(kk,1:3) corresponds to A{a,b}(kk,4:6)
 
+%keyboard
+
 s.maxDist1 = 15; % max distance between same dot in different channels
 s.maxDist2 = 2;  % max distance after translation
 s.plot = 0;
@@ -44,15 +46,19 @@ for aa = 1:numel(D)
             delta = C(:,4:5)- C(:,1:2);  % delta xt
             r = (delta(:,1).^2 + delta(:,2).^2).^(1/2); % r xy
             rhat = median(r);
-            
+                        
             if rhat < 10e-4
                 d = [0,0];
             else
                 deltan = delta;
                 deltan(:,1) = deltan(:,1)./r;
-                deltan(:,2) = deltan(:,2)./r;            
+                deltan(:,2) = deltan(:,2)./r;  
+                
+                mask = isfinite(sum(deltan,2));
+                deltan = deltan(mask,:);
                 thetahat = atan2(sum(deltan(:,1)), sum(deltan(:,2)));
-                d = rhat*[sin(thetahat), cos(thetahat)];
+                
+                d = rhat*[sin(thetahat), cos(thetahat)]; % Model for average displancement
             end
                
             if s.verbose

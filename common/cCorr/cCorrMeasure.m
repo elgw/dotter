@@ -225,11 +225,19 @@ uicontrol(GUI.fig, 'Style', 'pushbutton', ...
         % Save .mat file with unfitted dots
         %ccFile = [tempdir() 'temp.cc'];
         
+        
         N = str2num(get(GUI.setN, 'String'));
+        assert(N>0);
         
         F = s.F;
         for kk = 1:numel(F)
             F{kk} = F{kk}(1:N,1:3);
+        end
+        
+        if 0 % debug
+            figure, plot3(F{1}(:,1), F{1}(:,2), F{1}(:,3), 'ro')
+            hold on
+            plot3(F{2}(:,1), F{2}(:,2), F{2}(:,3), 'ks')
         end
         
         if s.new == 1            
@@ -241,12 +249,14 @@ uicontrol(GUI.fig, 'Style', 'pushbutton', ...
         folder = s.folder;
         chan = s.chan;
         refchan = s.chan(get(GUI.referenceChannel, 'Value'));
+        fprintf('Reference channel: %s\n', refchan);
+        
         save(ccFile, 'F', 'chan', 'N', 'folder', 'refchan');
         
         Q = [];
         D = str2num(get(GUI.setD, 'String'));
         
-        s.refchan = s.chan{get(GUI.referenceChannel, 'value')};
+        s.refchan = s.chan{get(GUI.referenceChannel, 'Value')};
         
         E = [];
                         
@@ -257,8 +267,7 @@ uicontrol(GUI.fig, 'Style', 'pushbutton', ...
         
         s.Cx = Cx;
         s.Cy = Cy;
-        s.dz = dz;
-        
+        s.dz = dz;        
                 
         figure;
         markers = 'ox+*sdv^<>ph';
@@ -316,6 +325,7 @@ uicontrol(GUI.fig, 'Style', 'pushbutton', ...
 
     function gui_detectChannels(varargin)
         %% Detect channels
+        
         channels = dir([s.folder '*001.tif']);
         fprintf('Found %d channels\n', numel(channels));
         for kk = 1:numel(channels)
@@ -323,7 +333,7 @@ uicontrol(GUI.fig, 'Style', 'pushbutton', ...
             fprintf('Channel %d : %s\n', kk, s.chan{kk});
         end
         
-        nFields = numel(dir([s.folder '*' s.chan{kk} '*']));
+        nFields = numel(dir([s.folder '*' s.chan{kk} '*.tif']));
         
         fieldStrings = {};
         for kk = 1:nFields
@@ -342,9 +352,10 @@ uicontrol(GUI.fig, 'Style', 'pushbutton', ...
         %set(GUI.showSelection, 'Visible', 'on');
         set(GUI.showDots, 'Visible', 'on');
         
-        
-        set(GUI.referenceChannel, 'String', s.chan{1});
+        % Add reference channels to the list
+        set(GUI.referenceChannel, 'String', s.chan);
         clr = GUI.referenceChannel.ForegroundColor;
+        
         GUI.referenceChannel.ForegroundColor = 'red';
         for cc = 1:numel(s.chan)
             if(strcmpi(s.chan{cc}, 'dapi'))
@@ -353,8 +364,7 @@ uicontrol(GUI.fig, 'Style', 'pushbutton', ...
                 GUI.referenceChannel.ForegroundColor = clr; 
             end
         end
-        
-        
+                
         set(GUI.referenceChannel, 'Visible', 'on');
         set(GUI.showReferenceChannel, 'Visible', 'on');
         
@@ -502,6 +512,7 @@ uicontrol(GUI.fig, 'Style', 'pushbutton', ...
     end
 
     function gui_refresh()
+        
         set(GUI.folder, 'String', s.folder);
         if isfield(s, 'chan')
             set(GUI.channels, 'String', s.chan);
