@@ -31,7 +31,20 @@ int blit3g(double * T, uint32_t Tm, uint32_t Tn, uint32_t Tp,
   // nD: number of dots
   // D:  list of dots (x,y,z, nphot, sigmax, sigmay, sigmaz)
 {
-  const int w = 15;
+  
+  const int nF = 7; // stride for D
+
+  double sigma_max = -1;
+  for(size_t kk = 0; kk < nD; kk++)
+    {
+      for(int ll = 0; ll < 3; ll++)
+      {
+      if( D[nF*kk+4 + ll] > sigma_max)
+        sigma_max = D[nF*kk+4 + ll];
+      }
+    }
+
+  const size_t w = ceil(sigma_max)*3*2 + 1;
   const int hw = (w-1)/2;
   // allocate temporary space for the Gaussian
   double * G = malloc(w*w*w*sizeof(double));    
@@ -39,7 +52,6 @@ int blit3g(double * T, uint32_t Tm, uint32_t Tn, uint32_t Tp,
   double sigma[] = {1.6,1.6,2.1};
   double mu[] = {0,0,0};
   double nPhot;
-  const int nF = 7; // stride for D
 
   for(uint32_t pp = 0; pp<nD; pp++)  {
 
