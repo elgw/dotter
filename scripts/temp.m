@@ -1,3 +1,36 @@
+gpseqFile='/mnt/bicroserver2/projects/GPSeq/centrality_by_seq/SeqNoGroup/B170_transCorrected/all/B170_transCorrected.asB165.rescaled.bins.size1000000.step100000.csm3.rmOutliers_chi2.rmAllOutliers.tsv';
+wpseqFile='/mnt/bicroserver2/projects/GPSeq/centrality_by_seq/SeqNoGroup/B170_transCorrected/all/B170_transCorrected.asB165.rescaled.bins.chrWide.csm3.rmOutliers_chi2.rmAllOutliers.tsv';
+
+gpseq = tdfread(gpseqFile);
+gpseqw = tdfread(wpseqFile);
+
+prob_g_avg = 0*gpseqw.prob_g;
+for kk = 1:24
+    chrStr = gpseqw.chrom(kk,:);
+    n = 0;
+    for ll = 1:size(gpseq.chrom, 1)        
+        if strcmp(chrStr, gpseq.chrom(ll,:)) == 1
+            prob_g = gpseq.prob_g(ll,:);
+            if isfinite(prob_g)
+                prob_g_avg(kk) = prob_g_avg(kk) + gpseq.prob_g(ll);
+                n = n + 1;
+            end            
+        end
+    end
+    prob_g_avg(kk) = prob_g_avg(kk)/n;
+end
+
+figure,
+scatter(gpseqw.prob_g, prob_g_avg)
+ylabel('Average per chromosome')
+xlabel('Chr Wide GPSeq')
+pcorr = corr(gpseqw.prob_g(1:23), prob_g_avg(1:23));
+title(sprintf('pcorr: %f', pcorr));
+
+E = gpseqw.prob_g(1:23)- prob_g_avg(1:23);
+pause
+dprintpdf('/home/erikw/temp/chrWideVsAverageGPSeq', 'publish');
+
 X = linspace(-1,1, 1000);
 nDiv = 3;
 

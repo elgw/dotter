@@ -21,13 +21,26 @@ if exist('df_fwhm1d') ~= 3
 end
 
 disp('Wrong arguments')
+
+% No argument
 gotError = false;
 try
-    df_fwhm1d([]);
+    df_fwhm1d();
 catch e
     gotError=true;
 end
 assert(gotError);
+
+% Empy argument -- and too short arguments
+for kk = 1:6
+gotError = false;
+try
+    df_fwhm1d(zeros(kk,1));
+catch e
+    gotError=true;
+end
+assert(gotError);
+end
 
 gotError = false;
 try
@@ -37,26 +50,34 @@ catch e
 end
 assert(gotError);
 
-% Even size of signal
+
+% Even size of signal -- should only accept odd
+for kk = 4:2:22
 gotError = false;
 try
-    df_fwhm1d([ 0 0 ]);
+    df_fwhm1d(zeros(kk,1));
 catch e
     gotError = true;
 end
 assert(gotError);
-
+end
 
 
 disp('Border cases');
-t = zeros(11,1);
-df_fwhm1d(t)
+% Constant/flat signals
+for kk = -1:1
+t = ones(11,1);
+df_fwhm1d(kk*t)
+end
 
 disp('Random input')
 for kk = 1:100
     t = rand(randi(21)*2+5,1);
     df_fwhm1d(t);
 end
+
+disp('NaN and inf')
+df_fwhm1d([1 1 1 nan 1 1 1])
 
 disp('Precision')
 sigmas = linspace(1,2)';
