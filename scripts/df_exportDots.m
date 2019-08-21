@@ -63,6 +63,7 @@ s.maxDots = -1; % If positive, restrict the number of dots
 s.fitting = 'none';
 s.centroids = 0; % If 1, replace clusters with their centroid
 s.calcSNR = -1;
+s.calcNSNR = -1;
 
 T = [];
 files = [];
@@ -80,6 +81,9 @@ for kk = 1:numel(varargin)
     end
     if strcmpi(varargin{kk}, 'snr')
         s.calcSNR = varargin{kk+1};
+    end
+    if strcmpi(varargin{kk}, 'nsnr')
+        s.calcNSNR = varargin{kk+1};
     end
     if strcmpi(varargin{kk}, 'maxDots')
         s.maxDots = varargin{kk+1};
@@ -158,7 +162,7 @@ if ~exist('outFile', 'var')
 end
 
 
-% All seems ready
+% If the input seems ok, show settings
 s.logFileName = [tempdir() 'df_exportDots.txt'];
 s.logFile = fopen(s.logFileName, 'w');
 
@@ -190,8 +194,7 @@ for kk = 1:numel(files)
     M = M{1};
     
     assert(isfield(M, 'mask'));
-    
-    
+                
     % For each channel
     for cc = 1:numel(M.channels)
         cname = M.channels(cc);
@@ -212,10 +215,8 @@ for kk = 1:numel(files)
                 TFC = replaceByCentroids(TFC);
             end
         else
-            TFC = extractAllDotsForChannel(s, cc, M, N, imFile);
-            
-        end
-        
+            TFC = extractAllDotsForChannel(s, cc, M, N, imFile);            
+        end        
         
         % file, cname, nuclei, TFC
         %keyboard
@@ -241,7 +242,7 @@ if numel(T) == 0
 end
 
 Table = cell2table(T);
-Table.Properties.VariableNames = {'File', 'Channel', 'Nuclei', 'x', 'y', 'z', 'Value','FWHM', 'SNR', 'Label'};
+Table.Properties.VariableNames = {'File', 'Channel', 'Nuclei', 'x', 'y', 'z', 'Value','FWHM', 'SNR', 'NSNR', 'Label'};
 
 if ischar(outFile)
     fprintf('Writing to disk: %s\n', outFile);
@@ -363,11 +364,18 @@ for nn = 1:numel(N)
             dfwhm = -2*ones(size(dots,1), 1);
         end
         
-        if s.calcSNR
+        if s.calcSNR            
             fprintf(s.logFile, ' + Calculating SNR\n');
-            dsnr = df_snr(imFile, dots(:,1:3));
+            dsnr = df_snr(imFile, dots(:,1:3));            
         else
             dsnr = -2*ones(size(dots,1), 1);
+        end
+        
+        if s.calcNSNR            
+            fprintf(s.logFile, ' + Calculating NSNR\n');            
+            dnsnr = df_nsnr(M, N, imFile, dots(:,1:3), cc);
+        else
+            dnsnr = -2*ones(size(dots,1), 1);
         end
         
         if strcmpi(s.fitting, 'com3w')
@@ -396,7 +404,7 @@ for nn = 1:numel(N)
                 'ccData', s.ccData);
         end
         
-        TFC = [TFC; dots, dfwhm, dsnr, N{nn}.userDotsLabels{cc}(:)];
+        TFC = [TFC; dots, dfwhm, dsnr, dnsnr, N{nn}.userDotsLabels{cc}(:)];
         nucNum = [nucNum; nn*ones(size(dots,1),1)];
     end
 end
@@ -419,10 +427,18 @@ else
     dfwhm = -2*ones(size(TFC,1),1);
 end
 
-if s.calcSNR
+if s.calcSNR    
     dsnr = df_snr(imFile, TFC(:,1:3));
 else
     dsnr = -2*ones(size(TFC,1), 1);
+end
+
+if s.calcNSNR
+    keyboard
+    fprintf(s.logFile, ' + Calculating NSNR\n');
+    dnsnr = df_nsnr(M, N, imFile, TFC(:,1:3), cc);
+else
+    dnsnr = -2*ones(size(TFC,1), 1);
 end
 
 if strcmpi(s.fitting, 'com3w')
@@ -441,7 +457,7 @@ if strcmpi(s.fitting, 'dotFitting')
     TFC(:,1:3) = F(:,1:3);
 end
 
-TFC = [TFC, dfwhm, dsnr, zeros(size(TFC,1),1)];
+TFC = [TFC, dfwhm, dsnr, dnsnr, zeros(size(TFC,1),1)];
 [~, nucNum] = associate_dots_to_nuclei(N, M.mask, TFC, cc);
 TFC = [nucNum, TFC];
 end

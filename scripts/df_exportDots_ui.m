@@ -11,6 +11,7 @@ s.maxDots = 0;
 s.calcFolderName = '';
 s.calcSNR = 1;
 s.calcFWHM = 0;
+s.calcNSNR = 0;
 
 
 for kk = 1:numel(varargin)
@@ -115,6 +116,13 @@ c_snr = uicontrol('Style', 'checkbox', ...
     'Position', [.1,.3,.5,.1], ...
     'Parent', p_settings);
 
+c_nsnr = uicontrol('Style', 'checkbox', ...
+    'String', 'Calc NSNR', ...
+    'Value', s.calcNSNR, ...
+    'Units', 'Normalized', ...
+    'Position', [.5,.3,.5,.1], ...
+    'Parent', p_settings);
+
 c_fwhm = uicontrol('Style', 'checkbox', ...
     'String', 'Calc FWHM', ...
     'Value', s.calcFWHM, ...
@@ -196,6 +204,7 @@ end
         
         s.calcFWHM = c_fwhm.Value;
         s.calcSNR = c_snr.Value;
+        s.calcNSNR = c_nsnr.Value;
         s.centroids = centroids.Value;
         s.maxDots = str2num(e_maxDots.String);
         s.fitting = p_fitting.String{p_fitting.Value};
@@ -212,7 +221,12 @@ end
             sugFile = [s.calcFolderName '_allDots.csv'];
         end
         
-        [A, B] = uiputfile(sugFile);
+        sugDir = '~/';
+        if numel(files)>0
+            sugDir = files{1};
+        end
+        
+        [A, B] = uiputfile([fileparts(sugDir), filesep(), sugFile]);
         if isnumeric(A)
             disp('Aborting')
             return

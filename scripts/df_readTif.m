@@ -20,9 +20,9 @@ if isfile(filename)
     t = Tiff(filename, 'r');
     tiffInfo = imfinfo(filename);
 else
-    warning('File does not exist');
-    V = [];
-    return
+    errorStr = sprintf('df_readTif: File %s does not exist', filename);
+    errordlg(errorStr, 'File Error');
+    error(errorStr);    
 end
 
 if verbose

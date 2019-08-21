@@ -1,10 +1,33 @@
+outfile = 'metadata.csv';
+fout = fopen(outfile, 'w');
+fprintf(fout, 'chr, start_mb\n');
+for kk = 1:numel(L)
+    chrStr = '';
+    if(L(kk) < 23)
+        chrStr = sprintf('chr%d', L(kk));
+    end
+    if L(kk) == 9
+        chrStr = 'chr9.22';
+    end
+    if L(kk) == 22
+        chrStr = 'chr22.9';
+    end
+    if L(kk) == 23
+        chrStr = 'chrX';
+    end
+    assert(numel(chrStr)>0);
+    
+    fprintf(fout, '%s, %d\n', chrStr, S(kk));
+end
+fclose(fout);       
+
 gpseqFile='/mnt/bicroserver2/projects/GPSeq/centrality_by_seq/SeqNoGroup/B170_transCorrected/all/B170_transCorrected.asB165.rescaled.bins.size1000000.step100000.csm3.rmOutliers_chi2.rmAllOutliers.tsv';
 wpseqFile='/mnt/bicroserver2/projects/GPSeq/centrality_by_seq/SeqNoGroup/B170_transCorrected/all/B170_transCorrected.asB165.rescaled.bins.chrWide.csm3.rmOutliers_chi2.rmAllOutliers.tsv';
 
 gpseq = tdfread(gpseqFile);
 gpseqw = tdfread(wpseqFile);
 
-prob_g_avg = 0*gpseqw.prob_g;
+prob_g_avg = 0*gseqw.prob_g;
 for kk = 1:24
     chrStr = gpseqw.chrom(kk,:);
     n = 0;
