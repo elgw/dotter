@@ -1,6 +1,7 @@
 function [V] = df_readTif(filename, varargin)
 % function [V, info] = df_readTif(filename, varargin)
 % Reads a volumetric tif image specified by filename
+% First tries to load filename.mat
 %
 % See also df_writeTif
 
@@ -16,6 +17,15 @@ for kk = 1:numel(varargin)
         verbose =1;
     end
 end
+
+% See nd2tif.m for how these mat files are created
+matfilename = [filename '.mat'];
+if isfile(matfilename)
+    t = load(matfilename);
+    V = t.V;
+    return;
+end
+
 if isfile(filename)
     t = Tiff(filename, 'r');
     tiffInfo = imfinfo(filename);

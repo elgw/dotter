@@ -102,7 +102,11 @@ if s.onlyFirst == 1
     nSeries = min(nSeries,1);
 end
 
-w = waitbar(0, 'Converting to tif');
+waitMSG = 'Converting to tif';
+if(s.asMAT)
+    waitMSG = 'Converting to mat';
+end
+w = waitbar(0, waitMSG);
 for kk = 1:nSeries
     waitbar((kk-1)/nSeries, w);
     
@@ -164,6 +168,10 @@ for kk = 1:nSeries
             cName = char(omeMeta.getChannelName(0,cc-1));
             % remove everything that is not a letter or number
             cName = regexprep(cName,'[^a-zA-Z0-9]','');
+            if(strcmpi(cName, 'dapi') == 1)
+                cName = 'dapi';
+            end
+                
             outFileName = sprintf('%s%s_%03d.tif', outFolder, cName, kk);
             
             % TODO: put meta data in tif files
@@ -207,7 +215,11 @@ for kk = 1:nSeries
             
             if save_fov
                 fprintf(s.logFile, 'Writing % s to: %s\n', filename, outFileName);
+                if s.asMAT == 1
+                    save([outFileName '.mat'], 'V', '-v7.3', '-nocompression');
+                else
                 df_writeTif(V, outFileName);
+                end
             else
                 fprintf(s.logFile, 'Not writing this field\n');
             end
