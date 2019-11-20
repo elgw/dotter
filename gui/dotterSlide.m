@@ -494,7 +494,7 @@ end
     end
 
     function markerInfo(varargin)
-        va{2}
+        %va{2}
     end
 
     function modeSwitch(varargin)
