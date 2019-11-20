@@ -48,6 +48,7 @@ for kk = 1:numel(files)
     
     for nn = 1:numel(D.N)
         D.N{nn}.metaNo = kk;
+        D.N{nn}.nucleiNr = nn;
     end
     
     if numel(s.ccFile)>0

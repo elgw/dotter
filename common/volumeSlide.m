@@ -7,6 +7,7 @@ function varargout = volumeSlide(V, varargin)
 %
 
 s.nanAlpha = 1;
+s.getSlice = 0;
 
 % Browse for a file if none provided
 if ~exist('V', 'var')
@@ -21,6 +22,12 @@ if ~exist('V', 'var')
     V = df_readTif([path file]);
     disp('Image size:')
     disp(size(V))
+end
+
+for kk = 1:numel(varargin)
+    if(strcmpi(varargin{kk}, 'getslice'))
+        s.getslice = 1;
+    end
 end
 
 % Read from disk if a file name
@@ -126,6 +133,11 @@ if nargout == 1
 end
 
 menu()
+
+if s.getslice == 1
+    uiwait(fig)
+    varargout{1} = slice;
+end
 
     function cLimChange(varargin)
         set(gca, 'clim', [get(sliderLower, 'Value'), get(sliderUpper, 'Value')]);

@@ -132,6 +132,7 @@ s.dotMarkers = dm.dotMarkers;
 
 verbose = 1;
 %
+tabCluster = [];
 init_fig_menu();
 
 % This resets some of the options above

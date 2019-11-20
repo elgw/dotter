@@ -14,7 +14,7 @@ end
 MM = varargin{1};
 N = varargin{2};
 % chan1 = varargin{3};
-% chan2 = varargin{4};
+% chan2 = varargin{4}; 
 
 A = nan(numel(N), 1);
 for kk = 1:numel(N)   

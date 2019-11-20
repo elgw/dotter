@@ -432,6 +432,7 @@ nucChangeSelection();
         funF = d.nucFilters(gui.nucFilters.Value).fun;
         
         Nselect = {};
+        
         for kk = 1:numel(N)
             if funF(M,N{kk})
                 Nselect{end+1} = N{kk};

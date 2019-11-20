@@ -1,5 +1,5 @@
 function [mask, S] = get_nuclei_manual(mask, I)
-% function [mask, S] = get_nuclei_manual(I, mask)
+% function [mask, S] = get_nuclei_manual(mask, I)
 % GUI for manual cell segmentation.
 %
 % Input:
