@@ -161,14 +161,21 @@ a = findall(gcf);
 b = findall(a,'ToolTipString','Link Plot');
 set(b,'Visible','Off');
 
+% Not available in matlab 2019b
+icon = zeros([46, 60, 3], 'uint8');
+if 0
 [icon,~] = imread(fullfile(matlabroot,...
     'toolbox','matlab','icons','plottype-gscatter.png'));
+end
 % Convert image from indexed to truecolor
 
+if 0
 [img,map] = imread(fullfile(matlabroot,...
     'toolbox','matlab','icons','plottype-scatter3.gif'));
 % Convert image from indexed to truecolor
 icon = ind2rgb(img, map);
+end
+
 p = uipushtool('TooltipString','3D view',...
     'ClickedCallback', @gui_visNuclei, ...
     'Separator', 'on');
