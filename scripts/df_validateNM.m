@@ -87,7 +87,7 @@ if ~ok
         fprintf(logFile, ' - TIF files could not be found, misc->relocate?\n');
     end
     if missingDots
-        fprintf(logfile, ' - Dots missing in NM files, cells->Find nuclei...?\n');
+        fprintf(logFile, ' - Dots missing in NM files, cells->Find nuclei...?\n');
     end
     if maskError
         fprintf(logFile, ' - Problems with the mask, misc->fixMasks?\n');
