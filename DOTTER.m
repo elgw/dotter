@@ -366,11 +366,11 @@ uimenu(mDNA, 'Label', 'Export 2D masks', 'Callback', @run_exportMasks, ...
             F = fopen('dotterRemote');
             cnLatest = fread(F);
             fclose(F);
-            
-            if isequal(cn ,cnLatest)
+            cn = dotter_version();
+            if isequal(cn, cnLatest)
                 msgbox(sprintf('Up to date with the latest version 0.%s\n', cn(1:end-1)));
             else
-                msgbox(sprintf('Can be updated. Latest version is 0.%s while you have 0.%s\n', cnLatest(1:end-1), cn(1:end-1)));
+                msgbox(sprintf('Can be updated. Latest version is 0.%s while you have 0.%s\n', cnLatest(1:end-1), cn(1:(end-1))));
             end
         catch e
             warndlg('Could not determine the latest remote version')
