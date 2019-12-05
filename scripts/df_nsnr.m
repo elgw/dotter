@@ -3,10 +3,13 @@ function nsnr = df_nsnr(M, N, image, dots, channelNumber)
 % nuclei
 % Requested by SU
 
-
+if size(dots,1) < 1
+    fprintf('df_nsnr: No dots\n');
+    nsnr = [];
+    return;
+end
 
 nsnr = zeros(size(dots,1),1);
-
 
 % 1/ Calculate median value per nuclei
 mask = M.xmask{channelNumber}; % Use the dilated mask
@@ -17,7 +20,6 @@ for kk = 1:numel(BG)
     BG(kk) = median(pixels(:));
 end
     
-
 % 2/ For each dot, divide image intensity by the correponding nuclei
 % value from 1.
 nuclei = interpn(mask, dots(:,1), dots(:,2));
