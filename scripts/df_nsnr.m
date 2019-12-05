@@ -22,10 +22,10 @@ end
     
 % 2/ For each dot, divide image intensity by the correponding nuclei
 % value from 1.
-nuclei = interpn(mask, dots(:,1), dots(:,2));
+nuclei = interpn(mask, dots(:,1), dots(:,2), 'nearest');
 value = interpn(image, dots(:,1), dots(:,2), dots(:,3));
 for kk = 1:size(nsnr,1)
-    if(nuclei(kk)) > 0
+    if nuclei(kk) > 0
         nsnr(kk) = value(kk)/BG(nuclei(kk));
     else
         nsnr(kk) = -1;
