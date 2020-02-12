@@ -33,7 +33,6 @@
 The best way to get introduced to the software is to ask someone
 already using it!.
 
-
 <a name="Installation"/>
 
 ## Installation
@@ -45,7 +44,7 @@ already using it!.
 * GIT
 * MATLAB
 * The GNU scientific library, GSL
-* A Compiler for C99 that works with matlab
+* A Compiler for C99 that works with Matlab
 
 <a name="Instructions"/>
 
@@ -61,9 +60,9 @@ brew install gsl
 brew install pkg-config
 ```
 
-Start MATLAB and add the path of DOTTER to the list of paths. Save and restart.
+Start MATLAB, and run `pathtool`, click 'Add Folder...', navigate to the `dotter` folder. Press 'Save' and then restart MATLAB.
 
-You should now be able to start
+From now on you should now be able to start
 DOTTER with the command: `DOTTER` in MATLAB.
 
 Next you need to compile some function written in C. Do so from the
