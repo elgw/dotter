@@ -25,8 +25,8 @@ if ~exist('V', 'var')
 end
 
 for kk = 1:numel(varargin)
-    if(strcmpi(varargin{kk}, 'getslice'))
-        s.getslice = 1;
+    if(strcmpi(varargin{kk}, 'getSlice'))
+        s.getSlice = 1;
     end
 end
 
@@ -134,7 +134,7 @@ end
 
 menu()
 
-if s.getslice == 1
+if s.getSlice == 1
     uiwait(fig)
     varargout{1} = slice;
 end

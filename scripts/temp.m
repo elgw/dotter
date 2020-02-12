@@ -1,3 +1,46 @@
+L = read_raw('/home/erikw/data/chromflock/1000G_extra_compaction_relax/8.000000_1000_MAX.L.uint8', 'uint8');
+L = L(L<24); % Excluded Y if not already excluded
+
+G = loadGPSeq(L, ...
+    '/bicroserver2/projects/GPSeq/centrality_by_seq/SeqNoGroup/B170_transCorrected/all/B170_transCorrected.asB165.rescaled.bins.size100000.step100000.csm3.rmOutliers_chi2.rmAllOutliers.tsv', ...
+    100000);
+
+GN = log2(G);
+%GN(GN>1) = 1;
+%GN(GN<0) = 0;
+% GG: That's GPSeq score, ergo "centrality". I.e., greater at the center.
+GN = 1-GN;
+
+figure
+GNX = GN;
+GNX(GNX<0) = 0+eps;
+GNX(GNX>1) = 1-eps;
+[counts, edges] = histcounts(GNX, linspace(0,1,15));
+%[counts, edges] = histcounts(GN, linspace(0,1,15));
+volumes = 0*counts;
+for kk = 1:numel(counts)
+    volumes(kk) = 4/3*pi*edges(kk+1)^3 - 4/3*pi*edges(kk)^3;
+end
+
+figure
+histogram('BinCounts', volumes, 'BinEdges', edges)
+hold on
+histogram('BinCounts', counts, 'BinEdges', edges)
+
+dens20 = numel(GN)/((4/3)*pi); % beads/volume
+histogram('BinCounts', (counts./volumes), 'BinEdges', edges)
+hold on
+plot([0,1], 5*[dens20, dens20])
+xlabel('Radius')
+ylabel('Density, beads/volume')
+legend({'From GPSeq', 'Max possible'})
+figure,
+histogram(GNX, linspace(0,1,15))
+
+axis([0,1.2, 0, 2000])
+x = linspace(0,1); hold on, plot(x, 2000*x.^2, 'r');
+
+
 outfile = 'metadata.csv';
 fout = fopen(outfile, 'w');
 fprintf(fout, 'chr, start_mb\n');
@@ -189,3 +232,26 @@ xlabel('Linear size, chr')
 ylabel('Centroid distance, nm')
 grid on
 
+
+G = loadGPSeq(L, ...
+    '/bicroserver2/projects/GPSeq/centrality_by_seq/SeqNoGroup/B170_transCorrected/all/B170_transCorrected.asB165.rescaled.bins.size100000.step100000.csm3.rmOutliers_chi2.rmAllOutliers.tsv', ...
+    100000);
+
+GN = log2(G);
+GN(GN>1) = 1;
+GN(GN<0) = 0;
+% GG: That's GPSeq score, ergo "centrality". I.e., greater at the center.
+GN = 1-GN;
+
+figure, plot(GN)
+
+
+G = loadGPSeq(L, ...
+    '/bicroserver2/projects/GPSeq/centrality_by_seq/SeqNoGroup/B170_transCorrected/all/B170_transCorrected.asB165.rescaled.bins.size1000000.step100000.csm3.rmOutliers_chi2.rmAllOutliers.tsv', ...
+    1000000);
+GN = log2(G);
+GN(GN>1) = 1;
+GN(GN<0) = 0;
+% GG: That's GPSeq score, ergo "centrality". I.e., greater at the center.
+GN = 1-GN;
+figure, histogram(GN)

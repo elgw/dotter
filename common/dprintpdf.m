@@ -45,7 +45,11 @@ if ~iscell(driver)
     driver = {driver};
 end
 
-% Print one file per driver, file endings appended automatically
+% Print one file per driver
+% file endings appended automatically -- which is dangerous
+% if the filename variable contains a '.' files might be overwritten
+% TODO: change this to [filename endigs{kk}] and append appropriate endings
+% per file type
 for kk = 1:numel(driver)
     print(driver{kk}, sprintf('-f%d', fig.Number), filename)
 end
