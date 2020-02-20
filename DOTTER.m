@@ -2,13 +2,22 @@ function DOTTER()
 %% DOTTER - Dot localization and processing
 %
 %	Brings up the main menu for DOTTER.
-%   Documentation is available via the GUI.
+%   Some documentation is available via the GUI.
 %
 
 %   This GUI is stateless. I.e., working folder/file has to be specified
 %    for each action.
 %   It is not completely safe to run multiple copies simultaneously since
 %   some temporary files as well as the configuration files are shared.
+
+% Only one window allowed at the same time
+h = findall(0,'tag','DOTTER');
+
+if numel(h)>0
+    disp('DOTTER is already running')
+    figure(h);
+    return
+end
 
 % should be set in startup.m
 DOTTER_PATH = getenv('DOTTER_PATH');
@@ -21,8 +30,9 @@ if strcmp(DOTTER_PATH, '')
 end
 
 %% Turn on logging using MATLAB's diary()
-logfile = [tempdir() 'dotter_log.txt'];
-logfile_last = [tempdir() 'dotter_log_last.txt'];
+uname = char(java.lang.System.getProperty('user.name'));
+logfile = [tempdir() uname '_dotter_log.txt'];
+logfile_last = [tempdir() uname '_dotter_log_last.txt'];
 try
     movefile(logfile, logfile_last);
 catch
@@ -33,17 +43,13 @@ end
 %fprintf(logf, '');
 %fclose(logf);
 
-diary(logfile);
-% will be turned off when the DOTTER window is closed
-
-% Only one window allowed at the same time
-h = findall(0,'tag','DOTTER');
-
-if numel(h)>0
-    disp('Already open')
-    figure(h);
-    return
+try
+    diary(logfile);
+    % will be turned off when the DOTTER window is closed
+catch
+    fprintf('Unable to open the log file but that is not critical\n');
 end
+
 
 helpFile = [getenv('DOTTER_PATH') 'HELP.html'];
 chFile = [getenv('DOTTER_PATH') 'README.html'];
