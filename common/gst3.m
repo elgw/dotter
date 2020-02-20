@@ -1,5 +1,5 @@
 function ST=gst3(V, sigma_g, sigma_t)
-% function gst3(V, sigma_g, sigma_t)
+% function ST=gst3(V, sigma_g, sigma_t)
 % Gradient structure tensor
 % sigma_g gradient sigma
 % sigma_t tensor sigma
