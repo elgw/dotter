@@ -32,18 +32,31 @@ if isfile(filename)
 else
     errorStr = sprintf('df_readTif: File %s does not exist', filename);
     errordlg(errorStr, 'File Error');
-    error(errorStr);    
+    error(errorStr);
 end
 
 if verbose
     tiffInfo
 end
 
+if 0
+    fnames = fieldnames(tiffInfo);
+    for kk = 1:numel(fnames)
+        fname = fnames{kk};
+        fdesc = getfield(tiffInfo(1), fname);
+        if isstring(fdesc)
+            fprintf('%s\t%s\n', fname, fdesc);
+        else
+            fprintf('%s\t%d\n', fname, fdesc);
+        end
+    end
+end
+
 imBits = tiffInfo(1).BitsPerSample;
 if ~(numel(intersect(imBits, [8,16,32]))==1)
     warning('%d BitsPerSample\n', imBits);
 end
-    
+
 
 if numel(tiffInfo) == 1
     % use imread to read 2D images
@@ -51,21 +64,34 @@ if numel(tiffInfo) == 1
     return
 end
 
-switch imBits
-    case 8
-        typeString = 'uint8';
-    case 16
-        typeString = 'uint16';
-    case 32
-        typeString = 'uint32';
-    otherwise
-        error('Don''t know how to handle %d bit files\n', imBits);        
+% In order to pre-allocate the output array, figure out the format.
+if strcmp(getfield(tiffInfo(1), 'SampleFormat'), 'IEEE floating point') == 1    
+    switch imBits
+        case 32
+            typeString = 'single';
+        case 64
+            typeString = 'double';
+        otherwise
+            error('Don''t know how to handle floats with %d bits per sample\n', imBits);
+    end    
+else    
+    switch imBits
+        case 8
+            typeString = 'uint8';
+        case 16
+            typeString = 'uint16';
+        case 32
+            typeString = 'uint32';
+        otherwise
+            error('Don''t know how to handle %d bit files\n', imBits);
+    end
 end
 
 V = zeros(tiffInfo(1).Height, tiffInfo(1).Width, numel(tiffInfo), typeString);
 
+
 for kk = 1:size(V,3)
-    t.setDirectory(kk);
+    t.setDirectory(kk);    
     V(:,:,kk) = t.read();
 end
 
