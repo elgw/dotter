@@ -211,7 +211,7 @@ updateGUIcomponents();
     function setDotsPerChannel(varargin)
         % When the list of number of dots per channels is clicked
        cNum = varargin{1}.Value;
-        v = inputdlg(sprintf('Number of dots for channel %s? ', s.channels{cNum}));        
+        v = inputdlg(sprintf('Number of dots per cluster for channel %s? ', s.channels{cNum}));        
         if numel(v) == 1            
             s.channels_dots(cNum) = str2num(v{1});            
             gui.channels_dots.String = cellfun(@num2str, num2cell(s.channels_dots), 'UniformOutput', false);            

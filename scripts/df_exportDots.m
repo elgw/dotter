@@ -433,8 +433,7 @@ else
     dsnr = -2*ones(size(TFC,1), 1);
 end
 
-if s.calcNSNR
-    keyboard
+if s.calcNSNR    
     fprintf(s.logFile, ' + Calculating NSNR\n');
     dnsnr = df_nsnr(M, N, imFile, TFC(:,1:3), cc);
 else

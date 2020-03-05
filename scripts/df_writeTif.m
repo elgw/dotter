@@ -2,7 +2,7 @@ function df_writeTif(stack, filename, metaData)
 %% function df_writeTif(stack, filename)
 % Writes a uint16 volumetric image to disk
 
-if ~isa(stack, 'uint16')
+if ~isa(stack, 'uint16')    
     error('Image has to be of type uint16');
 end
 

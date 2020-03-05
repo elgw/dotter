@@ -12,7 +12,16 @@ end
 nsnr = zeros(size(dots,1),1);
 
 % 1/ Calculate median value per nuclei
-mask = M.xmask{channelNumber}; % Use the dilated mask
+
+if isfield(M, 'xmask')
+    mask = M.xmask{channelNumber}; % Use the dilated mask
+else
+    if isfield(M, 'mask')
+        mask = M.mask;
+    else
+        error('No mask found in meta data. Corrupt NM file?')
+    end
+end
 imax = max(image, [], 3); % Max projection
 BG = zeros([max(mask(:)), 1]);
 for kk = 1:numel(BG)
