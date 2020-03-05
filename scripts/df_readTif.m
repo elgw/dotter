@@ -65,7 +65,20 @@ if numel(tiffInfo) == 1
 end
 
 % In order to pre-allocate the output array, figure out the format.
-if strcmp(getfield(tiffInfo(1), 'SampleFormat'), 'IEEE floating point') == 1    
+
+ifFloat = [];
+if isfield(tiffInfo, 'SampleFormat')
+    if strcmp(getfield(tiffInfo(1), 'SampleFormat'), 'IEEE floating point') == 1
+        isFloat = 1
+    else
+        isFloat = 0
+    end
+else
+    warning('SampleFormat not specified, assuming fix point');
+    isFloat = 0;
+end
+
+if isFloat
     switch imBits
         case 32
             typeString = 'single';
@@ -73,8 +86,8 @@ if strcmp(getfield(tiffInfo(1), 'SampleFormat'), 'IEEE floating point') == 1
             typeString = 'double';
         otherwise
             error('Don''t know how to handle floats with %d bits per sample\n', imBits);
-    end    
-else    
+    end
+else
     switch imBits
         case 8
             typeString = 'uint8';
@@ -91,7 +104,7 @@ V = zeros(tiffInfo(1).Height, tiffInfo(1).Width, numel(tiffInfo), typeString);
 
 
 for kk = 1:size(V,3)
-    t.setDirectory(kk);    
+    t.setDirectory(kk);
     V(:,:,kk) = t.read();
 end
 
