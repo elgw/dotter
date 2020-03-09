@@ -93,12 +93,10 @@ for kk = 1:numel(varargin)
 end
 
 % Sort by S if it exists
-if exist('S', 'var')
+if exist('S', 'var') && numel(S)>0
     if numel(S)>0
-        if numel(S)>0
-            [~, IDX]=sort(S, 'descend');
-            P = P(IDX, :);
-        end
+        [~, IDX]=sort(S, 'descend');
+        P = P(IDX, :);
     end
 else
     if numel(P)>0
@@ -132,13 +130,15 @@ sumI = sum(I,3)/size(I,3);
 maxI = max(I,[], 3);
 
 fig = figure('DeleteFcn', @cleanup);
-clf
+clf();
 border = .1;
 %plo = subplot('Position', [border,border,1-border,1-border]);
-subplot('position', [0 0 1 1])
+subplot('position', [0 0 1 1]);
 
 mode = 1;
-s.sumView = 2; % Set default to (2) = max projects
+if ~isfield(s, 'sumView')
+    s.sumView = 2; % Set default to (2) = max projects
+end
 slide = round((size(I,3)+1)/2);
 tSlide = slide;
 s.updateImageData = 1;
@@ -271,7 +271,7 @@ markerSize2 = 18;
 % Is really both nps and nPointShow needed?
 
 nPoints = size(P,1);
-if nPoints>0
+if nPoints>0 && size(P,2)>3
     th = dotThreshold(P(:,4));
     nPointsShow = sum(P(:,4)>th);
 else
@@ -335,15 +335,17 @@ set(fig, 'WindowButtonUpFcn', @endMove);
 set(fig, 'WindowKeyPressFcn', @modeSwitch)
 %addlistener(fig,'WindowKeyPress',@modeSwitch);
 
-disp('settings:')
-disp(s)
+if s.debug
+    disp('settings:')
+    disp(s)
+end
 
 if hasfwhm
     fwhmSlide = thSlider('Object', gui.img, 'Data', dfwhm, 'Callback', @setFwhm);
 end
 
 clim = climSlider(gui.img, 'Min', min(I(:)), 'Max', max(I(:)) );
-if size(P,1)>0
+if size(P,1)>0 && size(P,2)>3
     thSlide = thSlider('Object', gui.img, 'Data', P(:,4), 'Callback', @setTh);
 end
 
@@ -944,7 +946,7 @@ end
         msg = [msg, ...
             sprintf('Number of dots: %d\n', size(P,1))];
         msg = [msg, ...
-            sprintf('\n')];
+            '\n'];
         msgbox(msg);
     end
 
