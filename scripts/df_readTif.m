@@ -69,9 +69,9 @@ end
 ifFloat = [];
 if isfield(tiffInfo, 'SampleFormat')
     if strcmp(getfield(tiffInfo(1), 'SampleFormat'), 'IEEE floating point') == 1
-        isFloat = 1
+        isFloat = 1;
     else
-        isFloat = 0
+        isFloat = 0;
     end
 else
     warning('SampleFormat not specified, assuming fix point');
