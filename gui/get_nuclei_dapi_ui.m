@@ -38,7 +38,7 @@ end
 
 
 if ~isfield(s, 'useWatershed')
-    s.useWatershed = 0;
+    s.useWatershed = 1;
 end
 
 s.excludeOnEdge=1;
@@ -56,7 +56,6 @@ s.localContrastProjection = [];
 
 s.minarea = 500; 
 s.maxarea = 60000;
-
 
 if isfield(s, 'voxelSize')
     s.minarea = s.minarea*(130^2/s.voxelSize(1)^2);
@@ -85,7 +84,7 @@ V = single(V);
 
 s.firstZ = 1;
 s.lastZ = size(V,3);
-gui.I = projectVolume(V);
+gui.I = projectVolume(V, s);
 [nuclei, mask, s]= get_nuclei_dapi(gui.I, s);
 gui.nSelected = ones(numel(nuclei), 1);
 gui.mask = mask;
@@ -154,7 +153,7 @@ gui.lastZ = uicontrol('Style', 'edit', 'String', s.lastZ, ...
     'Position', [.5, 1/3, 0.5 1/3]);
 
 
-gui.projMethod = uicontrol('Style', 'popup', 'String', {'max', 'median', 'mean', 'local'}, ...
+gui.projMethod = uicontrol('Style', 'popup', 'String', {'max', 'median', 'mean'}, ...
     'Parent', gui.Projection, ...
     'Units', 'Normalized', ...
     'Position', [0, 0, 1 1], ...
@@ -163,22 +162,23 @@ gui.projMethod = uicontrol('Style', 'popup', 'String', {'max', 'median', 'mean',
 
 
 gui.excludeOnEdge = uicontrol('Style', 'checkbox', 'String', 'Exclude On Edge', ...
-    'Position', [5,650,100,20], ...
-    'Value', s.excludeOnEdge);
+    'Position', [5,650,100,80], ...
+    'Value', s.excludeOnEdge, ...
+    'Callback', @update);
 
-gui.method = uicontrol('Style', 'popup', 'String', {'Thresholding', 'mrfGC'}, ...
-    'Position', [5, 600, 100, 20]);
-
-gui.mrfMean1 = uicontrol('Style', 'edit', 'String', s.mrfMean1, ...
-    'Position', [5, 550, 50, 20]);
-gui.mrfStd1 = uicontrol('Style', 'edit', 'String', s.mrfMean1, ...
-    'Position', [55, 550, 50, 20]);
-gui.mrfMean2 = uicontrol('Style', 'edit', 'String', s.mrfMean1, ...
-    'Position', [5, 510, 50, 20]);
-gui.mrfStd2 = uicontrol('Style', 'edit', 'String', s.mrfMean1, ...
-    'Position', [55, 510, 50, 20]);
-gui.mrfSigma = uicontrol('Style', 'edit', 'String', s.mrfMean1, ...
-    'Position', [5, 450, 50, 20]);
+% gui.method = uicontrol('Style', 'popup', 'String', {'Thresholding', 'mrfGC'}, ...
+%     'Position', [5, 600, 100, 20]);
+% 
+% gui.mrfMean1 = uicontrol('Style', 'edit', 'String', s.mrfMean1, ...
+%     'Position', [5, 550, 50, 20]);
+% gui.mrfStd1 = uicontrol('Style', 'edit', 'String', s.mrfMean1, ...
+%     'Position', [55, 550, 50, 20]);
+% gui.mrfMean2 = uicontrol('Style', 'edit', 'String', s.mrfMean1, ...
+%     'Position', [5, 510, 50, 20]);
+% gui.mrfStd2 = uicontrol('Style', 'edit', 'String', s.mrfMean1, ...
+%     'Position', [55, 510, 50, 20]);
+% gui.mrfSigma = uicontrol('Style', 'edit', 'String', s.mrfMean1, ...
+%     'Position', [5, 450, 50, 20]);
 
 gui.hp = uicontrol('Style', 'checkbox', 'String', 'HP filter', ...
     'Position', [5,350,100,20], ...
@@ -195,7 +195,8 @@ gui.pf = uicontrol('Style', 'checkbox', 'String', 'Glow filter', ...
 
 gui.ws = uicontrol('Style', 'checkbox', 'String', 'Watershed', ...
     'Position', [5,200,100,20], ...
-    'Value', s.useWatershed);
+    'Value', s.useWatershed, ...
+    'Callback', @wsSwitch);
 
 uicontrol('Style', 'pushbutton', ...
     'String', 'Done', ...
@@ -337,25 +338,27 @@ end
         subplot(gui.dapiPlot);
     end
 
-    function glowSwitch(varargin)
-        
-        if get(gui.pf, 'Value') == 1
-            
+    function wsSwitch(varargin)
+        update();
+        updateImage();
+    end
+
+    function glowSwitch(varargin)        
+        if get(gui.pf, 'Value') == 1            
             % Project again, not to apply this several times            
-            gui.I = projectVolume(V);                       
+            gui.I = projectVolume(V, s);
             
-            bg = df_bgEstimation(gui.I);                   
-     
+            for kk = 1:3
+            bg = df_bgEstimation(gui.I);
             gui.I = gui.I-bg+mean(bg(:));
-            
-            resetLevel();            
-            update()            
-            updateHistogram()
-            updateImage()
-            
+            end
+           
+            resetLevel();
+            update();
+            updateHistogram();
+            updateImage();
         else
-            gui.I = projectVolume(V);                       
-            
+            gui.I = projectVolume(V, s);
             resetLevel();            
             update()
             updateHistogram()
@@ -410,21 +413,16 @@ end
         set(gui.win, 'Pointer', 'watch');
         drawnow
         
-        if (get(gui.method, 'Value') == 1)
-            s.thresholding = 1;
-            s.mrfGC = 0;
-        else
-            s.thresholding = 0;
-            s.mrfGC = 1;
-        end
+        s.thresholding = 1;
+        s.mrfGC = 0;
         
         s.excludeOnEdge = get(gui.excludeOnEdge, 'Value');
         
-        s.mrfMean1 = str2num(get(gui.mrfMean1, 'String'));
-        s.mrfStd1 =  str2num(get(gui.mrfStd1, 'String'));
-        s.mrfMean2 = str2num(get(gui.mrfMean2, 'String'));
-        s.mrfStd2 =  str2num(get(gui.mrfStd2, 'String'));
-        s.mrfSigma = str2num(get(gui.mrfSigma, 'String'));
+%         s.mrfMean1 = str2num(get(gui.mrfMean1, 'String'));
+%         s.mrfStd1 =  str2num(get(gui.mrfStd1, 'String'));
+%         s.mrfMean2 = str2num(get(gui.mrfMean2, 'String'));
+%         s.mrfStd2 =  str2num(get(gui.mrfStd2, 'String'));
+%         s.mrfSigma = str2num(get(gui.mrfSigma, 'String'));
         
         s.level = str2num(get(gui.level, 'String'));
         if numel(s.level) == 0
@@ -492,7 +490,7 @@ end
         h(5) = text(N.bbx(3), N.bbx(1), label, 'Color', [1,0,0], 'FontSize', 14, 'HitTest', 'off',  'PickableParts','none');
     end
 
-    function I = projectVolume(V)
+    function I = projectVolume(V, s)
         % Create a 2D projection of V
         if strcmp(s.projectionType, 'mean')
             I = sum(V(:,:,s.firstZ:s.lastZ),3);
@@ -514,19 +512,11 @@ end
             end
             I = s.localContrastProjection;
             gui.win.Pointer = 'arrow';
-        end
-        
+        end        
         I = I- min(I(:));
-        I = I/max(I(:));
-        gui.I = I;
+        I = I/max(I(:));        
     end
-
-    function C = getSliceContrast(V)
-        dx = gpartial(V,1,1);
-        dy = gpartial(V,2,1);
-        gm = (dx.^2+dy.^2).^(1/2);
-        C = squeeze(sum(sum(gm,1),2));
-    end
+    
 
     function setZauto()
         % Selects an interval of z-slices which covers the top 50%
@@ -534,22 +524,21 @@ end
         % like setting at threshold at .5*(max-min)+min
         
         if numel(s.contrast) == 0
-            s.contrast = getSliceContrast(V);
             
+            s.contrast = df_image_focus('image', V);
+                                    
             ma = max(s.contrast);
             if(size(V,3)>1)
                 maLocation = find(s.contrast==ma);
                 if min(maLocation) < 5 || max(maLocation)>(size(V,3)-4)
                     warning('Focus seems to be very close to the edge in this image')
                 end
-            end
-            
+            end            
         end
         
+        pslices = .15; % Proportion of slices to use
         t = sort(s.contrast);
-        cMin = t(ceil(0.50*numel(t)));
-        
-        
+        cMin = t(ceil((1-pslices)*numel(t)));                
         z = find(s.contrast>cMin);
         if numel(z)==0
             warning('No contrast could be determined');
@@ -566,8 +555,7 @@ end
             close(f)
         end
         s.firstZ = z(1);
-        s.lastZ = z(end);
-        
+        s.lastZ = z(end);        
     end
 
     function setZ(varargin)
@@ -579,7 +567,7 @@ end
             s.firstZ = f1;
             s.lastZ = f2;
             
-            gui.I = projectVolume(V);
+            gui.I = projectVolume(V, s);
             updateImage()
             if numel(gui.cPlot)>0
                 if isvalid(gui.cPlot)
@@ -596,7 +584,7 @@ end
     function projectionChanged(varargin)
         disp('projectionChanged')
         s.projectionType = gui.projMethod.String{gui.projMethod.Value};
-        gui.I = projectVolume(V);
+        gui.I = projectVolume(V, s);
         updateHistogram();
         updateImage();
     end

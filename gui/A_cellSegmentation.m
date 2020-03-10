@@ -42,7 +42,7 @@ if isfield(s, 'dapifiles')
 else
     dapifiles = dir([s.folder 'dapi*.tif']);
     if numel(dapifiles)==0
-        fprintf('No tif files files found in %s, quiting.\n', folder)
+        fprintf('No "dapi*.tif" files files found in %s, quiting.\n', s.folder)
         return
     end
 end

@@ -1,4 +1,5 @@
 function varargout = df_image_focus(varargin)
+% 'image', 'method' (default, 'gm')
 
 s.method = 'gm'; % Gradient magnitude
 V = [];

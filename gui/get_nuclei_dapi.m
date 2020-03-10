@@ -47,7 +47,7 @@ if ~isfield(s, 'level')
     s.level = graythresh(I/max(I(:)));
 end
 
-if s.useHP
+if s.useHP    
     I = gsmooth(I, s.hpSigma, 'normalized');
 end
 
@@ -73,14 +73,7 @@ mask = bwpropfilt(mask, 'Area', [s.minarea, s.maxarea]);
 % or using watersheds to separate cells a little more.
 
 if s.useWatershed
-    emask = imerode(mask, strel('disk', 20));
-    D = bwdist(emask, 'euclidean');
-    D(~mask)=Inf;
-    L = double(watershed(D));
-    L = L.*mask;    
-    
-    mask = L>0;
-    mask = bwpropfilt(mask, 'Area', [s.minarea, inf]);
+    mask = ws_mask(mask, s);    
 end
 
 if s.excludeOnEdge
@@ -114,3 +107,19 @@ end
 mask = L;
 nuclei = N;
 disp('done looking for cells')
+end
+
+function wsmask = ws_mask(mask, s)    
+    
+    th = round(sqrt(s.maxarea/pi) / 6); % radius/6
+    th = max(th, 1);
+    %D = -bwdist(~(LL~=0));
+    D = -bwdist(~mask);
+    D = imclose(D, strel('disk', th));
+    %D(D<-th) = -th;
+    D(D==0) = Inf;
+    W = watershed(D);
+    wsmask = double(W).*double(mask>0);
+    wsmask = wsmask>0; % Logical return value
+    
+end
