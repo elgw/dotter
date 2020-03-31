@@ -27,9 +27,11 @@ usable_bytes = FileObj.getUsableSpace;
 if nargin<3
     warning('No settings provided, using defaults');
     s.logFile = 1; % standard out
-    s.focus_check = 1;
+    s.focus_distance = 20;
+    s.focus_check = 0;
     s.focus_skip = 0;
     s.onlyFirst = 0;
+    s.asMAT = 0;
 end
 
 fprintf(s.logFile, '%.1f GB free on the target drive\n', usable_bytes/1024/1024/1024);

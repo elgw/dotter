@@ -1,5 +1,5 @@
 function df_gaussianInt2_ut(varargin)
-
+% df_gaussianInt2(pos, sigma, w)
 doBuild = 0;
 
 for kk = 1:numel(varargin)
