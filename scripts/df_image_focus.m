@@ -1,5 +1,7 @@
 function varargout = df_image_focus(varargin)
 % 'image', 'method' (default, 'gm')
+%
+% sigma=1 is too small for some deconvolved images.
 
 s.method = 'gm'; % Gradient magnitude
 V = [];
@@ -26,10 +28,11 @@ if nargout ~= 1
 end
 
 if strcmp(s.method, 'gm')
+    sigma = 2;
     gm = zeros(1,size(V,3));
     for kk = 1:size(V,3)
-        dx = gpartial(V(:,:,kk),1,1);
-        dy = gpartial(V(:,:,kk),2,1);
+        dx = gpartial(V(:,:,kk),1,sigma);
+        dy = gpartial(V(:,:,kk),2,sigma);
         gm(kk) = mean(mean((dx.^2+dy.^2).^(1/2)));
     end
     varargout{1} = gm;
