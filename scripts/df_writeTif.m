@@ -15,8 +15,10 @@ t = Tiff(filename, 'w');
 	tagstruct.ImageLength = size(stack, 1);
 	tagstruct.ImageWidth = size(stack, 2);
 	tagstruct.Photometric = Tiff.Photometric.MinIsBlack;
+    
 	tagstruct.BitsPerSample = 16;
 	tagstruct.SampleFormat =  1; % uint
+    
 	tagstruct.PlanarConfiguration = Tiff.PlanarConfiguration.Chunky;
     %tagstruct.Compression = Tiff.Compression.LZW;
     tagstruct.Compression = Tiff.Compression.None;
