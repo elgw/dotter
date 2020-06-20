@@ -244,6 +244,10 @@ uimenu(mDNA, 'Label', 'Export 2D masks', 'Callback', @run_exportMasks, ...
         if isnumeric(NMfolder)
             disp('Aborting');
         else
+            if ~contains(NMfolder, '_calc')
+                errordlg(sprintf('Can''t figure out what tif folder to use! This folder with NM files does not end with _calc'));
+                return;
+            end
             
             TIFfolder = uigetdir([NMfolder '/..'], 'Say where the tif files are (sub folder)');
             

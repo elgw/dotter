@@ -32,7 +32,7 @@ end
 assert(gotError);
 
 % Empy argument -- and too short arguments
-for kk = 1:6
+for kk = 0:6
 gotError = false;
 try
     df_fwhm1d(zeros(kk,1));
@@ -66,18 +66,26 @@ end
 disp('Border cases');
 % Constant/flat signals
 for kk = -1:1
-t = ones(11,1);
-df_fwhm1d(kk*t)
+    t = ones(11,1);
+    df_fwhm1d(kk*t);
 end
 
 disp('Random input')
-for kk = 1:100
-    t = rand(randi(21)*2+5,1);
+for kk = 1:100000
+    t = rand(randi(29)*2+5,1);
     df_fwhm1d(t);
 end
 
 disp('NaN and inf')
-df_fwhm1d([1 1 1 nan 1 1 1])
+w = df_fwhm1d([1 1 1 nan 1 1 1]);
+assert(w == -1);
+w = df_fwhm1d([1 1 1 Inf 1 1 1]);
+assert(w == -1);
+
+for kk = 1:7
+    df_fwhm1d(circshift([1, 1, 1, -1e9, 1, 1, 1], kk));
+    df_fwhm1d(circshift([1, 1, 1, 1e9, 1, 1, 1], kk));
+end
 
 disp('Precision')
 sigmas = linspace(1,2)';
@@ -91,7 +99,6 @@ for kk = 1:numel(sigmas)
 end
 
 T = [sigmas, w, 2*sqrt(2*log(2))*sigmas ];
-
 
 assert(max(abs(1-T(:,2)./T(:,3))) < 0.05);
 

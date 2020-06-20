@@ -35,11 +35,14 @@ else
   $(info --> $(UNAME) detected)
 endif
 
-all: gaussianInt2 blit3 com3 mlfit mlfit1 mlfit1sn mlfitN conv1 imshift
+all: gaussianInt2 blit3 com3 mlfit mlfit1 mlfit1sn mlfitN conv1 imshift fwhm1d
 
 blit3: blit3.c
 	$(CC) $(FLAGS) gaussianInt2.o -Dstandalone `pkg-config gsl --cflags` blit3.c -lm -o blit3
 	$(CC) $(FLAGS) gaussianInt2.o `pkg-config gsl --cflags` blit3.c -lm  -c -o blit3.o
+
+fwhm1d: fwhm1d.c
+	$(CC) -Wall -g  `pkg-config gsl --cflags` fwhm1d.c `pkg-config gsl --libs` -lm -o fwhm1d
 
 com3: com3.c
 	$(CC) $(FLAGS) -Dstandalone `pkg-config gsl --cflags --libs` com3.c -lm -o com3

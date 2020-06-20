@@ -48,7 +48,7 @@ for kk =1:numel(files)
     cFolder = fo{end};
     pos = strfind(cFolder, '_calc');
     if numel(pos) == 0
-        warndlg(sprintf('Can''t figure out what tif folder to use!'))
+        errordlg(sprintf('Can''t figure out what tif folder to use! This folder with NM files does not end with _calc'))
     end
         
     cFolder = cFolder(1:pos-1); % remove trailing '_calc'
