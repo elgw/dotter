@@ -15,7 +15,7 @@ fprintf(fid, '%s\n', props{end});
 
 propsClass = {};
 for kk = 1:size(tab, 2)
-    pcell = tab{2,kk};
+    pcell = tab{1,kk};
     if isa(pcell, 'cell')
         propsClass{kk} = class(pcell{1});
     else
@@ -24,7 +24,7 @@ for kk = 1:size(tab, 2)
 end
 
 nCols = numel(propsClass);
-for kk = 2:size(tab,1)
+for kk = 1:size(tab,1)
     for pp = 1:nCols-1
         writeCell(fid, tab{kk,pp}, propsClass{pp});
         fprintf(fid, ',');
@@ -42,7 +42,11 @@ if( strcmp(pclass, 'char') )
     fprintf(fid, '%s', acell{1});
 end
 if( strcmp(pclass, 'double') )
-    fprintf(fid, '%.3f', acell);
+    if iscell(acell)
+        fprintf(fid, '%.3f', acell{1});
+    else
+        fprintf(fid, '%.3f', acell);
+    end
 end
 
 end

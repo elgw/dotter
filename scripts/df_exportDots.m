@@ -203,6 +203,7 @@ for kk = 1:numel(files)
         
         if s.calcFWHM || ~strcmpi(s.fitting, 'none') || s.calcSNR
             imFile = double(df_readTif(imFileName));
+            assert(numel(imFile)>0);
         else
             imFile = [];
         end
@@ -244,9 +245,14 @@ end
 Table = cell2table(T);
 Table.Properties.VariableNames = {'File', 'Channel', 'Nuclei', 'x', 'y', 'z', 'Value','FWHM', 'SNR', 'NSNR', 'Label'};
 
+%keyboard
+
 if ischar(outFile)
     fprintf('Writing to disk: %s\n', outFile);
-    writetable(Table, outFile);
+    % Expect that writetable as a whimsical behaviour and sometimes rounds all values
+    % in certain columns.
+    % writetable(Table, outFile);
+    df_writeTable(Table, outFile);
     disp('Done writing data.');
     disp('Time to awk?')
 else
@@ -358,6 +364,11 @@ for nn = 1:numel(N)
         end
         
         if s.calcFWHM
+            %if nn == 47 
+            %    if cc == 6
+            %        keyboard
+            %    end
+            %end  
             fprintf(s.logFile, ' + Calculating FWHM\n');
             dfwhm = df_fwhm(imFile, dots(:,1:3));
         else
