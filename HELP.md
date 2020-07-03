@@ -49,41 +49,73 @@ already using it!.
 <a name="Instructions"/>
 
 ### Instructions
-Get the code:
-```
-git clone git@github.com:elgw/dotter.git
-```
+These instructions are for MacOS.
 
-Install GSL and pkg-config (requires [brew](https://brew.sh/))
+#### Get the code
+To get the code and keep it up to date you need to have an account at [github](http://www.github.com). Since DOTTER is private at the moment, you need to get access to the repository. You can get that by sending an email to [erik](email:erik.wernersson@gmail.com) where you provide your username from github.
+
+When you have access to the repository you, the preferred way to get it to you computer is to open a terminal, then:
 ```
-brew install gsl
-brew install pkg-config
+# Go where you want to place the code
+cd ~/
+# Download the latest version, which will be put in a new folder called dotter
+git clone git@github.com:elgw/dotter.git
 ```
 
 Start MATLAB, and run `pathtool`, click 'Add Folder...', navigate to the `dotter` folder. Press 'Save' and then restart MATLAB.
 
 From now on you should now be able to start
-DOTTER with the command: `DOTTER` in MATLAB.
+DOTTER with the command: `DOTTER` in MATLAB. However you can't use all functions yet since some of them are written in C and have to be compiled on your machine (alternatively copy these files from someone else with the same version of matlab and MacOS).
 
-Next you need to compile some function written in C. Do so from the
-menu: _DOTTER->Maintenanace->Compile C Functions_.
 
-Most likely `mex` is not setup on you computer. How to do this varies
-but on a mac you should install `XCode` first. Then run `mex -setup`
-in MATLAB. Ask someone for help if you get stuck at this point. If you are on mac you might need to start MATLAB from command line (i.e., not using the icon) in order for the compiler to find all dependencies.
+#### Install dependencies
+
+1. Install the package manager [brew](https://brew.sh/).
+
+2. Install GSL and pkg-config from the terminal
+  ```
+  brew install gsl
+  brew install pkg-config
+  ```
+
+3. Compile in MATLAB
+
+To compile in MATLAB you need to have [XCode](https://developer.apple.com/xcode/) installed which you can get from the App Store. Unfortunately this is a rather big package which will take some time to get installed. When XCode is installed, ask MATLAB to look for it
+```
+>> mex -setup
+```
+
+Figure out where MATLAB is installed (it is probably somewhere else on your system)
+```
+>> fullfile(matlabroot, 'bin')
+ '/home/donald/MATLAB_R2017b/bin'
+```
+
+Then in a terminal
+```
+cd /home/donald/MATLAB_R2017b/bin
+./matlab
+```
+
+open DOTTER, by
+```
+>> DOTTER
+```
+Navigate the menu and select: `DOTTER`->`Maintenanace`->`Compile C Functions`. Please note the output in the MATLAB console, if there are any errors, please try to understand what they are. If you get stuck here, send an email to Erik.
+
 
 <a name="KeepingUpdated" />
 
 ### Keeping updated
 Since the files are managed by GIT you can go to a terminal, `cd` to
-the directory with the source codes and do a
+the directory with DOTTER and do a
 
 ```
 git pull
 ```
 
 The same thing is accessible from the menubar in DOTTER,
-_DOTTER->Maintenance->Update_
+`DOTTER`->`Maintenance`->`Update`
 
 #### Downgrading
 In case that you want to use an older version, `git` is your friend.
