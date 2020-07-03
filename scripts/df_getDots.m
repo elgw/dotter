@@ -32,6 +32,7 @@ end
 
 %keyboard % No voxel size supplied?
 
+returnTemplate = 0;
 returnDefaults = 0;
 defaultsChannel = 'unknown';
 voxelSize = [];
@@ -40,6 +41,10 @@ for kk = 1:numel(varargin)
     if strcmp(upper(varargin{kk}), 'GETDEFAULTS')
         returnDefaults = 1;
     end
+    if strcmp(upper(varargin{kk}), 'GETTEMPLATE')
+        returnTemplate = 1;
+    end
+    
     if strcmp(upper(varargin{kk}), 'CHANNEL')
         defaultsChannel = varargin{kk+1};
     end
@@ -66,20 +71,19 @@ if nargin == 2
     end
 end
 
-if nargin == 1
-    if isnumeric(varargin{1})
-        warning('Legacy mode')
-        I = varargin{1};
-        s = df_getDots('getDefaults');
-    end
+if returnTemplate    
+    s.voxelSize = [130, 130, 300];
+    s.lambda = 600;
+    returnDefaults = 1;
 end
+    
 
 if returnDefaults
     if ~exist('s', 'var')
         s = struct();
     end
     
-    if ~isfield(s, 'voxelsize')
+    if ~isfield(s, 'voxelSize')
         s.voxelSize = df_getVoxelSize();
     end
     
@@ -109,6 +113,14 @@ if returnDefaults
     return
 end
 
+if nargin == 1
+    if isnumeric(varargin{1})
+        warning('Legacy mode')
+        I = varargin{1};
+        s = df_getDots('getDefaults');
+    end
+end
+
 if ~isfield(s, 'useLP')
     s.useLP = 0;
 end
@@ -127,6 +139,7 @@ I = double(I);
 if s.verbose
     disp('Finding local maximas')
 end
+
 s.verbose = 1;
 fprintf('FWHM for dot: %f %f %f\n', s.dotFWHM(1), s.dotFWHM(2), s.dotFWHM(3));
 sigma = s.dotFWHM./s.voxelSize/2.35;
@@ -208,7 +221,7 @@ else
     D = imdilate(J, strel('arbitrary', sel));
 end
 
-J = clearBoarders(J, 3, -inf); % 3 was working fine
+J = clearBoarders(J, 4, -inf); % 3 was working fine
 %K = clearBoarders(A, 1, -1);
 %K=clearBoardersXY(A,s.xypadding,-1);
 

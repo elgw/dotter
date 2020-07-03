@@ -7,6 +7,15 @@ p2 = {120,100,10};
 
 V(p1{:})=1;
 
+disp(' Empty dot list')
+gotErr = 0;
+try
+    df_fwhm(V, 0);
+catch e
+    gotErr = 1;
+end
+assert(gotErr) = 1;
+
 disp('  Reasonable estimation for a delta function')
 w0 = df_fwhm(V, cell2mat(p1));
 assert(w0>0);
@@ -17,6 +26,8 @@ w1 = df_fwhm(V, cell2mat(p2));
 if (w1~=-1)
     error('Didn''t handle flat data')
 end
+
+
 
 V = zeros(100,100,100);
 V(50,50,:) = 1;

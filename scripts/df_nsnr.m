@@ -31,6 +31,7 @@ end
     
 % 2/ For each dot, divide image intensity by the correponding nuclei
 % value from 1.
+
 nuclei = interpn(mask, dots(:,1), dots(:,2), 'nearest');
 value = interpn(image, dots(:,1), dots(:,2), dots(:,3));
 for kk = 1:size(nsnr,1)

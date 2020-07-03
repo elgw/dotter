@@ -18,14 +18,13 @@
 # Help
 
  * [Getting started](#GettingStarted)
- * [Installation](#Installation)
-   * [Dependencies](#Dependencies)
-   * [Instructions](#Instructions)
+ * [Installation Instructions](#Installation)
    * [Keeping Updated](#KeepingUpdated) 
  * [Workflow](#Workflow)
  * [Specific Topics](#SpecificTopics)
    * [Shifts and chromatic aberrations](#ShiftsCorrections)
  * [Troubleshooting](#Troubleshooting)
+ * [Dependencies](#Dependencies)
 
 <a name="GettingStarted"/>
 
@@ -35,23 +34,11 @@ already using it!.
 
 <a name="Installation"/>
 
-## Installation
+## Installation instructions
 
-<a name="Dependencies"/>
-
-### Dependencies
-* OSX or Ubuntu - will not work on Windows
-* GIT
-* MATLAB
-* The GNU scientific library, GSL
-* A Compiler for C99 that works with Matlab
-
-<a name="Instructions"/>
-
-### Instructions
 These instructions are for MacOS.
 
-#### Get the code
+### Get the code
 To get the code and keep it up to date you need to have an account at [github](http://www.github.com). Since DOTTER is private at the moment, you need to get access to the repository. You can get that by sending an email to [erik](email:erik.wernersson@gmail.com) where you provide your username from github.
 
 When you have access to the repository you, the preferred way to get it to you computer is to open a terminal, then:
@@ -59,6 +46,7 @@ When you have access to the repository you, the preferred way to get it to you c
 # Go where you want to place the code
 cd ~/
 # Download the latest version, which will be put in a new folder called dotter
+# this will ask for your user name and password at github
 git clone git@github.com:elgw/dotter.git
 ```
 
@@ -68,7 +56,7 @@ From now on you should now be able to start
 DOTTER with the command: `DOTTER` in MATLAB. However you can't use all functions yet since some of them are written in C and have to be compiled on your machine (alternatively copy these files from someone else with the same version of matlab and MacOS).
 
 
-#### Install dependencies
+### Install dependencies
 
 1. Install the package manager [brew](https://brew.sh/).
 
@@ -117,7 +105,7 @@ git pull
 The same thing is accessible from the menubar in DOTTER,
 `DOTTER`->`Maintenance`->`Update`
 
-#### Downgrading
+### Downgrading
 In case that you want to use an older version, `git` is your friend.
 To see all old version use (in terminal)
 
@@ -239,4 +227,14 @@ improve DOTTER.
    folder `~/.DOTTER/`. Remove the whole folder to reset the
 configuration. This includes default directories, window placements
 and emission wavelengths for fluorophores.
+
+
+<a name="Dependencies"/>
+
+## Dependencies
+* OSX or Ubuntu - will not work on Windows
+* GIT
+* MATLAB
+* The GNU scientific library, GSL
+* A Compiler for C99 that works with Matlab
 
