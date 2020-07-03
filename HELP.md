@@ -48,8 +48,9 @@ When you have access to the repository you, the preferred way to get it to you c
 # Go where you want to place the code
 cd ~/
 # Download the latest version, which will be put in a new folder called dotter
-# this will ask for your user name and password at github
-git clone git@github.com:elgw/dotter.git
+# this will ask for your password at github
+# replace myname with your github username
+git clone https://myname@github.com/elgw/dotter.git
 ```
 
 Start MATLAB, and run `pathtool`, click 'Add Folder...', navigate to the `dotter` folder. Press 'Save' and then restart MATLAB.
