@@ -29,8 +29,10 @@
 <a name="GettingStarted"/>
 
 ## Getting started
-The best way to get introduced to the software is to ask someone
-already using it!.
+DOTTER is still full of surprises and could for sure be more intuitive. The best way to get introduced to the software is to ask someone
+already using it!
+
+As user you are expected to report bugs and come with [suggestions for improvements](https://github.com/elgw/dotter/issues)! Help is also wanted in extending the documentation.
 
 <a name="Installation"/>
 
