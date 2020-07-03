@@ -147,7 +147,7 @@ The general workflow is this:
 
 ## Specific Topics
 
-<a name="DotDetection"/>
+<a name="ShiftsCorrections"/>
 
 ### Shifts and chromatic aberrations
 
