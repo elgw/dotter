@@ -39,6 +39,8 @@ if size(I,3)>1
     I(I(:)==0) = nan;
     m = mode(I, 3); % mode in Z, nans ignored
     m = uint16(m);        
+else
+    m = uint16(I);
 end
 
 % No nuclei
