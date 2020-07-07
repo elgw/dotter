@@ -1,7 +1,6 @@
 function [m] = df_readExternalMask(file)
 % Read an external 2D/3D mask from a file and projects it down to 2D
 
-
 if ~exist('file', 'var')
     error('No file specified')
 end
@@ -26,12 +25,12 @@ end
 I = double(I); % uint32 can not be nan
 
 if(size(I,3)==1)
-    error('The external mask is not 3D');
+    warning('The external mask is not 3D');
 end
 
 % If the nuclei are not labelled, label them
 if numel(unique(I(:))) == 2
-    fprintf('Labelling the 3D mask\n');
+    fprintf('Labelling the mask\n');
     I = bwlabeln(I);
 end
 
