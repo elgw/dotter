@@ -554,16 +554,21 @@ close(f);
                 y(kk)=get(Markers(kk), 'Ydata');
             end
             
-            xp = [x x x]; yp = [y y y];
-            nLinePoints = 10*numel(x);
+            
             %xx = interp1(1:numel(xp), xp, linspace(1,numel(xp), 3*nLinePoints), interpolationType);
             % xx = xx(nLinePoints:(2*nLinePoints+10));
-            xx = interp1(1:numel(xp), xp, linspace(numel(x)+1, 2*numel(x)+1, nLinePoints), interpolationType);
-            %xx = xx(1:end-1);
-            %yy = interp1(1:numel(yp), yp, linspace(1,numel(yp), 3*nLinePoints), interpolationType);
-            %yy = yy(nLinePoints:(2*nLinePoints+10));
-            yy = interp1(1:numel(xp), yp, linspace(numel(x)+1, 2*numel(x)+1, nLinePoints), interpolationType);
-            %yy = yy(1:end-1);
+            
+            if 0
+                % MATLAB does not have closed splines
+                xp = [x x x]; yp = [y y y];
+                nLinePoints = 10*numel(x);
+                xx = interp1(1:numel(xp), xp, linspace(numel(x)+1, 2*numel(x)+1, nLinePoints), interpolationType);            
+                yy = interp1(1:numel(xp), yp, linspace(numel(x)+1, 2*numel(x)+1, nLinePoints), interpolationType);                
+            else             
+                [~, xx] = df_circspline(1:numel(x), x, 15);
+                [~, yy] = df_circspline(1:numel(y), y, 15);                        
+            end
+            
             
             %keyboard
             
