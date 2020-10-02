@@ -13,7 +13,7 @@ assert(ismember(conn, [6, 18, 26]))
 
 switch(conn)
     case 26
-        sel = ones(3,3, 3);        
+        sel = ones(3,3, 3);
     case 18
         sel = ones(3, 3, 3);
         for a = [1,3]
@@ -22,7 +22,7 @@ switch(conn)
                     sel(a, b, c) = 0;
                 end
             end
-        end        
+        end
     case 6
         sel = zeros(3,3, 3);
         sel(:, 2, 2) = 1;

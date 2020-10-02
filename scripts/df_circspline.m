@@ -1,4 +1,4 @@
-function [X, Y] = circspline(x, y, F)
+function [X, Y] = df_circspline(x, y, F)
 % https://mathworld.wolfram.com/CubicSpline.html
 
 x = x(:);
@@ -13,6 +13,8 @@ for kk = 1:numel(R)
 end
 Y = 3*(circshift(y, -1) - circshift(y, 1));
 % M*D=Y; M*D - Y = 0;
+% M is a Toeplitz matrix, not sure if matlab is using that fact here ...
+% In GSL: gsl_linalg_solve_symm_cyc_tridiag
 D = M\Y;
 
 a = y;

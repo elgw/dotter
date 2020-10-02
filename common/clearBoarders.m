@@ -1,5 +1,5 @@
 function I = clearBoarders(I, padding, value)
-% Sets the edge pixels to zeros
+% Sets the padding, edge pixels to value (default: 0)
 
 if ~exist('value', 'var')
     value = 0;

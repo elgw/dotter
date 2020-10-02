@@ -5,9 +5,10 @@ function [ldapi, rdapi] = select_dapi(D, outFolder)
 % cells by default and alows other choices.
 
 % D = [1000+100*randn(150,1);  2000+125*randn(100,1)];
-
-if ~exist(outFolder, 'dir')
-	mkdir(outFolder)
+if exist('outFolder', 'var')
+    if ~exist(outFolder, 'dir')
+        mkdir(outFolder)
+    end
 end
 
 maxDapi = max(D(:));
@@ -99,7 +100,7 @@ close(fig);
         set(fig, 'WindowButtonMotionFcn', '')
     end
 
-    function done(varargin)
+    function done(varargin)        
         if exist('outFolder', 'var')
             dprintpdf([outFolder 'dapiSelection.pdf'], 'fig', fig, 'w', 15, 'h', 10)
         end

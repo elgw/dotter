@@ -39,7 +39,11 @@ end
 
 function writeCell(fid, acell, pclass)
 if( strcmp(pclass, 'char') )
-    fprintf(fid, '%s', acell{1});
+    if isa(acell, 'char')
+        fprintf(fid, '%s', acell);
+    else
+        fprintf(fid, '%s', acell{1});
+    end
 end
 if( strcmp(pclass, 'double') )
     if iscell(acell)

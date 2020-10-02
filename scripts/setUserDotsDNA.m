@@ -951,8 +951,8 @@ fig_menu_delete()
         nm_file = [s.folder s.files(s.fieldNo).name];
         Meta_old = df_nm_load(nm_file);
         
-        if strcmp(Meta_old{1}.dapifile, M.dapifile) == 1
-            save(nm_file, 'M', 'N');
+        if strcmp(Meta_old{1}.dapifile, M.dapifile) == 1            
+            df_nm_save(M, N, nm_file);
         else
             errordlg('You just found a super serious bug! Please report to erik!');
         end
@@ -1177,7 +1177,7 @@ fig_menu_delete()
                 M = setToM(M ,s);
                 M.th = s.dots.th;
                 M.th0 = s.dots.th0;
-                save(fname, 'M', 'N', '-mat');
+                df_nm_save(M, N, fname);                
             end
             
             ctrl.table.Visible = 'on';
@@ -1808,7 +1808,7 @@ fig_menu_delete()
             for nn = 1:numel(N)
                 N{nn} = clustering_apply(N{nn}, s.clustering); %gui_kmeansClustering()
             end
-            save(nmFile, 'M', 'N');
+            df_nm_save(M, N, nmFile);            
         end
         close(p);
         

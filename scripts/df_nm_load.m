@@ -1,4 +1,4 @@
-function [M,N] = df_nm_load(fileName, varargin)
+function [M, N] = df_nm_load(fileName, varargin)
 %% function [M,N] = df_nm_load(fileName, varargin)
 % Load nuclei and metadata from folder or file
 
@@ -46,7 +46,12 @@ for kk = 1:numel(files)
         error('No nuclei available');
     end
     
-    for nn = 1:numel(D.N)
+    if ~isa(D.N, 'cell')
+        error('''N'' is not a cell -- is this really a DOTTER NM file?')
+    end
+    
+    % TODO: will fail if N is not a cell
+    for nn = 1:numel(D.N)        
         D.N{nn}.metaNo = kk;
         D.N{nn}.nucleiNr = nn;
     end
@@ -60,6 +65,5 @@ for kk = 1:numel(files)
     M = [M, {D.M}];
     N = [N, D.N];    
 end
-
 
 end
