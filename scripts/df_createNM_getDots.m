@@ -73,15 +73,16 @@ psf_file = [wfolder 'psf.mat'];
 
 %% For each image set consisting of several channels
 for kk = 1:numel(dapifiles)
-    dapif = dapifiles(kk).name;
+    dapif = dapifiles{kk};
     fprintf('-> Processing images related to %s\n', dapif);
-    datafile = [wfolder dapifiles(kk).name(end-6:end-4) '.NM'];
-    if ~exist(datafile)
+    
+    datafile = [wfolder df_nm_get_name_from_image(dapifiles{kk})];
+    if ~isfile(datafile)
         disp([datafile ' could not be loaded, aborting. Please run A_cellsSegmentation first (or A_cells)']);
         return
     end
     
-    load(datafile, '-mat');
+    load(datafile, 'M', 'N', '-mat');
     
     %% Per channel
     for cc = 1:numel(s.channels)
@@ -166,7 +167,7 @@ for kk = 1:numel(dapifiles)
     M.dotsMeta = dotsMeta;
     M.DOTTER_version = df_version();
     
-    save(datafile, 'N', 'M');
+    df_nm_save(M, N, datafile);
 end
 
 fprintf('Done\n');

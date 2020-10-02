@@ -1,4 +1,4 @@
-function [chan, dapichan] = df_channelsFromFileNames(folder)
+function [chan, dapichan, dapifiles] = df_channelsFromFileNames(folder, varargin)
 %function [chan, dapichan] = df_channelsFromFileNames(folder or file)
 % Identifies channel names from the names of the tif files in the folder
 % or if a single file was given, return the channel name from that file
@@ -17,6 +17,22 @@ function [chan, dapichan] = df_channelsFromFileNames(folder)
 % channels{end+1} = dapichan;
 %
 
+prefix = ''; % Prefix to use
+xprefix = 'dw_'; % Prefix to exclude
+
+% Alternatively, use:
+%prefix = 'dw_'; % Prefix to use
+%xprefix = ''; % Prefix to exclude -- ignored if empty
+
+for kk = 1:numel(varargin)
+    if strcmpi(varargin{kk}, 'prefix')
+        prefix = varargin{kk+1};
+    end
+    if strcmpi(varargin{kk}, 'xprefix')
+        xprefix = varargin{kk+1};
+    end
+end
+
 % A single file was given
 if exist(folder, 'file') == 2
     chan = chanFromFile(folder);
@@ -31,57 +47,51 @@ if(folder(end) ~= filesep())
     folder = [folder filesep()];
 end
 
-files = dir([folder '*.tif']);
+files = dir([folder '*.*']);
 
-if numel(files)==0
+pattern = ['^' prefix '(?<channel>\w+)\_(?<number>[0-9]+)\.(?<ending>[tT][iI][fF][fF]?)$'];
+xpattern = ['^' xprefix];
+
+use = zeros(numel(files), 1);
+for kk = 1:numel(files)    
+    file = files(kk).name;
+    match =  regexp(file, pattern, 'match');
+    if numel(xprefix) > 0
+        xmatch =  regexp(file, xpattern, 'match');
+    else
+        xmatch = [];
+    end
+    if numel(match) == 1 && numel(xmatch) == 0
+        use(kk) = 1;
+    end
+end
+files = files(use == 1);
+
+if numel(files) == 0
+    fprintf('Used pattern: %s\n', pattern);
     warning(['No tif files found in ' folder ' quiting'])
     return
 end
 
 %keyboard
+dapifiles = {};
 for kk=1:numel(files)
-    channel = chanFromFile(files(kk).name);
-    if numel(channel) > 0
-        if(channel(1) ~= '.') % Ignore hidden files
-            if numel(strfind(upper(channel), 'DAPI'))==0
-                chan{end+1} = channel;
-            else
-                dapichan=channel;
-            end
-            
-            chan = unique(chan);
-        end
-    end
+    file = files(kk).name;
+    reg = regexp(file, pattern, 'names');
+    channel = reg.channel;
+        
+    if contains(upper(channel), 'DAPI')
+        dapichan=[prefix channel];
+        dapifiles{end+1} = [files(kk).name];
+    else
+        chan{end+1} = [prefix channel];
+    end  
+    
+    chan = unique(chan);    
 end
 
 if numel(dapichan) == 0
     warning('No DAPI channel detected');
 end
-
-end
-
-function channel = chanFromFile(file)
-badName = 0;
-locations = find(file == '_');
-
-if numel(locations) == 0
-    disp('No _ in the file name');
-    badName = 1;
-else
-    if locations(end) == 1
-        disp('Only _ is at the start of the file name');
-        badName = 1;
-    end
-end
-
-if badName
-    fprintf('Bad file name : %s\n', fName)
-    warning('File names should be formatted CHANNEL_XYZ.tif');
-    channel = [];
-    return
-end
-
-lastLoc = locations(end);
-channel = file(1:lastLoc-1);
 
 end

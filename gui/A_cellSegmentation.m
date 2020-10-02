@@ -67,8 +67,8 @@ Ntot = 0; % Total number of nuclei
 
 %% For each image set consisting of several channels
 for kk = 1:numel(dapifiles)
-    fprintf('Loading %s ... ', dapifiles(kk).name);
-    dapif = [s.folder dapifiles(kk).name];
+    fprintf('Loading %s ... ', dapifiles{kk});
+    dapif = [s.folder dapifiles{kk}];
     
     M = []; % Meta data, for all the nuclei
     
@@ -114,7 +114,7 @@ for kk = 1:numel(dapifiles)
     %dotterSlide(idapi, dots, [], dotterSlide_settings);
     %pause
     
-    ddapif = strrep([wfolder dapifiles(kk).name], 'dapi', 'd_dapi');
+    ddapif = strrep([wfolder dapifiles{kk}], 'dapi', 'd_dapi');
     ddapif = strrep(ddapif, '.tif', '.mat');
     
     % check if there is a file with deconvolution results, if not,
@@ -130,8 +130,10 @@ for kk = 1:numel(dapifiles)
     end
     
     M.mask = mask;
-    datafile = [wfolder dapifiles(kk).name(end-6:end-4) '.NM'];
-    save(datafile, 'N', 'M');
+    
+    %% Decide what name the NM files should have                
+    datafile = [wfolder df_nm_get_name_from_image(dapifiles{kk})];
+    df_nm_save(M, N, datafile);
 end
 
 fprintf('Found %d nuclei\n', Ntot');

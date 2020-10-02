@@ -1,13 +1,18 @@
 function df_createNM(varargin)
-% Purpose: 
+% function df_createNM(varargin)
+% Purpose: Create NM files from images
+%
 % Create NM files from tif images.
-% NM files are mat-files, one per field of view
+% NM files are simly mat-files with a specific structure
+% One NM file corresponds to one field of view
+% and each file should contain a struct 
+% called M (for meta) that contains information about the 
+% field of view such as where the files can be found etc.
+% Then there should be a cell called N that contains 
+% one struct per nuclei.
 %
-% The output data is in two structures:
-% M : meta data
-% N : nuclei information,
-% which is finally written to a .NM file
-%
+% Input argments:
+% None required, will interactively ask for a folder to process.
 
 % 20190219 This replaces A_cells
 
@@ -16,8 +21,6 @@ if numel(s) == 0
     disp('Missing settings. Quitting.');
     return
 end
-
-
 
 % Localization settings for dotCandidates.m
 dotSettings.xypadding = 5;
@@ -31,7 +34,7 @@ s.NA = 1.45;
 
 %% Identify channels and determine which to use
 disp('Identifying channels based on *.tif files')
-[chan, dapichan] = df_channelsFromFileNames(s.folder);
+[chan, dapichan, dapifiles] = df_channelsFromFileNames(s.folder);
 if numel(chan) == 0
     disp('No channels detected')
     return
@@ -48,33 +51,30 @@ if ~isfield(s, 'dapichannel')
     s.dapichannel = dapichan;
 end
 
-% set arbitrary default value for number of dots per channel
-files = dir([s.folder 'dapi*.tif']);
-
-if numel(files) == 0
-    warndlg('No dapi*_.tif files found!');
+if numel(dapifiles) == 0
+    warndlg('No DAPI files found!');
     return
 end
 
 % Make a selection of fields to use
-fnums = listdlg('Name', 'Select Fields To use', 'ListString', {files.name}, 'InitialValue', 1:numel(files));
-files = files(fnums);
+fnums = listdlg('Name', 'Select Fields To use', 'ListString', dapifiles, 'InitialValue', 1:numel(dapifiles));
+dapifiles = dapifiles(fnums);
 
-s.dapifiles = files;
+s.dapifiles = dapifiles;
 
-if numel(files) == 0
+if numel(dapifiles) == 0
     disp('No Fields to process')
     return
 end
 
-fprintf('%d fields selected\n', numel(files));
+fprintf('%d fields selected\n', numel(dapifiles));
 
 if ~isfield(s, 'nTrueDots')
     s.nTrueDots = 2*ones(1, numel(s.channels));
 end
 
 qstring = sprintf('DAPI: %s\n', s.dapichannel);
-for kk = 1:numel(s.channels);
+for kk = 1:numel(s.channels)
     qstring = sprintf('%s\n%s (%d)', qstring, s.channels{kk}, s.nTrueDots(kk));
 end
 
