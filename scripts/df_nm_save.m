@@ -4,8 +4,21 @@ function df_nm_save(M, N, filename)
 % First writes to <filename>.tmp
 % Upon success it moves <filename>.tmp to <filename>
 
-assert(isa(N, 'cell'))
-assert(isa(M, 'struct'))
+if ~isa(filename, 'char')
+    error('The file name has to be of class ''char''');
+end
+
+if ~contains(filename, '.NM')
+    warning('File name does not contain ''.NM''');
+end
+
+if ~isa(M, 'struct')
+    error('M has to be a struct')
+end
+
+if ~isa(N, 'cell')
+    error('N as to be a cell')
+end
 
     tempfile = [filename '.tmp'];
     save(tempfile, 'M', 'N');

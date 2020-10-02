@@ -118,7 +118,11 @@ hold on
 g.histoLine = plot(g.Hd, g.Hv, 'k', 'lineWidth', 2);
 
 
-axis([g.Hd(1), g.Hd(end), min(g.Hv), max(g.Hv)]);
+if (numel(g.Hd) > 1) && (numel(g.Hv) > 1)
+    axis([g.Hd(1), g.Hd(end), min(g.Hv), max(g.Hv)]);
+else 
+    warning('Can''t set the axis properly -- something strange with the image?')
+end
 
 
 
@@ -257,6 +261,11 @@ win = g.win;  % return
         g.clim = double(g.clim);
         ax = [min(min(g.Hd),g.clim(1)), ...
             max(max(g.Hd),g.clim(2)), min(g.Hv(:)), max(g.Hv(:))];
+                
+        if ax(3) == ax(4)
+            ax(4) = ax(3) + 1;
+            warning('Problem setting the axes')
+        end
         axis(g.hax, ax)
     end
 

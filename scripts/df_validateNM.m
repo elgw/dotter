@@ -24,7 +24,7 @@ logFile = fopen(logFileName, 'w');
 
 fprintf(logFile, 'Validating Files with df_validateNM... \n');
 
-for kk = 1:numel(files)
+for kk = 1:numel(files)    
     fileOk = 1;
     maskError = 0;
     filename = [s.folder files(kk).name];
