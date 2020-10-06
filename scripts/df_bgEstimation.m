@@ -2,10 +2,17 @@ function bg = df_bgEstimation(I)
 % Background estimation of an image with nuclei on dark background
 % Quick hack. Needs some attention. 
 % This should try to appoximate a deconvolution.
+bg = [];
 
-assert(size(I,3) == 1); %only for 2D images in [0,1]
-assert(max(I(:)) <= 1);
-assert(min(I(:)) >= 0); %
+if ~size(I,3) == 1
+    warning('df_bgEstimation is only for 2D images in [0,1]');
+    return;
+end
+
+if max(I(:)) > 1 || min(I(:)) < 0
+    warning('df_bgEstimation is only for images in the range [0,1]');
+    return
+end
 
 p = graythresh(I);
 bg0 = I;

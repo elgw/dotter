@@ -26,8 +26,12 @@ if ~isfield(s, 'preFilter')
     s.preFilter =1;
 end
 
-if ~isfield(s, 'useHP')
-    s.useHP = 0;
+if ~isfield(s, 'useLP')
+    s.useLP = 0;
+end
+
+if ~isfield(s, 'useDS')
+    s.useDS = 0;
 end
 
 if ~isfield(s, 'hpSigma')
@@ -47,7 +51,11 @@ if ~isfield(s, 'level')
     s.level = graythresh(I/max(I(:)));
 end
 
-if s.useHP    
+if s.useDS    
+    I = -imclose(-I, strel('disk', s.DS_size));
+end
+
+if s.useLP    
     I = gsmooth(I, s.hpSigma, 'normalized');
 end
 

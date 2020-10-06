@@ -42,7 +42,9 @@ if ~isfield(s, 'useWatershed')
 end
 
 s.excludeOnEdge=1;
-s.useHP = 1;
+s.useLP = 1;
+s.useDS = 1;
+s.DS_size = 7;
 s.hpSigma = 4;
 s.mrfMean1 = 10;
 s.mrfStd1 = 5;
@@ -70,7 +72,6 @@ gui.win = figure('Position', [300,200,1024,1024], 'Menubar', 'none', ...
 gui.dapiPlot = subplot('Position', [.15,.15,.8,.8]);
 gui.im = imagesc(imread([getenv('DOTTER_PATH') 'logo.jpg']), 'ButtonDownFcn', @imClick);
 
-
 gui.c1 = uicontextmenu();
 gui.im.UIContextMenu = gui.c1;
 gui.m1 = uimenu(gui.c1, 'Label', 'Split', 'Callback', @splitNuclei);
@@ -90,7 +91,6 @@ gui.nSelected = ones(numel(nuclei), 1);
 gui.mask = mask;
 gui.N = nuclei;
 splitPosition = [];
-
 s.contrast = [];
 gui.contrastWindow = [];
 
@@ -152,37 +152,24 @@ gui.lastZ = uicontrol('Style', 'edit', 'String', s.lastZ, ...
     'Units', 'Normalized', ...
     'Position', [.5, 1/3, 0.5 1/3]);
 
-
 gui.projMethod = uicontrol('Style', 'popup', 'String', {'max', 'median', 'mean'}, ...
     'Parent', gui.Projection, ...
     'Units', 'Normalized', ...
     'Position', [0, 0, 1 1], ...
     'Callback', @projectionChanged);
 
-
-
 gui.excludeOnEdge = uicontrol('Style', 'checkbox', 'String', 'Exclude On Edge', ...
     'Position', [5,650,100,80], ...
     'Value', s.excludeOnEdge, ...
     'Callback', @update);
 
-% gui.method = uicontrol('Style', 'popup', 'String', {'Thresholding', 'mrfGC'}, ...
-%     'Position', [5, 600, 100, 20]);
-% 
-% gui.mrfMean1 = uicontrol('Style', 'edit', 'String', s.mrfMean1, ...
-%     'Position', [5, 550, 50, 20]);
-% gui.mrfStd1 = uicontrol('Style', 'edit', 'String', s.mrfMean1, ...
-%     'Position', [55, 550, 50, 20]);
-% gui.mrfMean2 = uicontrol('Style', 'edit', 'String', s.mrfMean1, ...
-%     'Position', [5, 510, 50, 20]);
-% gui.mrfStd2 = uicontrol('Style', 'edit', 'String', s.mrfMean1, ...
-%     'Position', [55, 510, 50, 20]);
-% gui.mrfSigma = uicontrol('Style', 'edit', 'String', s.mrfMean1, ...
-%     'Position', [5, 450, 50, 20]);
+gui.ds = uicontrol('Style', 'checkbox', 'String', 'DOT supression', ...
+    'Position', [5,400,100,20], ...
+    'Value', s.useDS, 'Callback', @update_clear);
 
 gui.hp = uicontrol('Style', 'checkbox', 'String', 'HP filter', ...
     'Position', [5,350,100,20], ...
-    'Value', s.useHP, 'Callback', @update);
+    'Value', s.useLP, 'Callback', @update_clear);
 
 gui.hpsigma = uicontrol('Style', 'edit', ...
     'String', s.hpSigma, ...
@@ -216,6 +203,7 @@ uicontrol('Style', 'pushbutton', ...
 uicontrol('Style','text',...
     'String', 'Threshold',...
     'Position',[5 130 100 30]);
+
 gui.level = uicontrol('Style', 'edit', ...
     'String', s.level, ...
     'Position', [5, 100, 60, 20]);
@@ -333,8 +321,7 @@ end
         ax = axis;
         hold on
         gui.levelslide = plot([s.level, s.level], ax(3:4), 'r');
-        %set(get(gui.histogram, 'Parent'), 'Yscale', 'log'); No improvement
-        
+        %set(get(gui.histogram, 'Parent'), 'Yscale', 'log'); No improvement        
         subplot(gui.dapiPlot);
     end
 
@@ -350,7 +337,9 @@ end
             
             for kk = 1:3
             bg = df_bgEstimation(gui.I);
-            gui.I = gui.I-bg+mean(bg(:));
+            if numel(bg) == 1
+                gui.I = gui.I-bg+mean(bg(:));
+            end
             end
            
             resetLevel();
@@ -375,18 +364,15 @@ end
             set(gui.level, 'String', sprintf('%.3f', s.level));
             subplot(gui.dapiPlot);
             update
-        end
-        
+        end        
     end
 
     function resetLevel(varargin)
         set(gui.level, 'String', '-');
     end
 
-    function imClick(varargin)        
-        
-        location = varargin{2}.IntersectionPoint;
-        
+    function imClick(varargin)                
+        location = varargin{2}.IntersectionPoint;        
         if varargin{2}.Button == 1        
         for tt = 1:numel(gui.N)
             if inbbx(gui.N{tt}, location)
@@ -409,6 +395,15 @@ end
         end
     end
 
+    function update_clear(varargin)
+        if isfield(s, 'level')
+            disp('clearing level')
+            s = rmfield(s, 'level');
+            set(gui.level, 'String', '-')
+        end
+        update(varargin)
+    end
+
     function update(varargin)
         set(gui.win, 'Pointer', 'watch');
         drawnow
@@ -417,21 +412,20 @@ end
         s.mrfGC = 0;
         
         s.excludeOnEdge = get(gui.excludeOnEdge, 'Value');
-        
-%         s.mrfMean1 = str2num(get(gui.mrfMean1, 'String'));
-%         s.mrfStd1 =  str2num(get(gui.mrfStd1, 'String'));
-%         s.mrfMean2 = str2num(get(gui.mrfMean2, 'String'));
-%         s.mrfStd2 =  str2num(get(gui.mrfStd2, 'String'));
-%         s.mrfSigma = str2num(get(gui.mrfSigma, 'String'));
-        
+                
         s.level = str2num(get(gui.level, 'String'));
         if numel(s.level) == 0
             s = rmfield(s, 'level');
         end
         s.useWatershed = get(gui.ws, 'Value');
         s.usePrefilter = get(gui.pf, 'Value');
-        s.useHP = get(gui.hp, 'Value');
+        
+        s.useLP = get(gui.hp, 'Value');
+        s.useDS = get(gui.ds, 'Value');
+        
         s.hpSigma = str2num(get(gui.hpsigma, 'String'));
+                        
+        
         
         [nuclei, mask, s]= get_nuclei_dapi(gui.I, s);
         set(gui.level, 'String', num2str(s.level));
