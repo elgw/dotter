@@ -19,7 +19,7 @@
 
  * [Getting started](#GettingStarted)
  * [Installation Instructions](#Installation)
-   * [Keeping Updated](#KeepingUpdated) 
+   * [Keeping Updated](#KeepingUpdated)
  * [Workflow](#Workflow)
  * [Specific Topics](#SpecificTopics)
    * [Shifts and chromatic aberrations](#ShiftsCorrections)
@@ -53,7 +53,19 @@ cd ~/
 git clone https://myname@github.com/elgw/dotter.git
 ```
 
-Start MATLAB, and run `pathtool`, click 'Add Folder...', navigate to the `dotter` folder. Press 'Save' and then restart MATLAB.
+Start MATLAB, and run
+
+``` matlab
+edit startup
+```
+In the editor, add the lines
+``` matlab
+% use the actual path on your machine
+addpath('~/code/dotter/') 
+dotter_startup
+```
+
+Just this time, also run `startup` in MATLAB.
 
 From now on you should now be able to start
 DOTTER with the command: `DOTTER` in MATLAB. However you can't use all functions yet since some of them are written in C and have to be compiled on your machine (alternatively copy these files from someone else with the same version of matlab and MacOS).
@@ -113,7 +125,7 @@ In case that you want to use an older version, `git` is your friend.
 To see all old version use (in terminal)
 
 ``
-git log --pretty=format:'%h %ad | %s%d [%an]' --graph --date=short 
+git log --pretty=format:'%h %ad | %s%d [%an]' --graph --date=short
 ``
 
 and then to get a specific version, use
@@ -157,7 +169,7 @@ The general workflow is this:
 Files: `df_cc_*.m`.
 
 This section describes geometric aberrations to microscopy images and what we
-can do about them. In short there are two major sources, 
+can do about them. In short there are two major sources,
 
  1. Shifts between channels, caused mainly by incorrectly aligned
     mirrors in the optical path (they might not be mechanically
@@ -201,7 +213,7 @@ deformations caused by chromatic aberrations.
 [kozubek,2000](http://dx.doi.org/10.1046/j.1365-2818.2000.00754.x).
 Some notes A) Order 2 is used by default since order 3 does not show
 an significant advantage. B) In z, a constant offset is used rather
-than a polynomial model. 
+than a polynomial model.
 
 #### In practice
 
@@ -240,4 +252,3 @@ and emission wavelengths for fluorophores.
 * MATLAB
 * The GNU scientific library, GSL
 * A Compiler for C99 that works with Matlab
-

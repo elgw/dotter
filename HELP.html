@@ -26,7 +26,7 @@ f3c536d39f6daa2a9392d074423a01db
 <li><a href="#GettingStarted">Getting started</a></li>
 <li><a href="#Installation">Installation Instructions</a>
 <ul>
-<li><a href="#KeepingUpdated">Keeping Updated</a> </li>
+<li><a href="#KeepingUpdated">Keeping Updated</a></li>
 </ul></li>
 <li><a href="#Workflow">Workflow</a></li>
 <li><a href="#SpecificTopics">Specific Topics</a>
@@ -72,7 +72,19 @@ already using it!</p>
 <p>git clone https://myname@github.com/elgw/dotter.git
 ```</p>
 
-<p>Start MATLAB, and run <code>pathtool</code>, click 'Add Folder...', navigate to the <code>dotter</code> folder. Press 'Save' and then restart MATLAB.</p>
+<p>Start MATLAB, and run</p>
+
+<p><code>matlab
+edit startup
+</code>
+In the editor, add the lines
+<code>matlab
+% use the actual path on your machine
+addpath('~/code/dotter/') 
+dotter_startup
+</code></p>
+
+<p>Just this time, also run <code>startup</code> in MATLAB.</p>
 
 <p>From now on you should now be able to start
 DOTTER with the command: <code>DOTTER</code> in MATLAB. However you can't use all functions yet since some of them are written in C and have to be compiled on your machine (alternatively copy these files from someone else with the same version of matlab and MacOS).</p>
@@ -196,7 +208,7 @@ git checkout 8d18c29</p>
 <p>Files: <code>df_cc_*.m</code>.</p>
 
 <p>This section describes geometric aberrations to microscopy images and what we
-can do about them. In short there are two major sources, </p>
+can do about them. In short there are two major sources,</p>
 
 <ol>
 <li>Shifts between channels, caused mainly by incorrectly aligned
@@ -245,7 +257,7 @@ x</em>j^B) : |(x^A<em>i+delta-x^B</em>j)|<T \}$</li>
 <a href="http://dx.doi.org/10.1046/j.1365-2818.2000.00754.x">kozubek,2000</a>.
 Some notes A) Order 2 is used by default since order 3 does not show
 an significant advantage. B) In z, a constant offset is used rather
-than a polynomial model. </p></li>
+than a polynomial model.</p></li>
 </ul>
 
 <h4>In practice</h4>
@@ -267,7 +279,7 @@ make sure that A was not applied before).</li>
 <h2>Troubleshooting</h2>
 
 <p>In general, please report all errors and itches to
-<a href="&#109;&#97;&#x69;&#108;&#116;&#x6F;:&#x65;&#x72;&#x69;k&#46;&#x77;&#101;&#x72;&#x6E;&#x65;&#x72;&#x73;&#115;&#x6F;&#x6E;&#64;&#115;&#x63;&#x69;l&#105;&#102;&#101;&#108;&#x61;&#x62;&#x2E;&#115;&#x65;">&#x65;&#x72;&#x69;k&#46;&#x77;&#101;&#x72;&#x6E;&#x65;&#x72;&#x73;&#115;&#x6F;&#x6E;&#64;&#115;&#x63;&#x69;l&#105;&#102;&#101;&#108;&#x61;&#x62;&#x2E;&#115;&#x65;</a> in order for him to
+<a href="&#109;&#97;i&#x6C;&#116;&#x6F;:e&#x72;&#x69;&#107;&#46;&#119;&#101;&#x72;&#110;&#101;&#x72;&#x73;s&#111;&#x6E;&#64;&#115;&#99;&#105;&#x6C;&#105;f&#x65;&#108;&#x61;&#98;&#46;&#115;&#x65;">e&#x72;&#x69;&#107;&#46;&#119;&#101;&#x72;&#110;&#101;&#x72;&#x73;s&#111;&#x6E;&#64;&#115;&#99;&#105;&#x6C;&#105;f&#x65;&#108;&#x61;&#98;&#46;&#115;&#x65;</a> in order for him to
 improve DOTTER.</p>
 
 <ul>
