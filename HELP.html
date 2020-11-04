@@ -1,0 +1,292 @@
+<p><link rel="stylesheet" href="style.css"></p>
+
+<!--
+
+
+560b2438f0e8628822f4c6418fb6f8d8
+
+
+
+
+
+f3c536d39f6daa2a9392d074423a01db
+
+
+-->
+
+<p><a href="README.html">Changes</a>
+<a href="BUGS.html">Bugs</a>
+<a href="REQUESTS.html">Requests</a></p>
+
+<p><img src="logo_758.jpg" alt="DOTTER LOGO" title="" /></p>
+
+<h1>Help</h1>
+
+<ul>
+<li><a href="#GettingStarted">Getting started</a></li>
+<li><a href="#Installation">Installation Instructions</a>
+<ul>
+<li><a href="#KeepingUpdated">Keeping Updated</a> </li>
+</ul></li>
+<li><a href="#Workflow">Workflow</a></li>
+<li><a href="#SpecificTopics">Specific Topics</a>
+<ul>
+<li><a href="#ShiftsCorrections">Shifts and chromatic aberrations</a></li>
+</ul></li>
+<li><a href="#Troubleshooting">Troubleshooting</a></li>
+<li><a href="#Dependencies">Dependencies</a></li>
+</ul>
+
+<p><a name="GettingStarted"/></p>
+
+<h2>Getting started</h2>
+
+<p>DOTTER is still full of surprises and could for sure be more intuitive. The best way to get introduced to the software is to ask someone
+already using it!</p>
+
+<p>As user you are expected to report bugs and come with <a href="https://github.com/elgw/dotter/issues">suggestions for improvements</a>! Help is also wanted in extending the documentation.</p>
+
+<p><a name="Installation"/></p>
+
+<h2>Installation instructions</h2>
+
+<p>These instructions are for MacOS.</p>
+
+<h3>Get the code</h3>
+
+<p>To get the code and keep it up to date you need to have an account at <a href="http://www.github.com">github</a>. Since DOTTER is private at the moment, you need to get access to the repository. You can get that by sending an email to <a href="email:erik.wernersson@gmail.com">erik</a> where you provide your username from github.</p>
+
+<p>When you have access to the repository you, the preferred way to get it to you computer is to open a terminal, then:
+```</p>
+
+<h1>Go where you want to place the code</h1>
+
+<p>cd ~/</p>
+
+<h1>Download the latest version, which will be put in a new folder called dotter</h1>
+
+<h1>this will ask for your password at github</h1>
+
+<h1>replace myname with your github username</h1>
+
+<p>git clone https://myname@github.com/elgw/dotter.git
+```</p>
+
+<p>Start MATLAB, and run <code>pathtool</code>, click 'Add Folder...', navigate to the <code>dotter</code> folder. Press 'Save' and then restart MATLAB.</p>
+
+<p>From now on you should now be able to start
+DOTTER with the command: <code>DOTTER</code> in MATLAB. However you can't use all functions yet since some of them are written in C and have to be compiled on your machine (alternatively copy these files from someone else with the same version of matlab and MacOS).</p>
+
+<h3>Install dependencies</h3>
+
+<ol>
+<li><p>Install the package manager <a href="https://brew.sh/">brew</a>.</p></li>
+<li><p>Install GSL and pkg-config from the terminal
+<code>
+brew install gsl
+brew install pkg-config
+</code></p></li>
+<li><p>Compile in MATLAB</p></li>
+</ol>
+
+<p>To compile in MATLAB you need to have <a href="https://developer.apple.com/xcode/">XCode</a> installed which you can get from the App Store. Unfortunately this is a rather big package which will take some time to get installed. When XCode is installed, ask MATLAB to look for it
+```</p>
+
+<blockquote>
+  <blockquote>
+  <p>mex -setup
+```</p>
+</blockquote>
+
+<p></blockquote></p>
+
+<p>Figure out where MATLAB is installed (it is probably somewhere else on your system)
+```</p>
+
+<blockquote>
+  <blockquote>
+  <p>fullfile(matlabroot, 'bin')
+ '/home/donald/MATLAB_R2017b/bin'
+```</p>
+</blockquote>
+
+<p></blockquote></p>
+
+<p>Then in a terminal
+<code>
+cd /home/donald/MATLAB_R2017b/bin
+./matlab
+</code></p>
+
+<p>open DOTTER, by
+```</p>
+
+<blockquote>
+  <blockquote>
+  <p>DOTTER
+<code>``
+Navigate the menu and select:</code>DOTTER<code>-&gt;</code>Maintenanace<code>-&gt;</code>Compile C Functions`. Please note the output in the MATLAB console, if there are any errors, please try to understand what they are. If you get stuck here, send an email to Erik.</p>
+</blockquote>
+
+<p></blockquote></p>
+
+<p><a name="KeepingUpdated" /></p>
+
+<h3>Keeping updated</h3>
+
+<p>Since the files are managed by GIT you can go to a terminal, <code>cd</code> to
+the directory with DOTTER and do a</p>
+
+<p><code>
+git pull
+</code></p>
+
+<p>The same thing is accessible from the menubar in DOTTER,
+<code>DOTTER</code>-><code>Maintenance</code>-><code>Update</code></p>
+
+<h3>Downgrading</h3>
+
+<p>In case that you want to use an older version, <code>git</code> is your friend.
+To see all old version use (in terminal)</p>
+
+<p><code>
+git log --pretty=format:'%h %ad | %s%d [%an]' --graph --date=short
+</code></p>
+
+<p>and then to get a specific version, use</p>
+
+<p><code>
+git checkout &lt;hash&gt;
+</code></p>
+
+<p>Example:</p>
+
+<p>```
+git log --pretty=format:'%h %ad | %s%d [%an]' --graph --date=short
+* 57a3363 2017-11-24 | v 0.471 [erikw]
+* 8d18c29 2017-11-22 | v 0.462 [erikw]
+...
+git checkout 8d18c29</p>
+
+<p>```</p>
+
+<p><a name="Workflow"/></p>
+
+<h2>Workflow</h2>
+
+<p>The general workflow is this:</p>
+
+<ul>
+<li>Acquire images</li>
+<li>Convert native image formats such that <code>nd2</code> to <code>tif</code> using DOTTER.</li>
+<li>Correct for chromatic aberrations using calibration images of beads</li>
+<li>Detect/segment nuclei and dots</li>
+<li>Select dots</li>
+<li>Analyze the results, plot and export</li>
+</ul>
+
+<p><a name="SpecificTopics"/></p>
+
+<h2>Specific Topics</h2>
+
+<p><a name="ShiftsCorrections"/></p>
+
+<h3>Shifts and chromatic aberrations</h3>
+
+<p>Files: <code>df_cc_*.m</code>.</p>
+
+<p>This section describes geometric aberrations to microscopy images and what we
+can do about them. In short there are two major sources, </p>
+
+<ol>
+<li>Shifts between channels, caused mainly by incorrectly aligned
+mirrors in the optical path (they might not be mechanically
+stable and wiggle around).</li>
+<li>Chromatic aberrations, including a wavelength dependent
+magnifications and some other non-linearities.</li>
+</ol>
+
+<h4>Detecting them</h4>
+
+<p>These disturbances are easiest to see when imaging beads, small
+particles which emit light at all wavelengths that we are interested
+in. In the ideal case, a field of view with beads captured at any
+wavelength should look the same -- but they look different.</p>
+
+<p>Given an image with beads, we detect and localize dots from each
+channel, to get $x<em>1^A, x</em>2^A, ...$ for channel A and $x<em>1^B, X</em>2^B,
+...$ for channel B, etc.</p>
+
+<p>First we have to identify which dots corresponds to the same bead.</p>
+
+<ul>
+<li><em>Algorithm 1</em> -- translation detection</li>
+<li>For each $x<em>i^A$, find the closest point in channel B,
+$m</em>B(x_i^A)$.</li>
+<li><p>Look at the distribution of $\delta<em>i = (x</em>i^A-m<em>B(x</em>i^A))$. Assumption: in
+most cases the closest point to $x<em>i$ in channel B corresponds to
+the same bead. $\hat{\delta} = \hat{r}
+(cos \hat{\theta},\sin \hat{\theta})$.
+$\hat{r}=median(\delta</em>i)$, $\hat{\theta} = atan2(\sum\delta_i)$.</p>
+
+<ol>
+<li>$\hat{x}<em>i^A = x</em>i^A + \delta<em>i$, $\hat{A} = \{ \hat{a}</em>i^A
+\}$</li>
+<li>Match $\hat{A}$ vs $\hat{B}$ as in step 1 and 2 above, assume that
+two dots corresponds to the same bead whenever $\delta_i|<T$,
+where $T$ is a threshold set so to tolerate the small non-linear
+deformations caused by chromatic aberrations.</li>
+<li>In the end, a set of matched points is returned, $\{ (x<em>i^A,
+x</em>j^B) : |(x^A<em>i+delta-x^B</em>j)|<T \}$</li>
+</ol></li>
+<li><p><em>Algorithm 2</em> -- find polynomial transformation between channels.</p>
+
+<p>This is quite straight forward, see
+<a href="http://dx.doi.org/10.1046/j.1365-2818.2000.00754.x">kozubek,2000</a>.
+Some notes A) Order 2 is used by default since order 3 does not show
+an significant advantage. B) In z, a constant offset is used rather
+than a polynomial model. </p></li>
+</ul>
+
+<h4>In practice</h4>
+
+<p>Whenever an important experiment is about to be image,
+ 1. Prepare and image beads for all relevant channels.
+ 2. Create a correction file (.cc) in DOTTER.</p>
+
+<ol>
+<li>Apply the correction, either on A) images directly or B) when dot
+selection/detection is done. (A) is the obvious choice when the
+shifts are large, otherwhise it will be hard to determine which dots
+that belong to which nuclei. Alternative B) can always be used (just
+make sure that A was not applied before).</li>
+</ol>
+
+<p><a name="Troubleshooting"/></p>
+
+<h2>Troubleshooting</h2>
+
+<p>In general, please report all errors and itches to
+<a href="&#109;&#x61;&#105;&#108;&#116;&#111;:&#x65;&#114;i&#107;&#46;&#x77;&#101;&#114;&#110;&#x65;&#x72;&#115;&#115;&#x6F;&#110;&#64;&#x73;&#x63;&#105;&#108;&#105;&#x66;&#101;l&#97;&#98;&#x2E;s&#x65;">&#x65;&#114;i&#107;&#46;&#x77;&#101;&#114;&#110;&#x65;&#x72;&#115;&#115;&#x6F;&#110;&#64;&#x73;&#x63;&#105;&#108;&#105;&#x66;&#101;l&#97;&#98;&#x2E;s&#x65;</a> in order for him to
+improve DOTTER.</p>
+
+<ul>
+<li><p><em>I set a value somewhere and now I can't change it!</em></p>
+
+<p>DOTTER does save data that is not specific to any experiment in the
+folder <code>~/.DOTTER/</code>. Remove the whole folder to reset the
+configuration. This includes default directories, window placements
+and emission wavelengths for fluorophores.</p></li>
+</ul>
+
+<p><a name="Dependencies"/></p>
+
+<h2>Dependencies</h2>
+
+<ul>
+<li>OSX or Ubuntu - will not work on Windows</li>
+<li>GIT</li>
+<li>MATLAB</li>
+<li>The GNU scientific library, GSL</li>
+<li>A Compiler for C99 that works with Matlab</li>
+</ul>
