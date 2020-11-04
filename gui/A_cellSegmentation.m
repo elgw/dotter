@@ -42,7 +42,7 @@ if isfield(s, 'dapifiles')
 else
     dapifiles = dir([s.folder 'dapi*.tif']);
     if numel(dapifiles)==0
-        fprintf('No "dapi*.tif" files files found in %s, quiting.\n', s.folder)
+        fprintf('s.dapifiles not populated and no "dapi*.tif" files files found in %s, quiting.\n', s.folder)
         return
     end
 end
@@ -83,12 +83,13 @@ for kk = 1:numel(dapifiles)
     fprintf('ok\n');
     
     M.imageSize = size(idapi);
-    dapisettings.useWatershed = s.dapiWS;
-    dapisettings.voxelSize = s.voxelSize;
+    
     
     if isfield(s, 'masks')
         mask = s.masks{kk};
     else
+        dapisettings.useWatershed = s.dapiWS;
+        dapisettings.voxelSize = s.voxelSize;
         P = idapi; % Projection, might be updated by get_nuclei_dapi_ui
         if s.dapiGUI
             if s.threeD
@@ -131,7 +132,7 @@ for kk = 1:numel(dapifiles)
     
     M.mask = mask;
     
-    %% Decide what name the NM files should have                
+    %% Decide what name the NM files should have
     datafile = [wfolder df_nm_get_name_from_image(dapifiles{kk})];
     df_nm_save(M, N, datafile);
 end

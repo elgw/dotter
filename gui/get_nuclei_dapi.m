@@ -2,8 +2,7 @@ function [nuclei, mask, s]= get_nuclei_dapi(I, s, varargin)
 % Find the nuclei in the dapi stack I
 disp('Looking for cells ...')
 
-% Use watersheds for cell separation, might not be useful for deconvolved
-% images
+I = double(I);
 
 if nargin<1 || nargin>2
     warning('Wrong number of inputs');
@@ -15,6 +14,7 @@ if nargin==1
     s.useWatershed = 1;
     s.preFilter = 1;
     s.minarea = 500;
+    s.maxarea = inf;
 end
 
 if ~isfield(s, 'minarea')
@@ -47,16 +47,16 @@ if ~isfield(s, 'thresholding')
     s.mrfGC = 0;
 end
 
-if ~isfield(s, 'level')
-    s.level = graythresh(I/max(I(:)));
-end
-
-if s.useDS    
+if s.useDS        
     I = -imclose(-I, strel('disk', s.DS_size));
 end
 
 if s.useLP    
     I = gsmooth(I, s.hpSigma, 'normalized');
+end
+
+if ~isfield(s, 'level')
+    s.level = graythresh(I/max(I(:)));
 end
 
 mask = I/max(I(:))>s.level;
@@ -119,10 +119,12 @@ end
 
 function wsmask = ws_mask(mask, s)    
     
-    th = round(sqrt(s.maxarea/pi) / 6); % radius/6
+    th = round(sqrt(s.maxarea/pi) / 6); % radius/6    
     th = max(th, 1);
+    th = min(th, numel(mask)/6);
     %D = -bwdist(~(LL~=0));
     D = -bwdist(~mask);
+    
     D = imclose(D, strel('disk', th));
     %D(D<-th) = -th;
     D(D==0) = Inf;

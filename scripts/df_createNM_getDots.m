@@ -14,6 +14,8 @@ function df_createNM_getDots(varargin)
 %
 % See also: A_cells, A_settings
 
+
+
 %% Parse input arguments
 for kk = 1:numel(varargin)
     if strcmp(varargin{kk}, 'settings')
@@ -25,7 +27,7 @@ for kk = 1:numel(varargin)
 end
 
 if nargin == 0
-    warning('Depreciated usage')
+    warning('Depreciated usage (no input arguments)')
     disp('No arguments, looking for dapi*.tif in current folder and using default settings')
     s.folder = uigetdir(pwd);
     if isa(s.folder, 'double')
@@ -55,10 +57,10 @@ if ~strcmp(s.folder(end), '/')
 end
 
 if isfield(s, 'dapifiles')
-    dapifiles = s.dapifiles;
+    dapifiles = s.dapifiles; 
 else
     disp(['Looking in ' s.folder]);
-    dapifiles = dir([s.folder 'dapi*.tif']);
+    dapifiles = dir([s.folder s.dapichannel '*.tif']);
 end
 
 % As well as the files where 'dapi' is replaced by

@@ -71,12 +71,12 @@ if nargin == 2
     end
 end
 
-if returnTemplate    
+if returnTemplate
     s.voxelSize = [130, 130, 300];
     s.lambda = 600;
     returnDefaults = 1;
 end
-    
+
 
 if returnDefaults
     if ~exist('s', 'var')
@@ -88,13 +88,13 @@ if returnDefaults
     end
     
     if numel(s.voxelSize) == 0
-       s.voxelSize = df_getVoxelSize();
+        s.voxelSize = df_getVoxelSize();
     end
     
     if ~isfield(s, 'lambda')
         s.lambda = df_getEmission(defaultsChannel);
     end
-                
+    
     s.xypadding = 5;
     s.localizationMethods = {'DoG_XY+Z','gaussian', 'DoG_3D','DoG_2D', 'intensity'};
     s.localization = 'DoG_XY+Z';
@@ -128,7 +128,7 @@ end
 s.verbose = 0;
 
 % Spot saturated pixels etc
-verify_image(I); 
+verify_image(I);
 
 I = double(I);
 
@@ -148,42 +148,42 @@ sigmadog = 1.72*sigma;
 fprintf('Sigma for DoG: %f %f %f\n', sigmadog(1), sigmadog(2), sigmadog(3));
 
 if s.verbose
-        disp(s.localization)
+    disp(s.localization)
 end
 
 
-if strcmpi(s.localization, 'DoG_2D')    
-    % DOG - Difference of Gaussians, i.e., approximation of Laplacian        
-    J = dog2(I, sigmadog);        
+if strcmpi(s.localization, 'DoG_2D')
+    % DOG - Difference of Gaussians, i.e., approximation of Laplacian
+    J = dog2(I, sigmadog);
 end
 
 if strcmpi(s.localization, 'DoG_3D')
-    % DOG - Difference of Gaussians, i.e., approximation of Laplacian        
-    J = dog3(I, sigmadog);        
+    % DOG - Difference of Gaussians, i.e., approximation of Laplacian
+    J = dog3(I, sigmadog);
 end
 
-if strcmpi(s.localization, 'DoG_XY+Z')    
-    % DOG - Difference of Gaussians, i.e., approximation of Laplacian        
-    %J = dog3(I, sigmadog);    
+if strcmpi(s.localization, 'DoG_XY+Z')
+    % DOG - Difference of Gaussians, i.e., approximation of Laplacian
+    %J = dog3(I, sigmadog);
     DXY = dog2(I, sigmadog);
     DZ = dogz(I, sigmadog);
     
     % TODO: balance these correct
     % 20190502, change coefficient on DZ from 1 to .5
-    J = DXY+.5*DZ; 
+    J = DXY+.5*DZ;
     
 end
 
 if strcmpi(s.localization, 'intensity')
     if s.verbose
-    disp('Intensity localization')
+        disp('Intensity localization')
     end
     J = I;
 end
 
 if strcmpi(s.localization, 'gaussian')
     if s.verbose
-    disp('Gaussian correlation localization')
+        disp('Gaussian correlation localization')
     end
     
     J = gcorr(I, sigma);
@@ -194,7 +194,7 @@ if ~exist('J', 'var')
 end
 
 % D: Dilation of J, to find the local maximas
-if size(I,3)>1        
+if size(I,3)>1
     sel = ones(3,3,3);
     for z = [1,3] % Corners in z = 1,3 removed
         sel(1,1,z) = 0;
@@ -214,7 +214,7 @@ if size(I,3)>1
     D = imdilate(J, strel('arbitrary', sel));
 else
     if s.verbose
-    disp('2D')
+        disp('2D')
     end
     sel = ones(3,3);
     sel(2,2)=0;
@@ -226,7 +226,7 @@ J = clearBoarders(J, 4, -inf); % 3 was working fine
 %K=clearBoardersXY(A,s.xypadding,-1);
 
 % Detect and possibly remove pixels in J where I is saturated
-J = removeSaturatedPixels(I,J); 
+J = removeSaturatedPixels(I,J);
 
 Pos = find(J>D);
 [PX, PY, PZ]=ind2sub(size(I), Pos);
@@ -262,7 +262,7 @@ P = P(IDX, :);
 
 
 %% FWHM
-if s.calcFWHM    
+if s.calcFWHM
     if isfield(s, 'nFWHM')
         nfwhm = s.nFWHM;
     else
@@ -287,7 +287,7 @@ if s.maxNpoints > 0
     end
 end
 
-return; 
+return;
 end
 
 function nSat = verify_image(I)
@@ -319,7 +319,7 @@ end
 
 function V = dogz(I, sigma)
 sigma = [0,0,1].*sigma;
-    V = gsmooth(I, sigma, 'normalized')-gsmooth(I, sigma+0.001, 'normalized');    
+V = gsmooth(I, sigma, 'normalized')-gsmooth(I, sigma+0.001, 'normalized');
 end
 
 function V = dog2(I, sigma)
@@ -337,22 +337,22 @@ end
 
 function J = removeSaturatedPixels(I,J)
 %% Looks for saturated pixels and can remove them from the analysis if wanted.
-% Most of all it is important to warn about this 
+% Most of all it is important to warn about this
 
 nsat = sum(I(:)==2^16-1);
 removeSaturated = 0;
 
 if 0
-if nsat>0
-    qans = questdlg('There are saturated pixels in the image. Do you want to use them for dot detection?', ...
-        'Saturated pixels', 'No', 'Yes', 'No');
-    switch qans
-        case 'Yes'
-            removeSaturated = 0;
-        case 'No'
-            removeSaturated = 1;
+    if nsat>0
+        qans = questdlg('There are saturated pixels in the image. Do you want to use them for dot detection?', ...
+            'Saturated pixels', 'No', 'Yes', 'No');
+        switch qans
+            case 'Yes'
+                removeSaturated = 0;
+            case 'No'
+                removeSaturated = 1;
+        end
     end
-end
 end
 
 if removeSaturated

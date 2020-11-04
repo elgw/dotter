@@ -1,4 +1,4 @@
-function [V] = df_readTif(filename, varargin)
+function [V, scale] = df_readTif(filename, varargin)
 % function [V, info] = df_readTif(filename, varargin)
 % Reads a volumetric tif image specified by filename
 % First tries to load filename.mat
@@ -8,10 +8,14 @@ function [V] = df_readTif(filename, varargin)
 % Possible improvement, for non-local files, copy to temp location before
 % reading because the Tif reader makes multiple disk accesses.
 %
+% 20201006, reads also the scaling parameter from a deconwolf log file
+%           the scale is set to -1 if not detected
 % 20161218, using Tiff to read instead of imread. 5x faster.
 % 20160425, created
 
 verbose = 0;
+
+scale = -1;
 for kk = 1:numel(varargin)
     if strcmp(varargin{kk}, 'verbose')
         verbose =1;
@@ -24,6 +28,12 @@ if isfile(matfilename)
     t = load(matfilename);
     V = t.V;
     return;
+end
+
+
+logfile = [filename, '.log.txt'];
+if isfile(logfile)
+    scale = parse_dw_scale(logfile);
 end
 
 if isfile(filename)
@@ -109,5 +119,22 @@ for kk = 1:size(V,3)
 end
 
 t.close();
+
+end
+
+function scale = parse_dw_scale(file)
+scale = -1;
+
+fid = fopen(file, 'r');
+pat='scaling: (?<scale>[0-9\.]+)';
+while ~feof(fid)
+    line = fgetl(fid);
+    names = regexp(line, pat, 'names');
+    if numel(names) == 1
+        scale = str2num(names.scale);
+    end
+end
+
+fclose(fid);
 
 end

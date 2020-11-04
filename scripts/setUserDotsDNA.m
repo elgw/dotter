@@ -50,7 +50,7 @@ if nargin == 0
         return
     end
     %folder = '/data/current_images/iJC/iJC829_20170918_001_calc/';
-    folder = '/data/current_images/iXL/iXL213_20171005_00X_calc/';
+    %folder = '/data/current_images/iXL/iXL213_20171005_00X_calc/';
     %folder = '/data/current_images/iEG/iEG410_170925_004_calc/';
     s.maxFiles = 2;
 end
@@ -1062,6 +1062,7 @@ fig_menu_delete()
         s.sumProjection = 0;
         s.maxProjection = 1;
         lock_field_io = 0;
+        
     end
 
     function generateProjections()
