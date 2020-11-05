@@ -454,13 +454,9 @@ end
             s.updateImageData=0;
         end
         
+        %keyboard
         % Set the new title
         if size(P,1)>1
-            if nps>0
-                th = P(nps,4);
-            else
-                th = -1;
-            end
             set(fig, 'name', sprintf('%s %d/%d #P: %d/%d, th: %f', s.title, tSlide, size(I,3), nps, nPoints, th));
         else
             set(fig, 'name', sprintf('%s %d/%d #P: %d/%d', s.title, tSlide, size(I,3), nps, nPoints));
@@ -479,9 +475,18 @@ end
         
         if mode == 1
             newValue = nPointsShow+round(delta/4);
-            newValue = max(1, newValue);
+            newValue = max(0, newValue);
             newValue = min(nPoints, newValue);
             nps = round(newValue);
+            
+            switch nps
+                case size(P,4)
+                    th = min(P(:,4))*0.9;
+                case 0
+                    th = max(P(:,4))*1.1;
+                otherwise
+                    th = P(nps,4);
+            end                            
         end
         
         if mode == 2

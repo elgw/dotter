@@ -14,6 +14,8 @@ function app = thSlider(varargin)
 % https://se.mathworks.com/help/matlab/creating_guis/choose-components-for-your-app-designer-app.html
 % uigridlayout
 % https://se.mathworks.com/help/matlab/ref/uigridlayout.html
+ 
+
 
 %% Global data
 th = [];
@@ -32,6 +34,10 @@ for kk = 1:numel(varargin)
         cbFun = varargin{kk+1};
     end
 end
+
+% 
+%save('datatemp.mat', 'data', 'th');
+%load datatemp.mat
 
 assert(numel(data)>0);
 if numel(th)==0
@@ -53,6 +59,13 @@ app.UserData = struct('setTh', @setTh);
 range = [];
 range(1) = min(th, Hd(1));
 range(2) = max(th, Hd(end));
+
+if(min(data(:)) < range(1))
+    warning('The lowest value is not in range!');
+end
+if(max(data(:)) > range(2))
+    warning('The largest value is not in range!');
+end
 
 g = uigridlayout(app); 
 g.RowHeight = {'1x',40};
@@ -80,7 +93,7 @@ thSlider.Layout.Column = 1;
 thSlider.Value = th;
 
 if(Hd(1)<Hd(end) && max(Hv)>min(Hv))
-    axis(histAx, [Hd(1), Hd(end), min(Hv), max(Hv)])
+    axis(histAx, [Hd(1), Hd(end), min(Hv), max(Hv)*1.1])
 end
 
 
