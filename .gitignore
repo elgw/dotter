@@ -1,3 +1,5 @@
 *.mexa64
 *.o
 *~
+*.asv
+python/__pycache__/
