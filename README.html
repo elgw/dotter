@@ -2,7 +2,7 @@
 
 <p><a href="REQUESTS.html">Requests</a>
 <a href="BUGS.html">Bugs</a>
-<a href="HELP.html">Help</a></p>
+<a href="HELP.html">Installation and Help</a></p>
 
 <p><img src="logo_758.jpg" alt="DOTTER LOGO" title="" /></p>
 
@@ -23,7 +23,7 @@
 <h2>0.594</h2>
 
 <ul>
-<li>Updated <code>bfmatlab</code> from 5.7.3 to 5.9.1. </li>
+<li>Updated <code>bfmatlab</code> from 5.7.3 to 5.9.1.</li>
 </ul>
 
 <h2>0.567</h2>
@@ -35,7 +35,7 @@
 <li><p><code>isMultipleCall</code>
 ```
 function flag=isMultipleCall()
-flag = false; 
+flag = false;
 % Get the stack
 s = dbstack();
 if numel(s)&lt; =2
@@ -49,14 +49,14 @@ TF = strcmp(s(2).name,names);
 count = sum(TF);
 if count>1
 % More than 1
-flag = true; 
+flag = true;
 end
 end
 <code>
 then in the code a simple
 </code>
 if isMultipleCall();  return;  end
-``` 
+```
 can be used.</p></li>
 <li><p>Encapsulation:</p></li>
 </ul>
@@ -217,7 +217,7 @@ sensitive for really noisy images.</li>
 <h2>0.478</h2>
 
 <ul>
-<li>SetUserDots 
+<li>SetUserDots
 <ul>
 <li>Dots can be added with the right button</li>
 <li>The closest dot is picked (behaviour is still undefined if there
@@ -345,7 +345,7 @@ files = dir('*.NM');
 for kk = 1:numel(files)
 load(files(kk).name, '-mat');
 M.dapifile  = regexprep(M.dapifile,'_*','_')
-</code>   </li>
+</code></li>
 <li>Better <em>glow filter</em> in the nuclei segmentation.</li>
 <li>HP filter enabled by default in the nuclei segmentation</li>
 <li>Fixed flipped image in some cases (the image was display upside
@@ -398,7 +398,7 @@ functions were renamed.</li>
 <li>Better integration with DAPI threshold (an upper limit on the
 integrated DAPI intensity). A DAPI threshold is picked already
 directly after nuclei are segmented and is used when selecting
-userDots and when exporting userDots. </li>
+userDots and when exporting userDots.</li>
 <li>Old data sets have to be given a DAPI threshold from <em>nuclei->set upper DAPI threshold
 for calc folder</em>.</li>
 </ul>
@@ -479,14 +479,14 @@ included in the bioformats package so no extra packages needed.</li>
 for a field of view.</li>
 <li>Fixed error in <code>A_cells_generate_dot_curves.m</code>. Did not save the
 correct window to the <code>...dpn.png</code> images.</li>
-<li>made <code>df_getNucleiFromNM</code> less verbosive. </li>
+<li>made <code>df_getNucleiFromNM</code> less verbosive.</li>
 </ul>
 
 <h2>0.370, 2017-08-28</h2>
 
 <ul>
 <li>New functionality: <code>df_setNUserDotsDNA</code> can be used to set a
-certain number of dots for each nuclei. </li>
+certain number of dots for each nuclei.</li>
 <li>Spotted and corrected a bug in <code>twomeans.m</code>. When only two dots
 were given as input they were sometimes assigned the same starting
 label. The input is now balanced so that there are equal number of
@@ -518,7 +518,7 @@ scatter(A,D)
 xlabel('Area [pixels]')
 ylabel('DAPI [au]')
 </code></p></li>
-<li><p><code>df_getNucleiFromNM.m</code>, </p>
+<li><p><code>df_getNucleiFromNM.m</code>,</p>
 
 <ul>
 <li>added <em>select NM files(s)</em> to the prompt</li>

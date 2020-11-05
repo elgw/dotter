@@ -38,13 +38,16 @@ As user you are expected to report bugs and come with [suggestions for improveme
 
 ## Installation instructions
 
+DOTTER is currently tested with MATLAB R2018b and R2020b so any version in between will most likely work.
+
 These instructions are for MacOS.
 
 ### Get the code
 To get the code and keep it up to date you need to have an account at [github](http://www.github.com). Since DOTTER is private at the moment, you need to get access to the repository. You can get that by sending an email to [erik](email:erik.wernersson@gmail.com) where you provide your username from github.
 
 When you have access to the repository you, the preferred way to get it to you computer is to open a terminal, then:
-```
+
+``` shell
 # Go where you want to place the code
 cd ~/
 # Download the latest version, which will be put in a new folder called dotter
@@ -61,7 +64,7 @@ edit startup
 In the editor, add the lines
 ``` matlab
 % use the actual path on your machine
-addpath('~/code/dotter/') 
+addpath('~/code/dotter/')
 dotter_startup
 ```
 
@@ -76,7 +79,7 @@ DOTTER with the command: `DOTTER` in MATLAB. However you can't use all functions
 1. Install the package manager [brew](https://brew.sh/).
 
 2. Install GSL and pkg-config from the terminal
-  ```
+  ``` shell
   brew install gsl
   brew install pkg-config
   ```
@@ -84,24 +87,24 @@ DOTTER with the command: `DOTTER` in MATLAB. However you can't use all functions
 3. Compile in MATLAB
 
 To compile in MATLAB you need to have [XCode](https://developer.apple.com/xcode/) installed which you can get from the App Store. Unfortunately this is a rather big package which will take some time to get installed. When XCode is installed, ask MATLAB to look for it
-```
+``` matlab
 >> mex -setup
 ```
 
 Figure out where MATLAB is installed (it is probably somewhere else on your system)
-```
+``` matlab
 >> fullfile(matlabroot, 'bin')
  '/home/donald/MATLAB_R2017b/bin'
 ```
 
 Then in a terminal
-```
+``` matlab
 cd /home/donald/MATLAB_R2017b/bin
 ./matlab
 ```
 
 open DOTTER, by
-```
+``` matlab
 >> DOTTER
 ```
 Navigate the menu and select: `DOTTER`->`Maintenanace`->`Compile C Functions`. Please note the output in the MATLAB console, if there are any errors, please try to understand what they are. If you get stuck here, send an email to Erik.
@@ -124,19 +127,19 @@ The same thing is accessible from the menubar in DOTTER,
 In case that you want to use an older version, `git` is your friend.
 To see all old version use (in terminal)
 
-``
+`` shell
 git log --pretty=format:'%h %ad | %s%d [%an]' --graph --date=short
 ``
 
 and then to get a specific version, use
 
-```
+``` shell
 git checkout <hash>
 ```
 
 Example:
 
-```
+``` shell
 git log --pretty=format:'%h %ad | %s%d [%an]' --graph --date=short
 * 57a3363 2017-11-24 | v 0.471 [erikw]
 * 8d18c29 2017-11-22 | v 0.462 [erikw]
@@ -249,6 +252,6 @@ and emission wavelengths for fluorophores.
 ## Dependencies
 * OSX or Ubuntu - will not work on Windows
 * GIT
-* MATLAB
+* MATLAB, R2018B or above.
 * The GNU scientific library, GSL
 * A Compiler for C99 that works with Matlab

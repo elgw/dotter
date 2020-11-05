@@ -2,11 +2,13 @@
 
 [Requests](REQUESTS.md)
 [Bugs](BUGS.md)
-[Help](HELP.md)
+[Installation and Help](HELP.md)
 
 ![DOTTER LOGO](logo_758.jpg)
 
-# Changes to DOTTER 
+
+
+# Changes to DOTTER
 
 ## 0.598
  * Added a check to see that dapi file matches the nm file number (for exporting).
@@ -15,7 +17,7 @@
  * Added the option to export 2D masks from NM files
 
 ## 0.594
- * Updated `bfmatlab` from 5.7.3 to 5.9.1. 
+ * Updated `bfmatlab` from 5.7.3 to 5.9.1.
 
 ## 0.567
 
@@ -24,30 +26,30 @@
    * `isMultipleCall`
    ```
    function flag=isMultipleCall()
-     flag = false; 
+     flag = false;
      % Get the stack
      s = dbstack();
      if numel(s)< =2
        % Stack too short for a multiple call
        return
      end
-    
+
      % How many calls to the calling function are in the stack?
      names = {s(:).name};
      TF = strcmp(s(2).name,names);
      count = sum(TF);
      if count>1
        % More than 1
-       flag = true; 
+       flag = true;
      end
    end
    ```
-   then in the code a simple 
+   then in the code a simple
    ```
    if isMultipleCall();  return;  end
-   ``` 
+   ```
    can be used.
-   
+
    * Encapsulation:
 
    ```
@@ -144,7 +146,7 @@ such images.
 sensitive for really noisy images.
 
 ## 0.478
- * SetUserDots 
+ * SetUserDots
    * Dots can be added with the right button
    * The closest dot is picked (behaviour is still undefined if there
      are two identical dots)
@@ -226,8 +228,8 @@ accessible by pressing `e`.
 files = dir('*.NM');
 for kk = 1:numel(files)
     load(files(kk).name, '-mat');
-    M.dapifile  = regexprep(M.dapifile,'_*','_')    
-```   
+    M.dapifile  = regexprep(M.dapifile,'_*','_')
+```
 * Better _glow filter_ in the nuclei segmentation.
 * HP filter enabled by default in the nuclei segmentation
 * Fixed flipped image in some cases (the image was display upside
@@ -264,7 +266,7 @@ functions were renamed.
  * Better integration with DAPI threshold (an upper limit on the
    integrated DAPI intensity). A DAPI threshold is picked already
 directly after nuclei are segmented and is used when selecting
-userDots and when exporting userDots. 
+userDots and when exporting userDots.
  * Old data sets have to be given a DAPI threshold from _nuclei->set upper DAPI threshold
   for calc folder_.
 
@@ -320,11 +322,11 @@ individual fields. These changes are implemented in `A_cells()`
 for a field of view.
  * Fixed error in `A_cells_generate_dot_curves.m`. Did not save the
    correct window to the `...dpn.png` images.
- * made `df_getNucleiFromNM` less verbosive. 
+ * made `df_getNucleiFromNM` less verbosive.
 
 ## 0.370, 2017-08-28
  * New functionality: `df_setNUserDotsDNA` can be used to set a
-   certain number of dots for each nuclei. 
+   certain number of dots for each nuclei.
  * Spotted and corrected a bug in `twomeans.m`. When only two dots
    were given as input they were sometimes assigned the same starting
   label. The input is now balanced so that there are equal number of
@@ -340,7 +342,7 @@ files containing
   * Distance between alleles, measured as centroid distance
   * Distance between each allele and the periphery of the nuclei
   * Volume of each allele
-  
+
 * setUserDotsDNA, properly closes the climSlider before opening a new
   one -- not cluttering the screen with windows any more.
 * Fixed export to 'base' of DAPI and Area when measuring those
@@ -352,7 +354,7 @@ files containing
    ylabel('DAPI [au]')
    ```
 
-* `df_getNucleiFromNM.m`, 
+* `df_getNucleiFromNM.m`,
   * added _select NM files(s)_ to the prompt
   * Now also exports the meta data, `M` from each field and each
     nuclei point to a `M` using the field `.metaNo`
@@ -365,7 +367,7 @@ files containing
    Loaded 11 files, 238 nuclei, 420 clusters into M and N
    185 nuclei has two clusters
    ```
-   
+
 ## 0.355, 2017-08-21
 
 * Improvements in the interface when exporting dots
@@ -373,5 +375,3 @@ files containing
 * Showing free disk drive space when starting conversion from nd2 tif
 * Removed green background colours in some dialogue boxes.
 * Late is better than never, introduced this changelog.
-
-
