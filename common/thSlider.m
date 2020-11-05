@@ -106,7 +106,7 @@ info.ButtonPushedFcn = @uiSetTh;
 %ax = uiaxes(g);
 %ax.Layout.Row = [1 2];
 
-histAx.ButtonDownFcn = @setThHere;
+%histAx.ButtonDownFcn = @setThHere;
 
 histAx.YTickLabel = {};
 
