@@ -1078,7 +1078,11 @@ fig_menu_delete()
     end
 
     function gui_thresholdAid(varargin)
-        dotterSlide(C{s.channel}, M.dots{s.channel}(1:10000,1:4), [],[], 'wait')
+        dots = M.dots{s.channel}(:,1:4);
+        if size(dots,1) > 10000
+            dots = dots(1:10000, :);
+        end
+        dotterSlide(C{s.channel}, dots, [],[], 'wait')
     end
 
     function gui_resetThresholds(varargin)

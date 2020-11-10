@@ -10,7 +10,14 @@ if nargin ==1
     return
 end
 
+% Prefix key_ to numeric configuration names
+if ~isvarname(key)
+    key = ['key_' key];
+end
+
 filename = sprintf('~/.DOTTER/%s.mat', file);
+
+
 
 if exist(filename, 'file')
     config = load(filename, '-MAT');

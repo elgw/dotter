@@ -15,7 +15,13 @@ if exist(filename, 'file')
 else
     config = [];    
 end
-config.(key) = value;    
-save(filename, 'config');       
+
+% Prefix key_ to numeric configuration names
+if ~isvarname(key)
+    key = ['key_' key];
+end
+
+config.(key) = value;
+save(filename, 'config');
 
 end
