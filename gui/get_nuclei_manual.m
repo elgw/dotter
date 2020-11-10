@@ -557,7 +557,7 @@ close(f);
             
             %xx = interp1(1:numel(xp), xp, linspace(1,numel(xp), 3*nLinePoints), interpolationType);
             % xx = xx(nLinePoints:(2*nLinePoints+10));
-            z
+
             if 0
                 % MATLAB does not have closed splines
                 xp = [x x x]; yp = [y y y];

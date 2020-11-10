@@ -20,11 +20,11 @@ if ~isa(N, 'cell')
     error('N as to be a cell')
 end
 
-    tempfile = [filename '.tmp'];
-    save(tempfile, 'M', 'N');
-    [status,msg,msgID] = movefile(tempfile, filename);
-    if(status ~= 1)
-       error('Failed to move %s to %s\n msgID: %s, msg: %s', tempfile, filename, msg, msgID);        
-    end
-    
+tempfile = [filename '.tmp'];
+save(tempfile, 'M', 'N');
+[status,msg,msgID] = movefile(tempfile, filename);
+if(status ~= 1)
+    error('Failed to move %s to %s\n msgID: %s, msg: %s', tempfile, filename, msg, msgID);
+end
+
 end
