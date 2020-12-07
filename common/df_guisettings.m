@@ -15,6 +15,8 @@ if nargin < 2
     error('Too few input arguments');
 end
 
+s = [];
+
 name = 'No name provided';
 helpfun = [];
 for kk = 1:2:nargin
@@ -26,6 +28,12 @@ for kk = 1:2:nargin
     end
     if strcmpi(varargin{kk}, 'help')
         helpfun = varargin{kk+1};
+    end
+end
+
+if 0
+    for kk = 1:numel(s)
+        fprintf('%s \t %s\n', s(kk).name, s(kk).type);
     end
 end
 
@@ -161,18 +169,21 @@ end
     function leave(btn, event)
 
 if strcmpi(btn.Text, 'ok')
-    settings = uiparse();    
+    settings = uiparse(s);    
 else
     settings = [];
 end
     uiresume(app);    
     end
 
-    function s = uiparse()
-        s = [];
+    function s2 = uiparse(s)                
         for kk = 1:size(gui,1)-1          
             name = gui{kk,1}.Text;
-            s.(name) = gui{kk,2}.Value;       
+            if isequal(s(kk).type, 'numeric')
+                s2.(name) = str2num(gui{kk,2}.Value);
+            else
+                s2.(name) = gui{kk,2}.Value;       
+            end
         end
     end
 

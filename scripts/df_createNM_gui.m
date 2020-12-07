@@ -393,7 +393,7 @@ end
 
     function updateFWHM()
         for kk = 1:numel(s.channels)
-            fwhm = fwhm_from_lambda(df_getEmission(s.channels{kk}), s.NA);
+            fwhm = df_fwhm_from_lambda(df_getEmission(s.channels{kk}), s.NA);
             set(gui.fwhmxy(kk), 'String', sprintf('%.2f', fwhm(1)));
             set(gui.fwhmz(kk), 'String', sprintf('%.2f', fwhm(3)));
         end
