@@ -1079,9 +1079,10 @@ fig_menu_delete()
 
     function gui_thresholdAid(varargin)
         dots = M.dots{s.channel}(:,1:4);
-        if size(dots,1) > 10000
-            dots = dots(1:10000, :);
-        end
+        % Commented out Dec 23, 2020
+        %if size(dots,1) > 10000
+        %    dots = dots(1:10000, :);
+        %end
         dotterSlide(C{s.channel}, dots, [],[], 'wait')
     end
 
