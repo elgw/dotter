@@ -497,11 +497,11 @@ end
         for cc = 1:numel(s.channels)
             sout.dotSettings{cc}.calcFWHM = gui.calcFWHM.Value;
             sout.dotSettings{cc}.nFWHM = str2num(gui.nFWHM.String);
-            sout.dotSettings{cc}.maxNpoints = str2num(get(gui.maxNpoints, 'String'));
-            sout.dotSettings{cc}.localization = s.dotSettings{1}.localizationMethods(gui.refinement.Value);
+            sout.dotSettings{cc}.maxNpoints = str2num(get(gui.maxNpoints, 'String'));            
+            sout.dotSettings{cc}.localization = s.dotSettings{1}.localizationMethods(gui.localization.Value);
             sout.dotSettings{cc}.dotFWHM = [[1,1]*str2num(get(gui.fwhmxy(kk), 'String')), str2num(get(gui.fwhmz(kk), 'String'))];
         end
-        
+         
         sout.segmentNuclei = get(gui.r1, 'Value');
         sout.useExistingSegmentation = get(gui.r2, 'Value');
         sout.askForSegmentationMasks = get(gui.r3, 'Value');
