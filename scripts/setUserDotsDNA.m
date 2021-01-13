@@ -37,6 +37,8 @@ function setUserDotsDNA(folder)
 % - To leave without saving, press <esc>
 %
 
+% Nuclei contours: ctr and xctr
+
 %% Locks
 lock_field = 0; % Change field number
 lock_field_io = 0; % Write/save to nm
@@ -123,6 +125,7 @@ s.nxshow = 3;
 s.dots.maxDots = [];
 s.dots.Z = [];
 s.dots.fwhm = [];
+s.ctrLineStyle = '-';
 
 s.captureRadius = 5;   % When clicking the images, how far away are dots captured
 
@@ -155,7 +158,8 @@ gui.plotInfo = uicontrol('Style', 'Text', ...
 tightPos=get(gca,'TightInset');
 noDeadSpacePos = [0 0 1 1] + 3*[tightPos(1:2) -(tightPos(1:2) + ...
     tightPos(3:4))];
-set(gca,'Position',noDeadSpacePos);
+
+set(gca,'Position', noDeadSpacePos);
 
 a = findall(gcf);
 b = findall(a,'ToolTipString','Link Plot');
@@ -1616,6 +1620,7 @@ fig_menu_delete()
             [~, ctr] = contour(mask, [.5,.5]);
             
             set(ctr, 'LineColor', 'b');
+            set(ctr, 'LineStyle', s.ctrLineStyle);
             s.updateContours = 0;
         end
         
@@ -1644,8 +1649,8 @@ fig_menu_delete()
                 catch e
                     warning('')
                 end
-            else
-                axis([0,size(C{1},1), 0, size(C{1},2)]);
+            else                
+                axis([0,size(C{1}, 2), 0, size(C{1}, 1)]);
                 try
                     set(ctr, 'LineColor', 'w')
                 catch e

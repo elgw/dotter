@@ -515,10 +515,10 @@ end
         
         sout.nkmers = str2num(gui.nkmers.String);
         sout.generatePvsE = gui.generatePvsE.Value;
+                
+        sout.voxelSize = [str2num(gui.xres.String)*[1,1],  str2num(gui.zres.String)];
         summaryString = evalc('disp(sout)');
         gui.summary.String = summaryString;
-        sout.voxelSize = [str2num(gui.xres.String)*[1,1],  str2num(gui.zres.String)];
-        
     end
 
     function ok(varargin)

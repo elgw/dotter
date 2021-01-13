@@ -99,7 +99,7 @@ end
 
 info = uibutton(g); % No 'ButtonDownFcn', @uiSetTh
 info.Layout.Column = 2;
-info.Layout.Row = [1,2];
+info.Layout.Row = [1, 2];
 setInfoTxt();
 info.ButtonPushedFcn = @uiSetTh;
 
@@ -146,11 +146,12 @@ histAx.YTickLabel = {};
         
         thres = inputdlg('Give a threshold');
         if numel(thres)  == 1
-        thres = thres{1};
-        thres = str2num(thres);        
-        setTh(thres);
+            thres = thres{1};
+            thres = str2num(thres);        
+            setTh(thres);
+            thChange();
         end
-         
+        
     end
 
     function setTh(thres)
@@ -159,8 +160,7 @@ histAx.YTickLabel = {};
         th = thres;
         th = max(th, range(1));
         th = min(th, range(2));
-        thSlider.Value = th;
-        updateapp();
+        thSlider.Value = th;                
     end
 
     function thChange(varargin)
