@@ -150,7 +150,7 @@ set(f, 'Pointer', 'Cross'); % To show that some input is expected
 
 if hasI
     img = imagesc(I);
-    colormap gray, axis image, axis xy, hold on, axis off
+    colormap gray, axis image, axis ij, hold on, axis off
 else
     img = gca;
     hold on

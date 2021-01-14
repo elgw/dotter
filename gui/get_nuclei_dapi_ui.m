@@ -80,6 +80,8 @@ gui.m1 = uimenu(gui.c1, 'Label', 'More Settings', 'Callback', @showSettings);
 colormap gray
 hold on
 axis image
+axis ij
+
 
 V = single(V);
 
@@ -110,7 +112,7 @@ for tt = 1:numel(gui.N)
 end
 
 axis image
-axis xy
+
 
 setZauto();
 
