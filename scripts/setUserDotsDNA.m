@@ -690,12 +690,30 @@ fig_menu_delete()
             w = numel(M.channels); h = 2;
             
             for cc = 1:numel(M.channels)
+                
                 handles(cc,1) = subplot(w, h, cc*2-1);
                 % -2 means not calculated
                 % -1 means could not be calculated
                 
+                coords = M.dots{cc}(:,1:3);
+                ucoords = [];
+                for nn = 1:numel(N)
+                    ucoords = cat(1, ucoords, N{nn}.userDots{cc}(:,1:3));
+                end
+                umask = zeros(size(coords,1), 1);
+                
+                for rr = 1:size(coords, 1)
+                if(ismember(coords(rr, :), ucoords, 'rows'))
+                    umask(rr) = 1;
+                end
+                end
+                                
                 F = M.dots{cc}(:,fwhmCol);
                 V = M.dots{cc}(:, valueCol);
+                
+                F = F(umask==1, :);
+                V = V(umask==1, :);
+                
                 F = F(F>0);
                 V = V(F>0);
                 
