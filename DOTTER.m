@@ -151,7 +151,7 @@ uimenu(mCells, 'Label', 'Add missing dapiTh and voxelSize for calc folder', 'Cal
 
 
 mDots = uimenu(gui.win, 'Label', 'Select');
-uimenu(mDots, 'Label', 'View/Select DNA-FISH dots by threshold (->UD)', 'Callback', @run_setUserDots, ...
+uimenu(mDots, 'Label', 'View/Select dots in _calc folder (->UD)', 'Callback', @run_setUserDots, ...
     'Accelerator','U');
 
 %uimenu(mDots, 'Label', 'Pairwise Distances for UserDots', 'Callback', @run_pwd);

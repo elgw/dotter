@@ -275,6 +275,7 @@ if nPoints>0 && size(P,2)>3
     th = dotThreshold(P(:,4));
     nPointsShow = sum(P(:,4)>th);
 else
+    th = NaN;
     nPointsShow = 0;
 end
 %nPointsShow = min(size(P,1),50);
@@ -951,7 +952,7 @@ end
         msg = [msg, ...
             sprintf('Number of dots: %d\n', size(P,1))];
         msg = [msg, ...
-            '\n'];
+            sprintf('\n')];
         msgbox(msg);
     end
 
