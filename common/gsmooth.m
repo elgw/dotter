@@ -44,10 +44,10 @@ for kk = 1:numel(varargin)
     if strcmp(varargin{kk}, 'radius')
         radius = varargin{kk+1};
     end
-    if strcmp(varargin{kk}, 'normalized')
+    if strcmpi(varargin{kk}, 'normalized')
         normalized2 = 1;
     end
-    if strcmp(varargin{kk}, 'normalized2')
+    if strcmpi(varargin{kk}, 'normalized2')
         normalized = 1;
     end
 end
@@ -95,7 +95,7 @@ if(numel(size(V))==3)
         end
     end
     
-    if normalized2        
+    if normalized2                
         V=V./gnorm(size(V), [numel(k1), numel(k2), numel(k3)], max(sigma, [0.1, 0.1, 0.1]));
     end
     
@@ -109,12 +109,12 @@ if(numel(size(V))==2)
     
     %fprintf('1... ');
     V=imfilter(V, k1, 'same');
-    if normalized
+    if normalized | normalized2
         V=V./imfilter(0*V+1, k1, 'same');
     end
     %fprintf('2... ');
     V=imfilter(V, k2, 'same');
-    if normalized
+    if normalized | normalized2
         V=V./imfilter(0*V+1, k2, 'same');
     end
     %fprintf('3... ');

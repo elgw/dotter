@@ -1,6 +1,11 @@
 function snr = df_snr(image, dots)
 % Calculates SNR for the dots [x,y,z, ... ; x,y,z, ... ; ...]
 % in the supplied image
+%
+% SNR is defined as:
+% (signal-background)/noise
+% background and noise is estimated from a circle around each point,
+% the radius of the circle is hard coded to 5
 
 assert(size(dots,2)>2);
 assert(numel(image)>0);

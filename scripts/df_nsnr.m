@@ -1,6 +1,8 @@
 function nsnr = df_nsnr(M, N, image, dots, channelNumber)
-% SNR caluclated as value of image at dot / median value of image over
+% NSNR caluclated as value of image at dot / median value of image over
 % nuclei
+% Using the max projection.
+% Using the dilated mask (if available).
 % Requested by SU
 
 if size(dots,1) < 1
