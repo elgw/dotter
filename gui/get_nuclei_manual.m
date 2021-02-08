@@ -27,6 +27,7 @@ function [mask, S] = get_nuclei_manual(mask, I)
 % Note:
 %  - When cells are overlapping, the latest added will consume the ones
 %  below
+% - When deleting nuclei, aim for the mean position of the nuclei.
 
 verbose = 0;
 
@@ -47,6 +48,14 @@ if nargin == 0
         testImage = [testFolder '/dapi_001.tif'];
         I = df_readTif(testImage);
         I = max(I,[], 3);
+        
+    end 
+    
+    if 0 % Create a fake mask 
+        
+        t = rand(size(I));
+        t = gsmooth(t, 15, 'normalized');
+        mask = imbinarize(t);
     end
     
     if 0
@@ -63,8 +72,6 @@ if nargin == 0
     end
     
 end
-
-
 
 hasI = 1;
 if numel(I) == 0
@@ -108,7 +115,6 @@ else
     mask0 = S;
 end
 
-
 if hasI
     f = figure('Position', [300,200,1024,1024], ...
         'NumberTitle','off', ...
@@ -144,7 +150,6 @@ uicontrol('Style', 'pushbutton', ...
     'Position', [0, 0, .1, .05], ...
     'Callback', @cancel, ...
     'Parent', f);
-
 
 set(f, 'Pointer', 'Cross'); % To show that some input is expected
 
@@ -187,7 +192,7 @@ close(f);
         key = varargin{2}.Key;
         %keyboard
         
-        if strcmpi(key, 'H');
+        if strcmpi(key, 'H')
             hTxt = help('get_nuclei_manual');
             msgbox(hTxt);
         end
@@ -305,17 +310,16 @@ close(f);
             % If the image surface was clicked with the right button
             % delete the closest nuclei
             if gco == img
-                if strcmp(get(gcbf, 'SelectionType'), 'alt')
-                    
+                if strcmp(get(gcbf, 'SelectionType'), 'alt')                    
                     disp('Delete a nuclei?');
                     if numel(Markers)==0
-                        disp('No markers, try to delete something')
+                        disp('No markers, will try to delete an object')                        
                         pt = get(aH, 'CurrentPoint'); x = pt(1,1); y = pt(1,2);
                         dmin = inf;
                         dCell = -1;
                         for kk = 1:numel(cells)
                             d = norm([x-mean(cells{kk}.xx), y-mean(cells{kk}.yy)]);
-                            if d<dmin
+                            if d < dmin
                                 dmin = d;
                                 dCell = kk;
                             end
@@ -324,17 +328,15 @@ close(f);
                             fprintf('dCell: %d, distance %f\n', dCell, dmin);
                         end
                         if dCell > 0 && dmin < 100
-                            disp('Deleting');
+                            disp('Deleting a nuclei');
                             % keyboard
                             
                             delete(Lines(dCell))
                             delete(Labels(dCell))
                             cells = {cells{1:dCell-1} cells{dCell+1:end}};
                             Lines = [Lines(1:dCell-1) Lines(dCell+1:end)];
-                            Labels = [Labels(1:dCell-1) Labels(dCell+1:end)];
-                            
-                            S(S==dCell) = 0;
-                            
+                            Labels = [Labels(1:dCell-1) Labels(dCell+1:end)];                            
+                            S(S==dCell) = 0;                            
                             updateLabels
                             updateLines
                         end
@@ -351,9 +353,7 @@ close(f);
                 % i) create and show a new marker
                 pt = get(aH, 'CurrentPoint'); x = pt(1,1); y = pt(1,2);
                 h = createMarker(pt(1,1), pt(1,2));
-                
-                
-                
+                                                
                 % ii) Figure out where it belongs among the existing points
                 
                 %  1  Closest points -- Not always intuitive
@@ -403,7 +403,7 @@ close(f);
                             end
                             
                         else % If
-                            if cmarker == 1;
+                            if cmarker == 1
                                 Markers = [h Markers];
                             else
                                 Markers = [Markers h];
@@ -415,7 +415,7 @@ close(f);
                     updateLine;
                 end
                 
-                if snapType == 2; % Distance to closest line used, the most intuitive that I know of
+                if snapType == 2 % Distance to closest line used, the most intuitive that I know of
                     
                     nMarkers = numel(Markers);
                     
@@ -429,8 +429,7 @@ close(f);
                         updateLine()
                     end
                     
-                    if nMarkers > 1
-                        
+                    if nMarkers > 1                        
                         minLineDist = 10^99; % Shortest distance to any line
                         p1Dist = 10^9; % Distance to first point
                         pendDist = 10^9; % Distance to last point
@@ -493,6 +492,7 @@ close(f);
                 %end
             end
         end
+        
         if mode == 2
             set(f, 'WindowButtonMotionFcn', @move);
             Q= get(f, 'CurrentPoint');
@@ -731,20 +731,20 @@ close(f);
         % When done. This will create the 2D pixel map, mask,
         % and then end the GUI
         
+        
         % Reset the mask
         mask = 0*S;
         
         label = 1;
         for kk = 1:numel(cells)
             if numel(cells{kk}.xx)>0
-                %keyboard
-                
+                %keyboard                
                 if cells{kk}.sLabel > 0
                     % Use mask if exist since mask->contour->poly2mask
                     % is not perfectly invertible.
                     mask(S==cells{kk}.sLabel) = kk;
                     label = label + 1;
-                else
+                else                    
                     T = poly2mask(round(cells{kk}.xx), round(cells{kk}.yy), size(mask,1), size(mask,2));
                     [~, N] = bwlabeln(T, 8);
                     mask(T==1) = kk;
@@ -757,7 +757,16 @@ close(f);
                 
             end
         end
-        [mask] = bwlabeln(mask);
+        
+        % split touching objects
+        % TODO: use something better
+        
+        mask2 = imdilate(mask, strel('square', 3));
+        A = mask;
+        A((mask2 > mask) & (mask > 0)) = 0;                        
+        [mask2] = bwlabeln(A);
+        mask = mask2;        
+        
         uiresume(f);
     end
 
