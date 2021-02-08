@@ -268,7 +268,7 @@ markerSize2 = 18;
 
 % Set number of points to show depending on the threshold.
 % Variables: th, nps, nPointsShow
-% Is really both nps and nPointShow needed?
+% Is really both nps and nPointsShow needed?
 
 nPoints = size(P,1);
 if nPoints>0 && size(P,2)>3
@@ -346,8 +346,15 @@ if hasfwhm
 end
 
 clim = climSlider(gui.img, 'Min', min(I(:)), 'Max', max(I(:)) );
+
+
+% Attach a slider for the dot threshold
 if size(P,1)>0 && size(P,2)>3
-    thSlide = thSlider('Object', gui.img, 'Data', P(:,4), 'Callback', @setTh);
+    if (nPointsShow > 0) && (nPointsShow < size(P,1))
+        thSlide = thSlider('Object', gui.img, 'Data', P(:,4), 'Callback', @setTh, 'Threshold', P(nPointsShow, 4) );
+    else
+        thSlide = thSlider('Object', gui.img, 'Data', P(:,4), 'Callback', @setTh);
+    end
 end
 
 updateGUI();

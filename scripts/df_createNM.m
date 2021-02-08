@@ -5,10 +5,10 @@ function df_createNM(varargin)
 % Create NM files from tif images.
 % NM files are simly mat-files with a specific structure
 % One NM file corresponds to one field of view
-% and each file should contain a struct 
-% called M (for meta) that contains information about the 
+% and each file should contain a struct
+% called M (for meta) that contains information about the
 % field of view such as where the files can be found etc.
-% Then there should be a cell called N that contains 
+% Then there should be a cell called N that contains
 % one struct per nuclei.
 %
 % Input argments:
@@ -29,7 +29,6 @@ dotSettings.localization = 'intensity';
 dotSettings.maxNpoints = 10000;
 dotSettings.calculateFWHM = 0;
 s.dotSettings = dotSettings;
-
 s.NA = 1.45;
 
 %% Identify channels and determine which to use
@@ -79,8 +78,8 @@ for kk = 1:numel(s.channels)
 end
 
 %% Let the user verify/change the parameters
-% Note that the nuclei detection is not mandatory 
-% and hence settings has to be stored in meta data 
+% Note that the nuclei detection is not mandatory
+% and hence settings has to be stored in meta data
 % by the dot detection routine
 
 s.threeD = 0;
@@ -95,7 +94,7 @@ else
 end
 
 %% Find cells/nuclei/objects
-% Three alternatives: 
+% Three alternatives:
 %  - Segment cells
 %  - Use existing segmentation already in NM files
 %  - Load segmentation mask from files, s.askForSegmentationMasks
@@ -104,7 +103,7 @@ if s.useExistingSegmentation
     fprintf('Using existing segmentation\n');
 end
 
-if s.askForSegmentationMasks       
+if s.askForSegmentationMasks
     s.maskFiles = uipickfiles('Prompt', 'Select nuclei mask files', 'REFilter', '\.png$|\.tif$');
     if(isnumeric(s.maskFiles))
         warndlg('Got no mask to use. Aborting.');
@@ -123,23 +122,29 @@ if s.segmentNuclei
     A_cellSegmentation('settings', s);
 end
 
-
-    
-
 calcFolder = [s.folder(1:end-1) '_calc' filesep()];
 
 %% Set DAPI
+% Load all nuclei and interactively ask for threshold to 
+% separate G1 from G2
 df_setDapiForFolder(calcFolder);
 
 %% Find dots
 %  and write NM files to _calc folder
 disp('>>> Running A_dots to find dots')
-save([calcFolder 'settingsA.mat'], 's');  % Not needed 
+% save([calcFolder 'settingsA.mat'], 's');  % Not needed
 df_createNM_getDots('settings', s, 'dotSettings', s.dotSettings);
 
-%% Generate preview images showing segmented cells and their numbers for
+%% Generate preview images 
+% Purpose: 
+% showing segmented cells and their numbers for
 % future reference
+generate_preview_images(s, calcFolder)
+    
+disp('All Done')
+end
 
+function generate_preview_images(s, calcFolder)
 disp('>>> Generating segmentataion preview images')
 A_cells_generate_segmentation_preview(calcFolder)
 
@@ -154,11 +159,7 @@ if isfield(s, 'experimentType')
         end
     end
 end
-
-disp('All Done')
-
 end
-
 
 function s = getArguments(varargin, nargin)
 
@@ -184,7 +185,7 @@ end
 
 fprintf('Folder: %s\n', folder);
 
-% Add trailing filesep() if not there (usually a '/') 
+% Add trailing filesep() if not there (usually a '/')
 if ~strcmp(folder(end), filesep())
     folder = [folder filesep()];
 end

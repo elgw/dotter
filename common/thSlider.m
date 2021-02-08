@@ -15,8 +15,6 @@ function app = thSlider(varargin)
 % uigridlayout
 % https://se.mathworks.com/help/matlab/ref/uigridlayout.html
  
-
-
 %% Global data
 th = [];
 data = [];

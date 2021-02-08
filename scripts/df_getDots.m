@@ -106,7 +106,7 @@ if returnDefaults
     s.LPsigma = 1;
     s.dogDimension = 2;
     s.channel = defaultsChannel;
-    s.calcFWHM = 0;
+    s.calcFWHM = 1;
     s.dotFWHM = df_fwhm_from_lambda(s.lambda);
     
     P = s;

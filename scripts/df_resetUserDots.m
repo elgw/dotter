@@ -1,10 +1,11 @@
 function [M,N,s] = df_resetUserDots(M,N,s)
 % [M,N] = resetUserDots(M,N, s)
-% Sets userDots based on the settings in s.dots
-% s.dots.th : thresholds for each channel
-% s.dots.Z : range for valid Z
-% s.dots.FWHM : range for valid FWHM
-% s.dots.maxDots : max number of dots per nuclei
+% Sets:
+% - userDots based on the settings in s.dots
+% - s.dots.th : thresholds for each channel
+% - s.dots.Z : range for valid Z
+% - s.dots.FWHM : range for valid FWHM
+% - s.dots.maxDots : max number of dots per nuclei
 
 
 disp('df_resetUserDots')

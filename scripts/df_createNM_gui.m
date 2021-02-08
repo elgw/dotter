@@ -13,7 +13,7 @@ if nargin == 0
     s.channels = {'vanilla','raspberry', 'apple', 'coffee'}; % and DAPI
     s.nTrueDots = [10, 4, 6, 8];
     s.dapichannel = 'dapi';
-    s.voxelSize = [130,130,300];
+    s.voxelSize = [130, 130, 300];
     s.threeD = 0;
     s.NA = 1.45;
 end
@@ -280,7 +280,7 @@ uicontrol('Style', 'text', ...
     'Parent', gui.dotPanel);
 
 gui.nFWHM = uicontrol('Style', 'Edit', ...
-    'String', '1000', ...
+    'String', '25000', ...
     'Units', 'Normalized', ...
     'Position', [.5,.3,.4,.1], ...
     'Parent', gui.dotPanel);
@@ -400,8 +400,12 @@ end
     end
 
     function gui_update(varargin)
-        if numel(varargin)>0
-            varargin{1}
+        % Callback for most buttons and radiobuttons
+        
+        TYPE_DNA = 1;
+        TYPE_RNA = 0;
+            
+        if numel(varargin)>0            
             if varargin{1} == gui.r1
                 set(gui.r1, 'Value', 1);
                 set(gui.r2, 'Value', 0); 
@@ -417,8 +421,7 @@ end
                 set(gui.r2, 'Value', 0);
                 set(gui.r3, 'Value', 1);
             end
-            
-            
+                        
             % Exclusive RNA or DNA
             if varargin{1} == gui.r4
                 exptype = abs(gui.r4.Value-1);
@@ -429,7 +432,7 @@ end
                 set(gui.r4, 'Value', abs(exptype-1));
             end
             
-            if exptype == 1
+            if exptype == TYPE_DNA
                 gui.generatePvsE.Enable = 'on';
             else
                 gui.generatePvsE.Enable = 'off';
@@ -440,7 +443,7 @@ end
         seg = gui.r1.Value;
         exptype = gui.isDNAFISH.Value;
         
-        if exptype == 1
+        if exptype == TYPE_DNA
             set(gui.maxNpoints, 'String', '100000');
         else
             set(gui.maxNpoints, 'String', '1000000');
