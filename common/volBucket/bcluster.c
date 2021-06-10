@@ -174,7 +174,7 @@ for(int kk=0; kk<N; kk++)
     X[kk+N] = 1024.0*rand()/ (double) RAND_MAX;
     X[kk+2*N] = 20.0*rand()/ (double) RAND_MAX;
 }
-X[0] = 20; X[1]=1; X[2] = 1;
+X[0] = 2048; X[1]=2048; X[2] = 0;
 
 bcluster(X, N, r, C);
 if(N<100)
