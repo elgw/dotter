@@ -2,7 +2,8 @@ function df_writeTable(tab, fname)
 % Similar like writetable but overcomes the issue that
 % values sometimes are rounded
 % However this function is more limited in terms of functionality
-% Only supports {'char'} and 'double' cells.
+% Only supports 'char' 'uint16', and 'double' cells. Will generate
+% an error and halt if it finds a cell of another format.
 
 props = tab.Properties.VariableNames;
 
