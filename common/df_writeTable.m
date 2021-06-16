@@ -44,6 +44,7 @@ if( strcmp(pclass, 'char') )
     else
         fprintf(fid, '%s', acell{1});
     end
+    return;
 end
 if( strcmp(pclass, 'double') )
     if iscell(acell)
@@ -51,6 +52,18 @@ if( strcmp(pclass, 'double') )
     else
         fprintf(fid, '%.3f', acell);
     end
+    return;
 end
+
+if( strcmp(pclass, 'uint16') )
+    if iscell(acell)
+        fprintf(fid, '%d', acell{1});
+    else
+        fprintf(fid, '%d', acell);
+    end
+    return;
+end
+
+error('Doesn''t know how to export data of type %s\n', pclass);
 
 end
