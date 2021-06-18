@@ -101,6 +101,18 @@ end
 
 if s.useExistingSegmentation
     fprintf('Using existing segmentation\n');
+    fprintf('This will clear all detected dots\n');
+    wfolder = [s.folder(1:end-1) '_calc/'];
+    assert(isdir(wfolder));
+    for kk = 1:numel(s.dapifiles)
+        dapifile = s.dapifiles{kk};
+        match = regexp(dapifile, '_[0-9][0-9][0-9].[tT][iI][fF]', 'match');
+        assert(numel(match) == 1);
+        num = str2num(match{1}(2:4));
+        T = load(sprintf('%s%03d.NM', wfolder, num), '-mat');
+        s.masks{kk} = T.M.mask;
+    end
+    A_cellSegmentation('settings', s);        
 end
 
 if s.askForSegmentationMasks
