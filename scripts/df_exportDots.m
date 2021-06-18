@@ -225,7 +225,7 @@ for kk = 1:numel(files)
                 TFC = replaceByCentroids(TFC);
             end
         else
-            TFC = extractAllDotsForChannel(s, cc, M, N, imFile);            
+            TFC = extractAllDotsForChannel(s, cc, M, N, imFile);
         end        
         
         % file, cname, nuclei, TFC
@@ -436,7 +436,7 @@ end
 function TFC = extractAllDotsForChannel(s, cc, M, N, imFile)
 % Take the dots from M.dots{cc}
 TFC = M.dots{cc}(:, 1:4);
-
+TFC = double(TFC);
 if s.maxDots > 0
     TFC = TFC(1:min(s.maxDots, size(TFC,1)), :);
 end
@@ -478,5 +478,6 @@ end
 
 TFC = [TFC, dfwhm, dsnr, dnsnr, zeros(size(TFC,1),1)];
 [~, nucNum] = associate_dots_to_nuclei(N, M.mask, TFC, cc);
-TFC = [nucNum, TFC];
+TFC = [double(nucNum), TFC];
+assert(isequal(class(TFC), 'double'));
 end
