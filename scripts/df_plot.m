@@ -318,7 +318,7 @@ nucChangeSelection();
     end
 
     function loadNMfiles(varargin)
-        gui.DataInfo.String = 'waiting for NM files';
+        gui.DataInfo.String = 'waiting for NM files (please don''t select folders! TODO: fix that)';
         gui.cc.Enable = 'off';
         
         % Note: if ccFile = '', nothing happens
@@ -338,7 +338,7 @@ nucChangeSelection();
 
     function updateGUI(varargin)
         if numel(N) == 0 % No nuclei available
-            gui.DataInfo.String = 'Load NM files or folders with NM files. Each folder should contain ONE .cc file specifying how to correct for shifts and chromatic aberrations.';
+            gui.DataInfo.String = 'Load NM files (NOT folders with NM files). Each folder should contain ONE .cc file specifying how to correct for shifts and chromatic aberrations.';
             %gui.DataInfo.ForegroundColor = [0, .2, 0];
             gui.DataInfo.FontSize = 14;
         else

@@ -128,8 +128,8 @@ maxx = max(iCv);
 th = find(iCv== maxx(1));
 th = th(1); % take first if multiple
 th = Dom(th); % map to the domain
-fprintf(' Found threshold: %.2f', th);
-fprintf(' (%d/%d dots)\n', sum(D(:)>th), numel(D));
+%fprintf(' Found threshold: %.2f', th);
+%fprintf(' (%d/%d dots)\n', sum(D(:)>th), numel(D));
 
 if interactive
     figure('Name', figTitle);

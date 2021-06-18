@@ -3,10 +3,10 @@
 
 // Provides a MATLAB interface from com3.c
 
-void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[]) 
+void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[])
 {
 
-  int verbosive = 0;
+  int verbosive = 1;
   int weighted = 0;
 
   if (nrhs<2 || nrhs>3) {
@@ -52,7 +52,7 @@ void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[])
   mwSize Cdim[] = {0,0};
   Cdim[0] = 3; Cdim[1] = Pnel/3;
 
-  if(verbosive) { 
+  if(verbosive) {
     printf("V: %dx%dx%d\n", Vdim[0], Vdim[1], Vdim[2]);
     printf("C: %dx%d\n", Cdim[0], Cdim[1]);
   }
@@ -60,7 +60,7 @@ void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[])
   plhs[0] = mxCreateNumericArray(2,  Cdim, mxDOUBLE_CLASS, mxREAL);
   double * C = (double *) mxGetPr(plhs[0]);
 
-  com3(V, Vdim[0], Vdim[1], Vdim[2], 
+  com3(V, Vdim[0], Vdim[1], Vdim[2],
       P, C, Pdim[1], weighted);
 
   for(size_t kk =0; kk<Pnel; kk++)

@@ -18,7 +18,6 @@ if numel(h)>0
     figure(h);
     return
 end
-
 % should be set in startup.m
 DOTTER_PATH = getenv('DOTTER_PATH');
 

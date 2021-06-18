@@ -226,6 +226,7 @@ J = clearBoarders(J, 4, -inf); % 3 was working fine
 %K=clearBoardersXY(A,s.xypadding,-1);
 
 % Detect and possibly remove pixels in J where I is saturated
+% TODO: only remove if they are larger than one pixel
 J = removeSaturatedPixels(I,J);
 
 Pos = find(J>D);

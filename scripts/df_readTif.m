@@ -30,10 +30,16 @@ if isfile(matfilename)
     return;
 end
 
-
 logfile = [filename, '.log.txt'];
 if isfile(logfile)
     scale = parse_dw_scale(logfile);
+end
+
+if scale == -1
+    logfile2 = strrep(logfile, 'max_', '');
+    if isfile(logfile2)
+        scale = parse_dw_scale(logfile2);
+    end
 end
 
 if isfile(filename)

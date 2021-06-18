@@ -1,21 +1,34 @@
 function df_bcluster_ut()
+% rangesearch is more efficient and should be used
 
 disp('--> Testing df_bcluster')
 % mex CFLAGS='$CFLAGS -std=c99' COPTIMFLAGS='-DNDEBUG -O3' df_bcluster.c volBucket.c
-
-disp('  Random input ... ')
-N = 100000;
-verbosive = 0;
-
-for r = linspace(.5, 2, 5)
-    X = 124*rand(N,3);
-    tic
-    df_bcluster(X, r);
-    t = toc;
+if 1
+    cd volBucket
+    mex CFLAGS='$CFLAGS -std=c99' COPTIMFLAGS='-g' df_bcluster.c volBucket.c
+    cd ..
 end
+    
+disp('  Random input ... ')
+N = 10000;
+verbosive = 1;
+
+for r = linspace(.5, 30, 5)
+    
+    X = 124*rand(N,3);
+    X = cat(1, X, [0, 0, 0]);
+    tic
+    A = df_bcluster(X, r);
+    t0 = toc;
+    tic
+    B = df_bcluster2(X, r);
+    t1 = toc;
+    assert(numel(A) == numel(B))
+end
+keyboard
 clear X
 
-fprintf(' Realistic case with %d dots took %.2f seconds \n', size(N,1), t);
+fprintf(' Realistic case with %d dots took %.2f seconds \n', size(N,1), t0);
 
 disp(' Does not crash with no inputs')
 error = 0;
@@ -90,6 +103,7 @@ end
 if verbosive
     r=4;
     
+    rng(0)
     N = 1200;
     X = 124*rand(N,2);
     %theta = linspace(0, 2*pi, 100)';
@@ -113,7 +127,16 @@ if verbosive
     C = df_bcluster(X, r);
     t1 = toc
     
-    
+    tic
+    z = linkage(X, 'single', 'euclidean');
+    c = cluster(z,'criterion', 'distance', 'cutoff',r);    
+    t2 = toc
+    C2 = [];
+    for kk = 1:max(c(:))
+        C2 = cat(1, C2, [find(c==kk) ; 0]);
+    end
+    C2 = C2(1:end-1);
+    %C = C2;
     %tic
     %C2 = cluster(linkage(X, 'single'), 'cutoff', r);
     %t2 = toc
@@ -122,7 +145,7 @@ if verbosive
     figure,
     subplot('position', [0,0,1,1])
     %plot3(X(:,2), X(:,1), X(:,3), '.')
-    plot(X(:,2), X(:,1), 'k.')
+    plot(X(:,2), X(:,1), 'g.')
     
     axis equal
     %view(3)
