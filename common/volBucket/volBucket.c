@@ -15,11 +15,12 @@ erikw 20150218
 #include <math.h>
 #include <time.h>
 #include <assert.h>
+#include <stdint.h>
 
 #define MAX(a,b) (((a)>(b))?(a):(b))
 #define MIN(a,b) (((a)<(b))?(a):(b))
 
-typedef unsigned int uint32;
+
 typedef struct vbNode vbNode;
 typedef struct vbBucket vbBucket;
 
@@ -31,7 +32,7 @@ struct vbNode {
   int NEBuckets[26]; // Neighbouring buckets to search in
   int nNEBuckets; // Number of neighbour buckets relevant to the object
   int visited;
-  uint32 number;
+  uint32_t number;
 };
 
 struct vbBucket{
@@ -41,7 +42,7 @@ struct vbBucket{
   // in a clump
   vbNode *  objects;
   // Number of objects
-  uint32 nObjects;
+  uint32_t nObjects;
   // Largest x,y,z of the elements that will be put into the vb
   // (smallest assumed to be 0)
   int maxx, maxy, maxz;
@@ -57,7 +58,7 @@ struct vbBucket{
 };
 
 
-vbBucket * vbInitialize(uint32 nObjects, int maxx, int maxy, int maxz, double rmax)
+vbBucket * vbInitialize(uint32_t nObjects, int maxx, int maxy, int maxz, double rmax)
 {
     //    printf("vbInitialize %d, %d, %d, %f\n", maxx, maxy, maxz, rmax);
     vbBucket * b = malloc(sizeof(vbBucket));
@@ -81,7 +82,6 @@ vbBucket * vbInitialize(uint32 nObjects, int maxx, int maxy, int maxz, double rm
   int P = ceil((double) maxz/b->delta);
   P = MAX(P,1);
   b->P =P;
-
 
   b->nBuckets = M*N*P;
   // allocate buckets
@@ -111,7 +111,7 @@ int vbFree(vbBucket * vb)
 int vbInfo(vbBucket * b)
 {
   printf("\n::: Bucket information :::\n");
-  printf("nBuckets: %d nObjects: %ud\n", b->nBuckets, b->nObjects);
+  printf("nBuckets: %d nObjects: %u\n", b->nBuckets, b->nObjects);
   printf("Spatial geometry: X Y Z: %dx%dx%d\n", b->maxx, b->maxy, b->maxz);
   printf("Bucket geometry: M N P: %dx%dx%d\n", b->M, b->N, b->P);
   printf("delta: %d > rmax: %f\n", b->delta, b->rmax);
@@ -136,7 +136,7 @@ int vbInfo(vbBucket * b)
 }
 
 int vbAdd(vbBucket *b, double x, double y, double z, void * object,
-    uint32 number)
+    uint32_t number)
 {
   // Take one of the unused objects to store the object
   vbNode *node = &b->objects[b->oadd++];
@@ -218,7 +218,7 @@ double vbBucketDistance2(vbNode * a, vbNode *b)
   return (dx*dx + dy*dy + dz*dz);
 }
 
-int main2(int argc, char ** argv)
+int main(int argc, char ** argv)
 {
 
   srand(time(NULL));
@@ -226,7 +226,11 @@ int main2(int argc, char ** argv)
 
   // Initialization
   int nObjects = 50000; // Number of objects
-  int maxx=1024; int maxy=1024; int maxz=100; // Size of sample
+  if(argc > 1)
+  {
+      nObjects = atoi(argv[1]);
+  }
+  int maxx=1024; int maxy=2*1024; int maxz=100; // Size of sample
   int rmax = 3; // Max distance between objects, only integer values supported
 
   printf("Initializing vb\n");

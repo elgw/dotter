@@ -4,6 +4,7 @@
   #include "string.h"
   #include "math.h"
   #include "volBucket.h"
+#include <stdint.h>
 #include "time.h"
 
   /*
@@ -42,7 +43,7 @@ Erik, 20150317
 #define MAX(a,b) (((a)>(b))?(a):(b))
 #define MIN(a,b) (((a)<(b))?(a):(b))
 
-void propagate(vbBucket * myVB, vbNode *e, uint32 * C, uint32 * cpos)
+void propagate(vbBucket * myVB, vbNode *e, uint32_t * C, uint32_t * cpos)
 /*  Recursively expand a cluster */
 {
   e->visited = 1;
@@ -65,7 +66,7 @@ void propagate(vbBucket * myVB, vbNode *e, uint32 * C, uint32 * cpos)
 }
 
 
-void bcluster(double *X, int nObjects, double r, uint32 * C)
+void bcluster(double *X, int nObjects, double r, uint32_t * C)
 /* Input: X, the data [[x0, y0, z0], [x1, y1, z1], ... ,[xN, yN, zN]]
  r: max distance between clusters
  C: output
@@ -82,7 +83,7 @@ int minx=floor(X[0]);
 int miny=floor(X[nObjects]);
 int minz=floor(X[2*nObjects]);
 
-for(uint32  kk=0; kk<nObjects; kk++)
+for(uint32_t  kk=0; kk< (uint32_t) nObjects; kk++)
   {
     maxx= MAX(ceil(X[kk]), maxx);
     maxy= MAX(ceil(X[kk+nObjects]), maxy);
@@ -112,7 +113,7 @@ if(verbose)
 if(verbose)
   printf("Populating\n");
 
-for(uint32 kk=0; kk<nObjects; kk++)
+for(uint32_t kk=0; kk < (uint32_t) nObjects; kk++)
 {
   double x = X[kk];
   double y = X[kk+nObjects];
@@ -127,12 +128,12 @@ for(uint32 kk=0; kk<nObjects; kk++)
 if(verbose>0)
   vbInfo(myVB);
 
-uint32 cpos = 0;
-for(uint32 kk=0; kk<nObjects; kk++) // For each node/object
+uint32_t cpos = 0;
+for(uint32_t kk=0; kk < (uint32_t) nObjects; kk++) // For each node/object
   {
    vbNode *e = &myVB->objects[kk];
    // printf("p:%d v:%d enr: %d\n", cpos, e->visited, e->number);
-   int cpos0 = cpos;
+   uint32_t cpos0 = cpos;
    if (e->visited == 0)
       {
         propagate(myVB, e, C, &cpos);
@@ -152,23 +153,28 @@ if(verbose>0)
 vbFree(myVB);
 }
 
-int main(int argv, char ** argc)
+#if 0
+int main(int argc, char ** argv)
 {
 
-printf("sizeof(uint32): %lu\n", sizeof(uint32));
+
 
 srand(time(NULL)); rand();
-int N = 10000 + (double) (5000.0*rand()/RAND_MAX);
+uint32_t N = 10000 + (double) (5000.0*rand()/RAND_MAX);
+if(argc > 1)
+{
+    N = atoi(argv[1]);
+}
 N = 1;
 double r = 1.0 + ((double) rand()/(RAND_MAX));
 
 printf("N: %d, r: %f\n", N, r);
 
 double *X = (double*) malloc(3*N*sizeof(double));
-uint32 *C = (uint32 *) malloc(2*N*sizeof(uint32));
-memset(C, 0, 2*N*sizeof(uint32));
+uint32_t *C = (uint32_t *) malloc(2*N*sizeof(uint32_t));
+memset(C, 0, 2*N*sizeof(uint32_t));
 
-for(int kk=0; kk<N; kk++)
+for(uint32_t kk=0; kk<N; kk++)
 {
     X[kk] = 1024.0*rand()/ (double) RAND_MAX;
     X[kk+N] = 1024.0*rand()/ (double) RAND_MAX;
@@ -179,8 +185,8 @@ X[0] = 2048; X[1]=2048; X[2] = 0;
 bcluster(X, N, r, C);
 if(N<100)
 {
-uint32 last = 0;
-for(uint32 kk=0; kk<2*N; kk++)
+uint32_t last = 0;
+for(uint32_t kk=0; kk<2*N; kk++)
   {
   if(C[kk] == 0)
       { if(last>0) printf("\n"); }
@@ -198,3 +204,4 @@ free(C);
 
 return 0;
 }
+#endif

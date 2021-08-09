@@ -1,6 +1,7 @@
+#include <stdint.h>
+
 typedef struct vbNode vbNode;
 typedef struct vbBucket vbBucket;
-typedef unsigned int uint32;
 
 struct vbNode {
 vbNode *next; // A pointer to the next node in the bucket
@@ -10,7 +11,7 @@ int bucket; // The bucket that this object falls into
 int NEBuckets[26]; // Neighbouring buckets to search in
 int nNEBuckets; // Number of neighbour buckets relevant to the object
 int visited;
-uint32 number; // The number of the cluster that the point belongs to
+uint32_t number; // The number of the cluster that the point belongs to
 // by default set to -1, which means that it is undecided
 // 0 means that is is an isolated point
 };
@@ -22,7 +23,7 @@ struct vbBucket{
   // in a clump
   vbNode *  objects;
   // Number of objects
-  uint32 nObjects;
+  uint32_t nObjects;
   // Largest x,y,z of the elements that will be put into the vb
   // (smallest assumed to be 0)
   int maxx, maxy, maxz;
@@ -33,22 +34,18 @@ struct vbBucket{
   int oadd; // next object to put in a bucket [0, N-1]
   // The overlap between the bucket, should be set to the radius of
   // interest
- double rmax; 
+ double rmax;
   double rr;
 };
 
 
 
-vbBucket * vbInitialize(uint32 nObjects, int maxx, int maxy, int maxz,
+vbBucket * vbInitialize(uint32_t nObjects, int maxx, int maxy, int maxz,
 double r );
 int vbFree(vbBucket * vb);
 int vbInfo(vbBucket * b);
 int vbAdd(vbBucket *b, double x, double y, double z, void * object,
-uint32 number);
+uint32_t number);
 vbNode* vbGetNext(vbBucket* b);
 double vbBucketDistance2(vbNode * a, vbNode *b);
 int main(int argc, char ** argv);
-
-
-
-
