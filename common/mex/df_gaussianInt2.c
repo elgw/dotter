@@ -18,10 +18,16 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray
 
   if(mxGetNumberOfElements(prhs[1]) != 2)
     mexErrMsgTxt("sigma has to be two elements");
-  
+
   if(mxGetNumberOfElements(prhs[2]) != 1)
     mexErrMsgTxt("Side length not specified");
 
+  for(int kk = 0; kk<3; kk++)
+  {
+  if (!(mxIsDouble(prhs[kk]))) {
+      mexErrMsgTxt("All arguments must be of type double.");
+  }
+  }
 
   double * mu = mxGetPr(prhs[0]);
   double * sigma = mxGetPr(prhs[1]);
@@ -41,8 +47,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray
   if(w>100)
     printf("Input: mu: %.2f, %.2f, sigma: %.2f, side: %.0f \n", mu[0], mu[1], sigma[0], side[0]);
 
-  plhs[0] = mxCreateNumericArray(2, ut_dim, mxDOUBLE_CLASS, mxREAL);  
-  double * GI = (double *) mxGetPr(plhs[0]); 
+  plhs[0] = mxCreateNumericArray(2, ut_dim, mxDOUBLE_CLASS, mxREAL);
+  double * GI = (double *) mxGetPr(plhs[0]);
 
-  gaussianInt2(GI, mu, sigma, w); 
+  gaussianInt2(GI, mu, sigma, w);
 }
