@@ -24,4 +24,14 @@ for kk = 1:numel(sigmas)
     end
 end
 
+
+disp('All dots get a value, no ''NaN''s')
+I = ones(100, 100, 100);
+D = randi(100, 200, 3);
+I(sub2ind(size(I), D(:,1), D(:,2), D(:,3))) = 2;
+sum(I(:) == 2);
+s = df_snr(I, D);
+assert(sum(isnan(s)) == 0);
+
+
 end

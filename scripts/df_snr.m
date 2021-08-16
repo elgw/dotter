@@ -14,7 +14,7 @@ snr = zeros(size(dots,1), 1);
 
 % Create a set off 100 points in a circle
 radius = 5;
-thetas = linspace(0,pi, 101);
+thetas = linspace(0,2*pi, 101);
 thetas = thetas(1:end-1);
 X = radius*sin(thetas);
 Y = radius*cos(thetas);
@@ -29,10 +29,16 @@ for kk = 1:size(dots,1)
     yd = dot(2)+Y;
     zd = ones(size(xd))*dot(3);
     bg = interpn(image, xd, yd, zd);
+    bg = interpn(image, xd(:), yd(:), zd(:));
+    bg = bg(isfinite(bg));
     noise = std(bg);
     bg = mean(bg);
     
     snr(kk) = (signal-bg)/noise;
+    if(isnan(snr(kk)))
+        warning('NaN value encountered, please fill a bug report')
+        keyboard
+    end
 end
 
 end
