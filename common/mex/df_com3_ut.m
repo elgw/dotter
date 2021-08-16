@@ -148,5 +148,20 @@ end
 fprintf('com:   Mean error: %0.2f pixels\n', mean(d(:)));
 fprintf('com+w: Mean error: %0.2f pixels\n', mean(d1(:)));
 
+test_speed()
+
 disp('  -- done')
+end
+
+function test_speed()
+
+disp('Some timing ...')
+I = rand(1024, 1024, 60);
+N = 1000;
+D = [randi(size(I,1), N, 1), randi(size(I,2), N, 1), randi(size(I,3), N, 1)];
+I(sub2ind(size(I), D(:,1), D(:,2), D(:,3))) = 2;
+tic
+C = df_com3(I, D',1)';
+t = toc;
+fprintf(' -> %.2f dots per second\n', N/t);
 end

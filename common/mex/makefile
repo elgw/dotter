@@ -13,7 +13,7 @@ UNAME := $(shell uname)
 
 # -march=native makes it slower on the MBP
 
-FLAGS = -g -W -Wpointer-arith -Wcast-qual -Wcast-align -Wall -Wwrite-strings -Wwrite-strings -fno-common -Wmissing-prototypes -Wstrict-prototypes -fshort-enums -Wshadow -Wnested-externs --std=c99 -O3 -Dverbose=1 
+FLAGS = -g -W -Wpointer-arith -Wcast-qual -Wcast-align -Wall -Wwrite-strings -Wwrite-strings -fno-common -Wmissing-prototypes -Wstrict-prototypes -fshort-enums -Wshadow -Wnested-externs --std=c99 -O3 -Dverbose=1
 # FLAGS += -DNDEBUG
 
 oktarget = 0
@@ -26,8 +26,8 @@ endif
 ifeq ($(UNAME), Darwin)
   oktarget = 1
 # compiles with warnings, PRIu64t macros in inttypes.h can fix
-FLAGS += 
-endif 
+FLAGS +=
+endif
 
 ifeq ($(oktarget), 0)
   $(error No supported platform detected)
@@ -52,22 +52,25 @@ mlfit: mlfit.c
 	$(CC) $(FLAGS) `pkg-config gsl --cflags --libs` mlfit.c -lm -c -o mlfit.o
 
 mlfit1: mlfit1.c mlfit blit3 gaussianInt2
-	$(CC) $(FLAGS) mlfit1.c mlfit.o blit3.o gaussianInt2.o -lm -o mlfit1sn `pkg-config --libs --cflags gsl` -o mlfit1 
+	$(CC) $(FLAGS) mlfit1.c mlfit.o blit3.o gaussianInt2.o -lm -o mlfit1sn `pkg-config --libs --cflags gsl` -o mlfit1
 
 mlfit1sn: mlfit1sn.c mlfit
-	$(CC) $(FLAGS) -Dstandalone  mlfit1sn.c mlfit.o gaussianInt2.o blit3.o -lm -o mlfit1sn `pkg-config --libs --cflags gsl` -o mlfit1sn 
+	$(CC) $(FLAGS) -Dstandalone  mlfit1sn.c mlfit.o gaussianInt2.o blit3.o -lm -o mlfit1sn `pkg-config --libs --cflags gsl` -o mlfit1sn
 
 mlfitN: mlfitN.c mlfit
-	$(CC) $(FLAGS) mlfitN.c mlfit.o blit3.o gaussianInt2.o -lm -o mlfitN `pkg-config --libs --cflags gsl` -o mlfitN 
+	$(CC) $(FLAGS) mlfitN.c mlfit.o blit3.o gaussianInt2.o -lm -o mlfitN `pkg-config --libs --cflags gsl` -o mlfitN
 
 gaussianInt2:
 	$(CC) $(FLAGS) `pkg-config gsl --cflags --libs` gaussianInt2.c -lm -c -o gaussianInt2.o
+
+gaussianInt2_ut:
+	$(CC) $(FLAGS) `pkg-config gsl --cflags --libs` gaussianInt2.c gaussianInt2_ut.c -lm -o gaussianInt2_ut
 
 conv1: conv1.c
 	$(CC) $(FLAGS) `pkg-config gsl --cflags --libs`  conv1.c -lpthread -c -o conv1.o
 	$(CC) $(FLAGS) -Dstandalone `pkg-config gsl --cflags --libs` conv1.c -lpthread -o conv1
 
-imshift: imshift.c 
+imshift: imshift.c
 	$(CC) $(FLAGS)  `pkg-config gsl --cflags --libs` imshift.c conv1.o -lpthread -o imshift
 
 clean:
@@ -76,7 +79,7 @@ clean:
 	rm mlfit1sn
 	rm *.o
 
-test: 
+test:
 	./com3
 	./blit3
 	./mlfit1

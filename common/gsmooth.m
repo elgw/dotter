@@ -186,6 +186,7 @@ if (mod(radius,2)==0)
     radius=radius+1;
 end
 
+normalized = 0;
 for kk = 1:numel(varargin)
     if strcmp(varargin{kk}, 'radius')
         radius = varargin{kk+1};

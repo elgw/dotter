@@ -546,10 +546,10 @@ uimenu(mDNA, 'Label', 'Export 2D masks', 'Callback', @run_exportMasks, ...
 
     function run_createNM(varargin)
         disp('Running df_createNM')
-        set(gui.win, 'Pointer', 'watch');
+        set(gui.win, 'Pointer', 'watch');                
         df_createNM()
         set(gui.win, 'Pointer', 'arrow');
-    end
+    end 
 
     function run_A_cells(varargin)
         disp('Running A_cells')

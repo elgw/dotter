@@ -27,8 +27,7 @@ for kk = 1:size(dots,1)
     
     xd = dot(1)+X;
     yd = dot(2)+Y;
-    zd = ones(size(xd))*dot(3);
-    bg = interpn(image, xd, yd, zd);
+    zd = ones(size(xd))*dot(3);    
     bg = interpn(image, xd(:), yd(:), zd(:));
     bg = bg(isfinite(bg));
     noise = std(bg);
@@ -36,8 +35,7 @@ for kk = 1:size(dots,1)
     
     snr(kk) = (signal-bg)/noise;
     if(isnan(snr(kk)))
-        warning('NaN value encountered, please fill a bug report')
-        keyboard
+        warning('NaN value encountered, either the dot is outside of the image')        
     end
 end
 

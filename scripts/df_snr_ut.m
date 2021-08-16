@@ -33,5 +33,14 @@ sum(I(:) == 2);
 s = df_snr(I, D);
 assert(sum(isnan(s)) == 0);
 
+disp('Some timing ...')
+I = rand(1024, 1024, 60);
+N = 10000;
+D = [randi(size(I,1), N, 1), randi(size(I,2), N, 1), randi(size(I,3), N, 1)];
+I(sub2ind(size(I), D(:,1), D(:,2), D(:,3))) = 2;
+tic
+s = df_snr(I,D);
+t = toc;
+fprintf(' - %.2f dots per second\n', N/t);
 
 end

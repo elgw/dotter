@@ -11,6 +11,7 @@ fprintf('  Took %f s\n', t);
 
 
 test_precision()
+test_speed()
 
 end
 
@@ -31,4 +32,18 @@ F = dotFitting(W, round(P));
 E = F(:,1:2) - P(:,1:2);
 E = (sum(E.^2,2).^(1/2));
 assert(max(E)<0.1);
+end
+
+function test_speed()
+
+disp('Some timing ...')
+I = rand(1024, 1024, 60);
+N = 1000;
+D = [randi(size(I,1), N, 1), randi(size(I,2), N, 1), randi(size(I,3), N, 1)];
+I(sub2ind(size(I), D(:,1), D(:,2), D(:,3))) = 2;
+tic
+s = dotFitting(I, D);
+t = toc;
+fprintf(' - %.2f dots per second\n', N/t);
+
 end

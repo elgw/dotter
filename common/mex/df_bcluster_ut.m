@@ -3,7 +3,7 @@ function df_bcluster_ut()
 
 disp('--> Testing df_bcluster')
 % mex CFLAGS='$CFLAGS -std=c99' COPTIMFLAGS='-DNDEBUG -O3' df_bcluster.c volBucket.c
-if 1
+if 0
     cd volBucket
     mex CFLAGS='$CFLAGS -std=c99' COPTIMFLAGS='-g' df_bcluster.c volBucket.c
     cd ..
@@ -11,7 +11,7 @@ end
     
 disp('  Random input ... ')
 N = 10000;
-verbosive = 1;
+verbosive = 0;
 
 for r = linspace(.5, 30, 5)
     
@@ -25,7 +25,7 @@ for r = linspace(.5, 30, 5)
     t1 = toc;
     assert(numel(A) == numel(B))
 end
-keyboard
+
 clear X
 
 fprintf(' Realistic case with %d dots took %.2f seconds \n', size(N,1), t0);
@@ -125,12 +125,12 @@ if verbosive
     
     tic
     C = df_bcluster(X, r);
-    t1 = toc
+    t1 = toc;
     
     tic
     z = linkage(X, 'single', 'euclidean');
     c = cluster(z,'criterion', 'distance', 'cutoff',r);    
-    t2 = toc
+    t2 = toc;
     C2 = [];
     for kk = 1:max(c(:))
         C2 = cat(1, C2, [find(c==kk) ; 0]);

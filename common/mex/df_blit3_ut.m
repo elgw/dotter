@@ -65,13 +65,13 @@ assert(W(4,4,4)==2);
 
 disp('  Correct number of photons with Gaussian kernel -- in volume')
 V1 = df_blit3(zeros(11,11,11), [], [6,6,6, 1, 1,1,1]', 0);
-assert(abs(sum(V1(:)) - 1)<1e-6);
+assert(abs(sum(V1(:)) - 1) < 1e-2);
 disp('  Correct number of photons with Gaussian kernel -- in plane')
 V2 = df_blit3(zeros(11,11,11), [], [6,6,6, 1, 1,1,1]', 1);
-assert(abs(sum(sum(V2(:,:,6))) - 1)<1e-6);
+assert(abs(sum(sum(V2(:,:,6))) - 1)<1e-3);
 disp('  Correct number of photons with Gaussian kernel -- in dot')
 V3 = df_blit3(zeros(11,11,11), [], [6,6,6, 1, 1,1,1]', 2);
-assert(abs(sum(V3(6,6,6)) - 1)<1e-6);
+assert(abs(sum(V3(6,6,6)) - 1)<1e-3);
 
        
 disp('  Timings for a realistic case');
