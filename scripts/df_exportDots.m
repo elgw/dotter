@@ -64,6 +64,9 @@ function T = df_exportDots(varargin)
 % 2017-11-03
 % Added support for cc files (corrections for shifts and chromatic
 % aberrations)
+%
+% 2021-10-12
+% Always export pixel values for all dots.
 
 % The script will either extract UserDots or all dots (M.dots)
 s.extractUserDots = 0;
@@ -73,6 +76,7 @@ s.fitting = 'none';
 s.centroids = 0; % If 1, replace clusters with their centroid
 s.calcSNR = -1;
 s.calcNSNR = -1;
+s.getPixelValues = 1; % Extract pixel values
 
 T = [];
 files = [];
@@ -252,7 +256,7 @@ if numel(T) == 0
 end
 
 Table = cell2table(T);
-Table.Properties.VariableNames = {'File', 'Channel', 'Nuclei', 'x', 'y', 'z', 'Value','FWHM', 'SNR', 'NSNR', 'Label'};
+Table.Properties.VariableNames = {'File', 'Channel', 'Nuclei', 'x', 'y', 'z', 'Value','FWHM', 'SNR', 'NSNR', 'Label', 'PixelValue'};
 
 %keyboard
 
@@ -319,7 +323,7 @@ end
 
 function TFC = extractUserDotsForChannel(s, cc, M, N, imFile)
 % Take the dots from N{nn}.userDots{cc}
-TFC = [];
+TFC = []; % Output array
 nucNum = [];
 
 for nn = 1:numel(N)
@@ -384,6 +388,12 @@ for nn = 1:numel(N)
             dfwhm = -2*ones(size(dots,1), 1);
         end
         
+        if s.getPixelValues           
+           pixel_values = interpn(imFile, dots(:,1), dots(:,2), dots(:,3));
+        else
+            pixel_values = -1*ones(size(dots,1), 1);
+        end
+        
         if s.calcSNR            
             fprintf(s.logFile, ' + Calculating SNR\n');
             dsnr = df_snr(imFile, dots(:,1:3));            
@@ -424,14 +434,13 @@ for nn = 1:numel(N)
                 'ccData', s.ccData);
         end
         
-        TFC = [TFC; dots, dfwhm, dsnr, dnsnr, N{nn}.userDotsLabels{cc}(:)];
+        TFC = [TFC; dots, dfwhm, dsnr, dnsnr, N{nn}.userDotsLabels{cc}(:), pixel_values];
         nucNum = [nucNum; nn*ones(size(dots,1),1)];
     end
 end
 % At last, combine
 TFC = [nucNum, TFC];
 end
-
 
 function TFC = extractAllDotsForChannel(s, cc, M, N, imFile)
 % Take the dots from M.dots{cc}
@@ -445,6 +454,12 @@ if s.calcFWHM
     dfwhm = df_fwhm(imFile, TFC(:,1:3));
 else
     dfwhm = -2*ones(size(TFC,1),1);
+end
+
+if s.getPixelValues
+	pixel_values = interpn(imFile, TFC(:,1), TFC(:,2), TFC(:,3));
+else
+	pixel_values = -1*ones(size(dots,1), 1);
 end
 
 if s.calcSNR    
@@ -476,7 +491,7 @@ if strcmpi(s.fitting, 'dotFitting')
     TFC(:,1:3) = F(:,1:3);
 end
 
-TFC = [TFC, dfwhm, dsnr, dnsnr, zeros(size(TFC,1),1)];
+TFC = [TFC, dfwhm, dsnr, dnsnr, zeros(size(TFC,1),1), pixel_values];
 [~, nucNum] = associate_dots_to_nuclei(N, M.mask, TFC, cc);
 TFC = [double(nucNum), TFC];
 assert(isequal(class(TFC), 'double'));
