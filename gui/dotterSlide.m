@@ -1,4 +1,4 @@
-function fig = dotterSlide(I, P, S, s, varargin)
+function [fig, th] = dotterSlide(I, P, S, s, varargin)
 %% function [] = dotterSlide(I, P, S, s, varargin)
 % I: image, 2D or 3D
 % P: Coordinates of the dots, x,y,z
@@ -75,7 +75,9 @@ if ~isfield(s, 'title')
     s.title = '';
 end
 
-s.wait = 0;
+if ~isfield(s, 'wait')    
+    s.wait = 0;
+end
 s.showNumbers = 1;
 s.debug =0;
 
@@ -129,7 +131,8 @@ end
 sumI = sum(I,3)/size(I,3);
 maxI = max(I,[], 3);
 
-fig = figure('DeleteFcn', @cleanup);
+fig = figure('CloseRequestFcn', @fig_CloseRequestFcn, ...
+    'DeleteFcn', @fig_DeleteFcn);
 clf();
 border = .1;
 %plo = subplot('Position', [border,border,1-border,1-border]);
@@ -268,7 +271,7 @@ markerSize2 = 18;
 
 % Set number of points to show depending on the threshold.
 % Variables: th, nps, nPointsShow
-% Is really both nps and nPointShow needed?
+% Is really both nps and nPointsShow needed?
 
 nPoints = size(P,1);
 if nPoints>0 && size(P,2)>3
@@ -296,11 +299,12 @@ DOTS = plot(gui.img.Parent, P(1:nPointsShow,2), P(1:nPointsShow,1), marker, 'Mar
 P1 = P(Zround(1:nPointsShow)==slide, 1:2); % In current plane
 DOTSG = plot(gui.img.Parent, P1(:,2), P1(:,1), 'o', 'Color', focusColor, 'MarkerSize', markerSize2);
 
-if size(P,2)==6
-    differentialMode =1;
-else
-    differentialMode = 0;
-end
+differentialMode = 0;
+%if size(P,2)==6
+%    differentialMode =1;
+%else
+%    differentialMode = 0;
+%end
 
 if differentialMode
     DOTS2 = plot(gui.img.Parent, P(1:nPointsShow,5), P(1:nPointsShow,4), marker2, 'ButtonDownFcn', @markerInfo);
@@ -346,14 +350,22 @@ if hasfwhm
 end
 
 clim = climSlider(gui.img, 'Min', min(I(:)), 'Max', max(I(:)) );
+
+
+% Attach a slider for the dot threshold
 if size(P,1)>0 && size(P,2)>3
-    thSlide = thSlider('Object', gui.img, 'Data', P(:,4), 'Callback', @setTh);
+    if (nPointsShow > 0) && (nPointsShow < size(P,1))
+        thSlide = thSlider('Object', gui.img, 'Data', P(:,4), 'Callback', @setTh, 'Threshold', P(nPointsShow, 4) );
+    else
+        thSlide = thSlider('Object', gui.img, 'Data', P(:,4), 'Callback', @setTh);
+    end
 end
 
 updateGUI();
 
-if s.wait
-    uiwait
+if s.wait        
+    uiwait(fig)    
+    return;
 end
 
     function cLimChange(varargin)
@@ -861,13 +873,17 @@ end
         updateGUI();
     end
 
-    function cleanup(varargin)
+    function fig_CloseRequestFcn(fig, ~)        
+        delete(fig)
+    end
+
+    function fig_DeleteFcn(varargin)        
         try
             close(clim)
         end
         try
             close(thSlide)
-        end
+        end        
     end
 
     function setNumbers(varargin)

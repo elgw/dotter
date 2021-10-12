@@ -42,9 +42,10 @@ df_writeTif(X, fileName);
 try
     m = df_readExternalMask(fileName);
 catch e
-    return;
+    error('Failed to read 2D mask')
 end
-error('No error generated')
+return
+
 end
 
 function zeroMask()

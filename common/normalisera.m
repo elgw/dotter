@@ -1,4 +1,5 @@
 function x = normalisera(x, interval)
+% function x = normalisera(x, interval)
 % maps [minx, maxx]->[0,1]
 % or [interval(1), interval(1)] -> [0,1] and clips off everthing outside
 x = double(x);

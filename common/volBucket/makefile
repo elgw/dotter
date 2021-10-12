@@ -1,3 +1,5 @@
-bcluster:
-  cc bcluster.c volBucket.c
-
+cc=gcc
+cflags=-g -Wall -Wextra -pedantic -Werror
+ldflags=-lm
+bcluster: bcluster.c volBucket.c
+	$(cc) $(cflags) bcluster.c volBucket.c $(ldflags) -o bcluster

@@ -33,7 +33,7 @@ function th = dotThreshold(D, varargin)
 
 if nargin==0
     disp('DEMO')
-    t = load('/data/current_images/iXL/iXL036_100816_001_calc/001.NM', '-mat');
+    t = load('/home/erikw/Desktop/eleni_segmentation/dw_calc/001.NM', '-mat');
     
     D = t.M.dots{1}(:,4);
     dotThreshold(D)
@@ -128,8 +128,8 @@ maxx = max(iCv);
 th = find(iCv== maxx(1));
 th = th(1); % take first if multiple
 th = Dom(th); % map to the domain
-fprintf(' Found threshold: %.2f', th);
-fprintf(' (%d/%d dots)\n', sum(D(:)>th), numel(D));
+%fprintf(' Found threshold: %.2f', th);
+%fprintf(' (%d/%d dots)\n', sum(D(:)>th), numel(D));
 
 if interactive
     figure('Name', figTitle);

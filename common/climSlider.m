@@ -25,6 +25,7 @@ g.clim_max = 1; % largest possible value for the sliders
 g.range = []; % same as clim_min, clim_max?
 g.histoLine = []; % line that represents the histogram
 g.channel = 1;
+g.wait = 0;
 
 if nargin == 0
     g.object = imagesc(rand(100,100));
@@ -41,6 +42,9 @@ if nargin>0
     end
     
     for kk = 1:numel(varargin)
+        if strcmpi(varargin{kk}, 'wait')
+            g.wait = 1;
+        end
         if strcmpi(varargin{kk}, 'min')
             g.clim_min = varargin{kk+1};
         end

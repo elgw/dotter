@@ -134,7 +134,7 @@ x0 = [.2,0];
 patch = 1+1000*df_gaussianInt2(x0, [sigma, sigma], side);
 [x] = LH2G(patch, sigma, 0);
 if verbose
-figure, imagesc([patch , 1+1000*1*df_gaussianInt2(x(1:2)-[side+1, side+1], sigma, side)])
+figure, imagesc([patch , 1+1000*1*df_gaussianInt2(x(1:2)-[side+1, side+1], [sigma, sigma], side)])
 end
 assert(norm(x(1:2)-x0-[side+1,side+1])<0.02)
 testno = testno+1;

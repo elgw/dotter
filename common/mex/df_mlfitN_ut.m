@@ -58,7 +58,8 @@ assert(eudist(P(1:3), F(1:3)')<1e-3);
 
 
 disp('  Correct localization, 2 dots -- when start guess = final');
-P = [5,5,5 , 15, 1.0, 1.1, 1.1; 7,7,7 , 15, 1.1, 1.1, 1.1];
+P = [5,5,5 , 15, 1.0, 1.1, 1.1; 
+     7,7,7 , 15, 1.1, 1.1, 1.1];
 V = df_blit3(zeros(15,15,15), [], P',2);
 F = df_mlfitN(V, P');
 assert(eudist(P(1,1:3), F(1:3,1)')<1e-3);

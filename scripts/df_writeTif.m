@@ -10,7 +10,12 @@ if ~isa(filename, 'char')
     error('File name has to be a string')
 end
 
-t = Tiff(filename, 'w');
+if 2*numel(stack) >= 2^32
+    disp('Writing as BigTIFF')
+    t = Tiff(filename, 'w8');
+else
+    t = Tiff(filename, 'w');
+end
 
 	tagstruct.ImageLength = size(stack, 1);
 	tagstruct.ImageWidth = size(stack, 2);

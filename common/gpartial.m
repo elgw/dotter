@@ -1,4 +1,4 @@
-function partial=gpartial(V, d, sigma)
+function partial = gpartial(V, d, sigma)
 % function partial=gpartial(V, d, sigma)
 % Calculate the partial derivative of V along dimension d using a filter of
 % size sigma

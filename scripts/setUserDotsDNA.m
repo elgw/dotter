@@ -1035,7 +1035,6 @@ fig_menu_delete()
             end
         end
         
-        % keyboard
         if doReset
             % Reset
             if isfield(M, 'th')
@@ -1723,7 +1722,7 @@ fig_menu_delete()
         infoString = [infoString sprintf('Channel   Threshold    Dots/Nuclei:\n')];
         
         ctrl.table.Data = cell(numel(M.channels), 6);
-        for kk = 1:numel(M.channels);
+        for kk = 1:numel(M.channels)
             dotsPerNuclei = getDotsPerNuclei('Channel', kk);
             ctrl.table.Data{kk,1} = M.channels{kk};
             ctrl.table.Data{kk,2} = dotsPerNuclei;

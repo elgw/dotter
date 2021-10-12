@@ -51,7 +51,20 @@ end
 % TODO: change this to [filename endigs{kk}] and append appropriate endings
 % per file type
 for kk = 1:numel(driver)
-    print(driver{kk}, sprintf('-f%d', fig.Number), filename)
+    ending = [];
+    switch driver{kk}
+        case '-dpng'
+            ending = '.png';
+        case '-dpdf'
+            ending = '.pdf';
+        case '-deps'
+            ending = '.eps';
+    end
+    if(numel(ending) == 0)
+        fprintf('Unknown driver: %s\n', driver{kk})
+    else
+        print(driver{kk}, sprintf('-f%d', fig.Number), [filename ending])
+    end
 end
 
 end

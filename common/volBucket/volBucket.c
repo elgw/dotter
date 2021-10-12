@@ -1,4 +1,4 @@
-/* 
+/*
    A volumetric bucket queue used to find 3D points in close proximity.
 
 Complexity: Linear in the number of points assuming that they are
@@ -15,11 +15,12 @@ erikw 20150218
 #include <math.h>
 #include <time.h>
 #include <assert.h>
+#include <stdint.h>
 
 #define MAX(a,b) (((a)>(b))?(a):(b))
 #define MIN(a,b) (((a)<(b))?(a):(b))
 
-typedef unsigned int uint32;
+
 typedef struct vbNode vbNode;
 typedef struct vbBucket vbBucket;
 
@@ -31,7 +32,7 @@ struct vbNode {
   int NEBuckets[26]; // Neighbouring buckets to search in
   int nNEBuckets; // Number of neighbour buckets relevant to the object
   int visited;
-  uint32 number;
+  uint32_t number;
 };
 
 struct vbBucket{
@@ -41,7 +42,7 @@ struct vbBucket{
   // in a clump
   vbNode *  objects;
   // Number of objects
-  uint32 nObjects;
+  uint32_t nObjects;
   // Largest x,y,z of the elements that will be put into the vb
   // (smallest assumed to be 0)
   int maxx, maxy, maxz;
@@ -52,22 +53,24 @@ struct vbBucket{
   int oadd; // next object to put in a bucket [0, N-1]
   // The overlap between the bucket, should be set to the radius of
   // interest
-  double rmax; 
+  double rmax;
   double rr; // will be set to rmax*rmax
 };
 
 
-vbBucket * vbInitialize(uint32 nObjects, int maxx, int maxy, int maxz, double rmax)
+vbBucket * vbInitialize(uint32_t nObjects, int maxx, int maxy, int maxz, double rmax)
 {
-  vbBucket * b = malloc(sizeof(vbBucket));
+    //    printf("vbInitialize %d, %d, %d, %f\n", maxx, maxy, maxz, rmax);
+    vbBucket * b = malloc(sizeof(vbBucket));
 
   b->nObjects = nObjects;
   b->maxx = maxx;
   b->maxy = maxy;
   b->maxz = maxz;
-  b->delta = 20; // side length of bins
+  //b->delta = 20; // side length of bins
   b->oadd = 0;
-  b->rmax = rmax; // Important parameter 
+  b->rmax = rmax; // Important parameter
+  b->delta = rmax+1;
   b->rr = rmax*rmax;
   assert(b->rmax < b->delta);
   int M = ceil((double) maxx/b->delta);
@@ -79,7 +82,6 @@ vbBucket * vbInitialize(uint32 nObjects, int maxx, int maxy, int maxz, double rm
   int P = ceil((double) maxz/b->delta);
   P = MAX(P,1);
   b->P =P;
-
 
   b->nBuckets = M*N*P;
   // allocate buckets
@@ -109,7 +111,7 @@ int vbFree(vbBucket * vb)
 int vbInfo(vbBucket * b)
 {
   printf("\n::: Bucket information :::\n");
-  printf("nBuckets: %d nObjects: %ud\n", b->nBuckets, b->nObjects);
+  printf("nBuckets: %d nObjects: %u\n", b->nBuckets, b->nObjects);
   printf("Spatial geometry: X Y Z: %dx%dx%d\n", b->maxx, b->maxy, b->maxz);
   printf("Bucket geometry: M N P: %dx%dx%d\n", b->M, b->N, b->P);
   printf("delta: %d > rmax: %f\n", b->delta, b->rmax);
@@ -127,20 +129,20 @@ int vbInfo(vbBucket * b)
       }
     }
     if(0)
-      printf("bucket %d, nObjects: %d\n", kk, nObjects); 
+      printf("bucket %d, nObjects: %d\n", kk, nObjects);
   }
   printf("\n");
   return 1;
 }
 
 int vbAdd(vbBucket *b, double x, double y, double z, void * object,
-    uint32 number)
+    uint32_t number)
 {
   // Take one of the unused objects to store the object
-  vbNode *node = &b->objects[b->oadd++];  
-  node->x = x; 
-  node->y = y; 
-  node->z = z; 
+  vbNode *node = &b->objects[b->oadd++];
+  node->x = x;
+  node->y = y;
+  node->z = z;
   node->object = object;
   node->next = NULL;
   node->visited = 0;
@@ -155,7 +157,7 @@ int vbAdd(vbBucket *b, double x, double y, double z, void * object,
   int bucketNo = m+n*b->M+p*b->M*b->P;
   node->bucket = bucketNo;
   assert(bucketNo>=0);
-  assert(bucketNo< b->nBuckets);
+  assert(bucketNo< b->nBuckets); // TODO: got stuck here
 
   //printf("Bucket %d\n", bucketNo);
   int neBuckets=0;
@@ -182,7 +184,7 @@ int vbAdd(vbBucket *b, double x, double y, double z, void * object,
             if(node->NEBuckets[tt] == bucketNo)
               unique = 0;
           if(unique)
-            node->NEBuckets[neBuckets++]=bucketNo; 
+            node->NEBuckets[neBuckets++]=bucketNo;
         }
       }
   node->nNEBuckets = neBuckets;
@@ -199,7 +201,7 @@ int vbAdd(vbBucket *b, double x, double y, double z, void * object,
   b->buckets[bucketNo]=node;
   node->next = btemp;
 
-  return(1); 
+  return(1);
 }
 
 vbNode* vbGetNext(vbBucket* b)
@@ -216,7 +218,7 @@ double vbBucketDistance2(vbNode * a, vbNode *b)
   return (dx*dx + dy*dy + dz*dz);
 }
 
-int main2(int argc, char ** argv)
+int main(int argc, char ** argv)
 {
 
   srand(time(NULL));
@@ -224,7 +226,11 @@ int main2(int argc, char ** argv)
 
   // Initialization
   int nObjects = 50000; // Number of objects
-  int maxx=1024; int maxy=1024; int maxz=100; // Size of sample
+  if(argc > 1)
+  {
+      nObjects = atoi(argv[1]);
+  }
+  int maxx=1024; int maxy=2*1024; int maxz=100; // Size of sample
   int rmax = 3; // Max distance between objects, only integer values supported
 
   printf("Initializing vb\n");
@@ -239,17 +245,17 @@ int main2(int argc, char ** argv)
   printf("Populating\n");
   for(int kk=0; kk<nObjects; kk++)
   {
-    double x = maxx*(double) rand()/ (double) RAND_MAX; 
-    double y = maxy*(double) rand()/ (double) RAND_MAX; 
-    double z = maxz*(double) rand()/ (double) RAND_MAX; 
+    double x = maxx*(double) rand()/ (double) RAND_MAX;
+    double y = maxy*(double) rand()/ (double) RAND_MAX;
+    double z = maxz*(double) rand()/ (double) RAND_MAX;
     if(verbose)
       printf("%f, %f, %f\n", x, y, z);
-    vbAdd(myVB, x,y,z, NULL, kk); 
+    vbAdd(myVB, x,y,z, NULL, kk);
   }
   printf("\n");
 
 
-  /* 
+  /*
      Find all point pairs where the Euclidean distance is less than rmax
      This is the only query interface at the moment and should be cleaned
      up
@@ -265,7 +271,7 @@ int main2(int argc, char ** argv)
     for(int nB=0; nB<e->nNEBuckets; nB++)
     {
       vbNode *b = myVB->buckets[e->NEBuckets[nB]];
-      if(b!=NULL) { 
+      if(b!=NULL) {
         do {
           if(b != e)
             if(vbBucketDistance2(b,e)<9){
@@ -277,8 +283,8 @@ int main2(int argc, char ** argv)
           b = b->next;
         } while (b != NULL);
       }}
-    if(verbose2 && hasNeighbours)   
-      printf("  close to (%f, %f, %f)-%d\n" , e->x, e->y, e->z, e->bucket); 
+    if(verbose2 && hasNeighbours)
+      printf("  close to (%f, %f, %f)-%d\n" , e->x, e->y, e->z, e->bucket);
   }
 
   printf("Found %d point pairs where d(a,b)<rmax\n", nPairs/2);
@@ -288,4 +294,3 @@ int main2(int argc, char ** argv)
   vbFree(myVB);
   return 0;
 }
-

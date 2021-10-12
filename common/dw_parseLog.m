@@ -23,7 +23,7 @@ while ~feof(fid)
     line = fgetl(fid);
     names = regexp(line, pat, 'names');
     if numel(names) == 1
-        names.grp
+        names.grp;
         info.time = str2num(names.grp);
     end
 end

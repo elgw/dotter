@@ -1,6 +1,6 @@
 function varargout = df_exportDots_ui(varargin)
-% GUI for df_exportDots
-%
+% GUI that calls df_exportDots
+
 
 tab = [];
 files = []; % Files to extract dots from

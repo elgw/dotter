@@ -6,6 +6,9 @@ function df_relocateTif(NMfolder, TIFfolder)
 % * Go through all files
 % * Show everything that will be done
 % * if ok, go
+% Example usage:
+% df_relocateTif('/home/me/myData_calc', '/home/me/')
+% will set the image folder to '/home/me/myData/'
 
 files = dir([NMfolder filesep() '*.NM']);
 

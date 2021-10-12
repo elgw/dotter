@@ -18,7 +18,6 @@ if numel(h)>0
     figure(h);
     return
 end
-
 % should be set in startup.m
 DOTTER_PATH = getenv('DOTTER_PATH');
 
@@ -61,10 +60,9 @@ bugsFile = ['file://' unRelFileName(bugsFile)];
 
 fprintf('DOTTER version %s\n<a href="%s">Changes</a>|<a href="%s">Bugs</a>|<a href="%s">Help</a>\n', ...
     df_version(), chFile, bugsFile, helpFile);
-fprintf('<a href="https://bienkocrosettolabs.org/">BiCroLabs</a> 2015-2019\n');
+fprintf('<a href="https://bienkocrosettolabs.org/">BiCroLabs</a> 2015-2021\n');
 disp(['Session started ' datestr(datetime('now'),'yyyy-mm-dd HH:MM:ss')])
 disp(['MATLAB ' version()])
-
 
 if exist('logo.jpg', 'file')
     I = imread('logo.jpg');
@@ -142,54 +140,21 @@ uimenu(mDots, 'Label', 'Manage colocalized dots', 'Callback', @run_manageOverlap
 mCells = uimenu(gui.win, 'Label', 'Detect');
 uimenu(mCells, 'Label', 'Find nuclei and dots (image -> calc)', 'Callback', @run_createNM, ...
     'Accelerator','F');
-uimenu(mCells, 'Label', '[OLD] Find nuclei and dots (image -> calc)', 'Callback', @run_A_cells);
-%uimenu(mCells, 'Label', 'Get nuclei DAPI intensity and area from NE files', ...
-%    'Callback', @dapiDistribution, ...
-%    'Separator','on');
-%uimenu(mCells, 'Label', 'Integral Intensity in nuclei -- all channels', 'Callback', @integralIntensity);
+% uimenu(mCells, 'Label', '[OLD] Find nuclei and dots (image -> calc)', 'Callback', @run_A_cells);
 uimenu(mCells, 'Label', 'Add missing dapiTh and voxelSize for calc folder', 'Callback', @setDapiThFolder);
-
 
 mDots = uimenu(gui.win, 'Label', 'Select');
 uimenu(mDots, 'Label', 'View/Select dots in _calc folder (->UD)', 'Callback', @run_setUserDots, ...
     'Accelerator','U');
 
-%uimenu(mDots, 'Label', 'Pairwise Distances for UserDots', 'Callback', @run_pwd);
-%uimenu(mDots, 'Label', 'N Clusters UserDots', 'Callback', @run_nkmeans);
-%uimenu(mDots, 'Label', 'Get fwhm for strongest dot per nuclei', 'Callback', @run_getFWHMstrongest);
-
 
 mDNA = uimenu(gui.win, 'Label', 'Measure');
 uimenu(mDNA, 'Label', 'Basic plots', 'Callback', @run_plot);
-%uimenu(mDNA, 'Label', 'DNA-FISH dots overlap', 'Callback', @run_DNA_ChannelOverlapAnalysis);
-%uimenu(mDNA, 'Label', '3D visualization of a nuclei');
-%uimenu(mDNA, 'Label', 'Dots Per Nuclei [UD]', 'Callback', @dotsPerNuclei);
-
-%uimenu(mDNA, 'Label', 'Manually screen nuclei', 'Callback', @manuallyPerNuclei);
-
 
 uimenu(mDNA, 'Label', 'Export dots', 'Callback', @run_exportDots, ...
     'Separator','on');
 uimenu(mDNA, 'Label', 'Export 2D masks', 'Callback', @run_exportMasks, ...
     'Separator','on');
-
-%mDNA_CSV = uimenu(mDNA, 'Label', 'Export');
-%uimenu(mDNA_CSV, 'Label', 'Get basic properties of clusters/alleles', 'Callback', @userDotsAlleles);
-%uimenu(mDNA_CSV, 'Label', 'Signal To Noise Ratio per cell [UD]', 'Callback', @userDotsSNR);
-
-%mDNA_Special = uimenu(mDNA, 'Label', 'Specific');
-%uimenu(mDNA_Special, 'Label', 'Q1 Promotor-Distance[UD]', 'Callback', @run_UDA_Q1);
-%uimenu(mDNA_Special, 'Label', 'Extract alleles [UD]', 'Callback', @run_UDA_alleles);
-%uimenu(mDNA_Special, 'Label', 'Find pairs and triplets', 'Callback', @pairsAndTriplets);
-
-%mRNA = uimenu(gui.win, 'Label', 'RNA-FISH');
-%uimenu(mRNA, 'Label', 'Analyse images (calc -> roq.pdf)', 'Callback', @run_B_analyze);
-%uimenu(mRNA, 'Label', 'Get DAPI distribution from NE files', 'Callback', @dapiDistribution);
-%uimenu(mRNA, 'Label', 'rnaSlide', 'Callback', @run_rnaSlide);
-
-%mMISC = uimenu(gui.win, 'Label', 'Misc');
-
-%uimenu(mMISC, 'Label', 'Fix Bad Masks', 'Callback', @fix_badMasks);
 
     function run_manageOverlapping(varargin)
         df_manageOverlapping()
@@ -458,10 +423,10 @@ uimenu(mDNA, 'Label', 'Export 2D masks', 'Callback', @run_exportMasks, ...
         if t == -1
             warndlg('Can not find documentation');
             return
-        end       
+        end
         clFile = fopen(t);
         fclose(t);
-        web(['file://' clFile],  '-browser');        
+        web(['file://' clFile],  '-browser');
     end
 
     function openHelp(varargin)
@@ -579,12 +544,12 @@ uimenu(mDNA, 'Label', 'Export 2D masks', 'Callback', @run_exportMasks, ...
         run('df_buildExternals');
     end
 
-function run_createNM(varargin)
+    function run_createNM(varargin)
         disp('Running df_createNM')
-        set(gui.win, 'Pointer', 'watch');
-        df_createNM
+        set(gui.win, 'Pointer', 'watch');                
+        df_createNM()
         set(gui.win, 'Pointer', 'arrow');
-end
+    end 
 
     function run_A_cells(varargin)
         disp('Running A_cells')
@@ -688,5 +653,5 @@ end
 end
 
 function run_exportMasks(varargin)
-    df_exportMasks();
+df_exportMasks();
 end
