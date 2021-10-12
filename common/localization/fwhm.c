@@ -1,3 +1,7 @@
+/* Not finished/used
+  fwhm calculation for point in volumetric images
+*/
+
 #include <stdlib.h>
 #include <stdio.h>
 #include "lanczos1.c"
@@ -103,10 +107,10 @@ double * X = malloc(N*sizeof(double));
 return X;
 }
 
-int fwhm_volume(double * V, size_t Vm, size_t Vn, size_t Vp, 
-            double * D, size_t Dm, size_t Dn, 
+int fwhm_volume(double * V, size_t Vm, size_t Vn, size_t Vp,
+            double * D, size_t Dm, size_t Dn,
             double * F)
-/** 
+/**
 V: volumetric image
 D: list of dots, the first three columns used
 F: array for FWHM.
@@ -183,5 +187,3 @@ free(V2);
 return 1;
 
 }
-
-

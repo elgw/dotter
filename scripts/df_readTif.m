@@ -1,5 +1,5 @@
 function [V, scale] = df_readTif(filename, varargin)
-% function [V, info] = df_readTif(filename, varargin)
+% function [V, scale] = df_readTif(filename, varargin)
 % Reads a volumetric tif image specified by filename
 % First tries to load filename.mat
 %

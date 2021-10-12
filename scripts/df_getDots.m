@@ -3,6 +3,10 @@ function [ P, meta ] = df_getDots(varargin)
 %
 % Locates local maxias in I according to the settings in s
 % s.maxNpoints maximum number of points to be returned, 0 - no limit
+% s.connectivity -- 'face' or 'edge' This affects what is considered 
+% a local maxima. In face of face, only the 6 pixels sharing a face is
+% used. That gives many donts and might not be suitable for noisy images.
+% 'edge', also the 10 pixels connected by edged are used. 
 %
 % To get default settings, use
 % s = df_getDots('getDefaults')
@@ -98,7 +102,7 @@ if returnDefaults
     s.xypadding = 5;
     s.localizationMethods = {'DoG_XY+Z','gaussian', 'DoG_3D','DoG_2D', 'intensity'};
     s.localization = 'DoG_XY+Z';
-    s.ranking = 'gaussian';
+    % s.ranking = 'gaussian'; not used -- should be used.
     s.refinementMethods = {'none', 'Weighted Centre of Mass'};
     s.refinement = 'none';
     s.maxNpoints = 100000;
@@ -108,6 +112,7 @@ if returnDefaults
     s.channel = defaultsChannel;
     s.calcFWHM = 1;
     s.dotFWHM = df_fwhm_from_lambda(s.lambda);
+    s.connectivity = 'face';
     
     P = s;
     return
@@ -123,6 +128,14 @@ end
 
 if ~isfield(s, 'useLP')
     s.useLP = 0;
+end
+
+if ~isfield(s, 'connectivity')
+    s.connectivity = 'face';
+end
+
+if ~isfield(s, 'dotFWHM')
+    s.dotFWHM = df_fwhm_from_lambda(s.lambda);
 end
 
 s.verbose = 0;
@@ -177,8 +190,12 @@ end
 if strcmpi(s.localization, 'intensity')
     if s.verbose
         disp('Intensity localization')
-    end
+    end    
     J = I;
+    if s.useLP        
+        fprintf('Low pass filterin with a gaussian, s=%.1f\n', s.LPSigma);
+        J = gsmooth(J, s.LPSigma);
+    end
 end
 
 if strcmpi(s.localization, 'gaussian')
@@ -195,21 +212,26 @@ end
 
 % D: Dilation of J, to find the local maximas
 if size(I,3)>1
-    sel = ones(3,3,3);
-    for z = [1,3] % Corners in z = 1,3 removed
-        sel(1,1,z) = 0;
-        sel(1,3,z) = 0;
-        sel(3,1,z) = 0;
-        sel(3,3,z) = 0;
-    end
-    sel(2,2,2)=0; % Hole in the middle
     
-    % Or 'plus?'
-    sel = zeros(3,3,3);
-    sel(:,2,2)=1;
-    sel(2,:,2)=1;
-    sel(2,2,:)=1;
-    sel(2,2,2)=0; % Hole in the middle
+    if strcmpi(s.connectivity, 'edge')
+        sel = ones(3,3,3);
+        for z = [1,3] % Corners in z = 1,3 removed
+            sel(1,1,z) = 0;
+            sel(1,3,z) = 0;
+            sel(3,1,z) = 0;
+            sel(3,3,z) = 0;
+        end
+        sel(2,2,2)=0; % Hole in the middle
+    end
+    
+    if strcmpi(s.connectivity, 'face')
+        % Or 'plus?'
+        sel = zeros(3,3,3);
+        sel(:,2,2)=1;
+        sel(2,:,2)=1;
+        sel(2,2,:)=1;
+        sel(2,2,2)=0; % Hole in the middle
+    end
     
     D = imdilate(J, strel('arbitrary', sel));
 else
@@ -229,8 +251,10 @@ J = clearBoarders(J, 4, -inf); % 3 was working fine
 % TODO: only remove if they are larger than one pixel
 J = removeSaturatedPixels(I,J);
 
+
 Pos = find(J>D);
 [PX, PY, PZ]=ind2sub(size(I), Pos);
+clear J
 
 %% Refinement should go here
 
@@ -242,7 +266,7 @@ end
 
 if strcmpi(s.refinement, 'Weighted Centre of Mass')
     disp('>> Refining using df_com3 with weighting')
-    X = df_com3(V, [PX, PY, PZ]', 1)';
+    X = df_com3(I, [PX, PY, PZ]', 1)';
     PX = X(:,1);
     PY = X(:,2);
     PZ = X(:,3);

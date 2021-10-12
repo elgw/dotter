@@ -1,4 +1,5 @@
 function varargout = df_image_focus(varargin)
+% function varargout = df_image_focus(varargin)
 % 'image', 'method' (default, 'gm')
 %
 % sigma=1 is too small for some deconvolved images.
