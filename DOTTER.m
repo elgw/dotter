@@ -50,16 +50,11 @@ catch
 end
 
 
-helpFile = [getenv('DOTTER_PATH') 'HELP.html'];
-chFile = [getenv('DOTTER_PATH') 'README.html'];
-bugsFile = [getenv('DOTTER_PATH') 'BUGS.html'];
-
+helpFile = [getenv('DOTTER_PATH') 'README.html'];
 helpFile = ['file://' unRelFileName(helpFile)];
-chFile = ['file://' unRelFileName(chFile)];
-bugsFile = ['file://' unRelFileName(bugsFile)];
 
-fprintf('DOTTER version %s\n<a href="%s">Changes</a>|<a href="%s">Bugs</a>|<a href="%s">Help</a>\n', ...
-    df_version(), chFile, bugsFile, helpFile);
+fprintf('<a href="%s">DOTTER</a> version %s\n', ...
+    helpFile, df_version());
 fprintf('<a href="https://bienkocrosettolabs.org/">BiCroLabs</a> 2015-2021\n');
 disp(['Session started ' datestr(datetime('now'),'yyyy-mm-dd HH:MM:ss')])
 disp(['MATLAB ' version()])

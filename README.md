@@ -1,6 +1,8 @@
 <link rel="stylesheet" href="style.css">
 
-![DOTTER LOGO](logo_758.jpg)
+![](logo_758.jpg)
+
+<a name="top"/>
 
 # DOTTER
 
@@ -25,16 +27,19 @@ The purpose of the pipeline is to extract dots and segment nuclei in wide field 
 ## Installation
 
 To use DOTTER the following is required:
-  * OSX or Ubuntu - will not work on Windows
-  * GIT
-  * MATLAB, R2018B or above.
-  * The GNU scientific library, GSL
-  * A Compiler for C99 that works with Matlab
+
+ - OSX or Ubuntu - will not work on Windows
+ - GIT
+ - MATLAB, R2018B or above.
+ - The GNU scientific library, GSL
+ - A Compiler for C99 that works with Matlab
 
 To install it
+
  1. Get a local copy of the repository, either by downloading it or using `git clone`
  2. Add DOTTER to paths. In MATLAB, go to 'Environment', 'Set Path', and then press 'Add Folder' and navigate to find the folder with DOTTER.
  3. Restart MATLAB, when you start it, there will be a message like this in the MATLAB terminal:
+
 
 ```
 DOTTER version 0.708
@@ -51,15 +56,15 @@ Session started 2021-10-27 08:59:36
 
 ### Compile C functions on MAC
 
-1. Install the package manager [brew](https://brew.sh/).
+ 1. Install the package manager brew.
+ See the latest [install instructions](https://brew.sh/).
+ 2. Install GSL and pkg-config from the terminal
+ ``` shell
+ brew install gsl
+ brew install pkg-config
+ ```
 
-2. Install GSL and pkg-config from the terminal
-  ``` shell
-  brew install gsl
-  brew install pkg-config
-  ```
-
-3. Compile in MATLAB
+ 3. Compile in MATLAB
 
 To compile in MATLAB you need to have [XCode](https://developer.apple.com/xcode/) installed which you can get from the App Store. Unfortunately this is a rather big package which will take some time to get installed. When XCode is installed, ask MATLAB to look for the C compiler:
 ``` matlab
@@ -88,8 +93,9 @@ Navigate the menu and select: `DOTTER`->`Maintenanace`->`Compile C Functions`. P
 
 ### Compile C functions on Linux
 On linux you will need to install:
- - git
- - GSL
+
+ * git
+ * GSL libraries
 
 <a name="update"/>
 
@@ -99,7 +105,7 @@ If DOTTER is installed from a zip file, repeat the installation instructions.
 If DOTTER was installed via git GIT you can go to a terminal, `cd` to
 the directory with DOTTER and do a
 
-```
+``` shell
 git pull
 ```
 Then build it C-functions again.
@@ -110,9 +116,9 @@ Then build it C-functions again.
 In case that you want to use an older version, `git` is your friend.
 To see all old version use (in terminal)
 
-`` shell
+``` shell
 git log --pretty=format:'%h %ad | %s%d [%an]' --graph --date=short
-``
+```
 
 and then to get a specific version, use
 
@@ -128,7 +134,6 @@ git log --pretty=format:'%h %ad | %s%d [%an]' --graph --date=short
 * 8d18c29 2017-11-22 | v 0.462 [erikw]
 ...
 git checkout 8d18c29
-
 ```
 
 <a name="usage"/>
@@ -147,7 +152,7 @@ Please use the [issues](https://github.com/elgw/dotter/issues) page on github.
 The general workflow is:
 
  * Acquire images
- * Convert native image formats such that `nd2` to `tif` using [radiant](.
+ * Convert native image formats such that `nd2` to `tif` using [radiantkit](https://github.com/ggirelli/radiantkit).
  * Correct for chromatic aberrations using calibration images of beads
  * Detect/segment nuclei and dots
  * Select dots
@@ -156,8 +161,6 @@ The general workflow is:
 <a name="shifts"/>
 
 ### Shifts and chromatic aberrations
-
-Files: `df_cc_*.m`.
 
 This section describes geometric aberrations to microscopy images and what we
 can do about them. In short there are two major sources,
@@ -189,19 +192,19 @@ First we have to identify which dots corresponds to the same bead.
 the same bead. $\hat{\delta} = \hat{r}
 (cos \hat{\theta},\sin \hat{\theta})$.
 $\hat{r}=median(\delta_i)$, $\hat{\theta} = atan2(\sum\delta_i)$.
-3. $\hat{x}_i^A = x_i^A + \delta_i$, $\hat{A} = \\{ \hat{a}_i^A
-   \\}$
+3. $\hat{x}_i^A = x_i^A + \delta_i$, $\hat{A} = { \hat{a}_i^A
+   }$
 4. Match $\hat{A}$ vs $\hat{B}$ as in step 1 and 2 above, assume that
    two dots corresponds to the same bead whenever $\delta_i|<T$,
 where $T$ is a threshold set so to tolerate the small non-linear
 deformations caused by chromatic aberrations.
-5. In the end, a set of matched points is returned, $\\{ (x_i^A,
-   x_j^B) : |(x^A_i+delta-x^B_j)|<T \\}$
+5. In the end, a set of matched points is returned, ${ (x_i^A,
+   x_j^B) : |(x^A_i+delta-x^B_j)|<T }$
 
  * _Algorithm 2_ -- find polynomial transformation between channels.
 
  This is quite straight forward, see
-[kozubek,2000](http://dx.doi.org/10.1046/j.1365-2818.2000.00754.x).
+[kozubek](http://dx.doi.org/10.1046/j.1365-2818.2000.00754.x).
 Some notes A) Order 2 is used by default since order 3 does not show
 an significant advantage. B) In z, a constant offset is used rather
 than a polynomial model.
@@ -228,3 +231,8 @@ make sure that A was not applied before).
    folder `~/.DOTTER/`. Remove the whole folder to reset the
    configuration. This includes default directories, window placements
    and emission wavelengths for fluorophores.
+
+<hr/>
+Didn't find what you were looking for? Please file a <a href="#bugs">bug report</a>.
+
+<a href="#top">top</a>
