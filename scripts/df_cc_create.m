@@ -11,9 +11,11 @@ function varargout = df_cc_create(varargin)
 %
 % Possible improvement: Set polyorder automatically (i.e., set to 1 when
 % very few dots).
-
+%
+% TODO: have the pixel size as input ..
 
 s.polyorder = 2;
+
 
 for kk = 1:numel(varargin)
     if strcmpi(varargin{kk}, 'dots')

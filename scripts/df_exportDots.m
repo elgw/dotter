@@ -256,7 +256,7 @@ if numel(T) == 0
 end
 
 Table = cell2table(T);
-Table.Properties.VariableNames = {'File', 'Channel', 'Nuclei', 'x', 'y', 'z', 'Value','FWHM', 'SNR', 'NSNR', 'Label', 'PixelValue'};
+Table.Properties.VariableNames = {'File', 'Channel', 'Nuclei', 'x', 'y', 'z', 'Value','FWHM', 'SNR', 'NSNR', 'Label', 'PixelValue', 'FWHM_fitting'};
 
 %keyboard
 
@@ -384,8 +384,10 @@ for nn = 1:numel(N)
             %end  
             fprintf(s.logFile, ' + Calculating FWHM\n');
             dfwhm = df_fwhm(imFile, dots(:,1:3));
+            
         else
             dfwhm = -2*ones(size(dots,1), 1);
+            
         end
         
         if s.getPixelValues           
@@ -422,6 +424,9 @@ for nn = 1:numel(N)
             dotFittingSettings.sigmaXY = df_getEmission(M.channels{cc});
             F=dotFitting(imFile, dots(:,1:3), dotFittingSettings);
             dots(:,1:3) = F(:,1:3);
+            fwhm_fitting = 2*F(:,6)*sqrt(2*log(2));            
+        else
+            fwhm_fitting = -1*ones(size(dots, 1), 1);
         end
         
         %% Apply cc-correction
@@ -434,7 +439,7 @@ for nn = 1:numel(N)
                 'ccData', s.ccData);
         end
         
-        TFC = [TFC; dots, dfwhm, dsnr, dnsnr, N{nn}.userDotsLabels{cc}(:), pixel_values];
+        TFC = [TFC; dots, dfwhm, dsnr, dnsnr, N{nn}.userDotsLabels{cc}(:), pixel_values, fwhm_fitting];
         nucNum = [nucNum; nn*ones(size(dots,1),1)];
     end
 end

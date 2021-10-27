@@ -9,6 +9,8 @@ function df_com3_ut()
 % C = df_com3(V, P');    % Centre of mass for each [x,y,z] in P
 % Cw = df_com3(V, P',1); % Weighted
 %
+% Dots too close to the boundary are not considered.
+% Note: not resolution independent, uses fixed padding.
 
 disp('--> Testing df_com3')
 % mex CFLAGS='$CFLAGS -std=c99 -Wall `pkg-config gsl --cflags --libs`' df_com3.c

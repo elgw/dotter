@@ -1,29 +1,37 @@
 function cCorrMeasure()
 %%
-%  Generates reference points for the function cCorrI, which corrects for chromatic
-%  aberrations.
+% This interface exists as a convenience for calling df_cc.
+% Here you specify what image folder and what field of view (FOV)
+% that should be used to generate a correction file (.cc) that later on
+% can be used to correct dots or images for shifts and chromatic
+% aberrations.
 %
-%  Proceed with cCorrVerify after this script to subselect dots and
-%  to measure the precision.
+% Parameters:
+% N -- The number of dots to use from each channel.
+% D -- the maximal distance, in pixels between dots from different channels
+%      that potentially could be the same bead. Typically the default is
+%      good enough. If that does not work at all, try to increase the
+%      value.
+% R -- the reference channel. All other channels will be corrected to match
+%      this one. Preferably you should use the best possible channel as a
+%      reference, i.e., the one with the brightest dots.
 %
-%  In the end, the ouput is a .mat file with the reference points.
-%
-% cCorrI will later be called with the syntax
-% P = cCorrI(Q, 'a595', 'tmr', 'cc_20151019_iJC60.mat')
-% To more the dots Q in a594 to the corresponding locations in tmr
-% cCorrI will detect if the input is an image or a list of locations based
-% on the size of the third dimension of Q
-%
-% To do:
-% - Reset visibility of some buttons when changing field.
+% Usage:
+% 1. Set the parameters.
+% 2. Fit the dots with the 'Fit Dots' button
+% 3. Press 'Try/Export' to export the corrections and get some
+%    statistics. If you are not happy, go back to 1.
 %
 % Warning:
 % - Only load images with beads here since this function might
 % overwrite/corrupt some of the data in the NM files for other images.
-%
-% See also:
-%  compareCC() - to visualize and compare CC files
 
+% To do:
+% - Reset visibility of some buttons when changing field.
+% - Ask for pixel size
+%
+
+%% All settings go into the struct s
 s.folder = '';
 s.refchannel = '';
 s.maxDist = 10; % pixels

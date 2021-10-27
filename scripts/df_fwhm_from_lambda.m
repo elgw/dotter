@@ -8,6 +8,10 @@ function fwhm = df_fwhm_from_lambda(lambda, numerical_aperture)
         %
         % - Rayleigh Resolution (equal to FWHM)
         %    xy = 0.61λ/NA
+        %
+        % FWHM of a gaussian:
+        % 2*sqrt(2*log(2))*sigma
+        % ~ 2.355*sigma
         
         if ~exist('numerical_aperture', 'var')
            numerical_aperture = df_getConfig('df_fwhm_from_lambda', 'NA', 0);
