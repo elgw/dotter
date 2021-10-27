@@ -106,11 +106,13 @@
 <p><a name="installation"/></p>
 <h2 id="installation">Installation</h2>
 <p>To use DOTTER the following is required:</p>
-<pre><code>* OSX or Ubuntu - will not work on Windows
-* GIT
-* MATLAB, R2018B or above.
-* The GNU scientific library, GSL
-* A Compiler for C99 that works with Matlab</code></pre>
+<ul>
+<li>OSX or Ubuntu - will not work on Windows</li>
+<li>GIT</li>
+<li>MATLAB, R2018B or above.</li>
+<li>The GNU scientific library, GSL</li>
+<li>A Compiler for C99 that works with Matlab</li>
+</ul>
 <p>To install it</p>
 <pre><code>1. Get a local copy of the repository, either by downloading it or using `git clone`
 2. Add DOTTER to paths. In MATLAB, go to &#39;Environment&#39;, &#39;Set Path&#39;, and then press &#39;Add Folder&#39; and navigate to find the folder with DOTTER.
@@ -130,15 +132,15 @@ Session started 2021-10-27 08:59:36</code></pre>
 <li><p>Compile in MATLAB</p></li>
 </ol>
 <p>To compile in MATLAB you need to have <a href="https://developer.apple.com/xcode/">XCode</a> installed which you can get from the App Store. Unfortunately this is a rather big package which will take some time to get installed. When XCode is installed, ask MATLAB to look for the C compiler:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode matlab"><code class="sourceCode matlab"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="op">&gt;&gt;</span> <span class="va">mex</span> <span class="op">-</span><span class="va">setup</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode matlab"><code class="sourceCode matlab"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="op">&gt;&gt;</span> <span class="va">mex</span> <span class="op">-</span><span class="va">setup</span></span></code></pre></div>
 <p>Figure out where MATLAB is installed (it is probably somewhere else on your system)</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode matlab"><code class="sourceCode matlab"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="op">&gt;&gt;</span> <span class="va">fullfile</span>(<span class="va">matlabroot</span><span class="op">,</span> <span class="ss">&#39;bin&#39;</span>)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a> <span class="ss">&#39;/home/donald/MATLAB_R2017b/bin&#39;</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode matlab"><code class="sourceCode matlab"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="op">&gt;&gt;</span> <span class="va">fullfile</span>(<span class="va">matlabroot</span><span class="op">,</span> <span class="ss">&#39;bin&#39;</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a> <span class="ss">&#39;/home/donald/MATLAB_R2017b/bin&#39;</span></span></code></pre></div>
 <p>Then in a terminal</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode matlab"><code class="sourceCode matlab"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="va">cd</span> <span class="op">/</span><span class="va">home</span><span class="op">/</span><span class="va">donald</span><span class="op">/</span><span class="va">MATLAB_R2017b</span><span class="op">/</span><span class="va">bin</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a><span class="op">./</span><span class="va">matlab</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode matlab"><code class="sourceCode matlab"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="va">cd</span> <span class="op">/</span><span class="va">home</span><span class="op">/</span><span class="va">donald</span><span class="op">/</span><span class="va">MATLAB_R2017b</span><span class="op">/</span><span class="va">bin</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a><span class="op">./</span><span class="va">matlab</span></span></code></pre></div>
 <p>open DOTTER, by</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode matlab"><code class="sourceCode matlab"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a><span class="va">DOTTER</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode matlab"><code class="sourceCode matlab"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="va">DOTTER</span></span></code></pre></div>
 <p>Navigate the menu and select: <code>DOTTER</code>-&gt;<code>Maintenanace</code>-&gt;<code>Compile C Functions</code>. Please note the output in the MATLAB console, if there are any errors, please try to understand what they are. If you get stuck here, please file a bug report.</p>
 <p><a name="compile-linux"/></p>
 <h3 id="compile-c-functions-on-linux">Compile C functions on Linux</h3>
