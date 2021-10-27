@@ -1,547 +1,261 @@
-<p><link rel="stylesheet" href="style.css"></p>
+<p><link rel="stylesheet" href="style.css">
+<img src="logo_758.jpg" alt="DOTTER LOGO" title="" /></p>
 
-<p><a href="REQUESTS.html">Requests</a>
-<a href="BUGS.html">Bugs</a>
-<a href="HELP.html">Installation and Help</a></p>
+<h1>DOTTER</h1>
 
-<p><img src="logo_758.jpg" alt="DOTTER LOGO" title="" /></p>
+<p>DOTTER is a MATLAB toolbox developed for internal use at <a href="https://bienkocrosettolabs.org/">bienkocrosettolabs</a>.</p>
 
-<h1>Changes to DOTTER</h1>
-
-<h2>0.598</h2>
+<p>The purpose of the pipeline is to extract dots and segment nuclei in wide field images of <a href="https://en.wikipedia.org/wiki/Fluorescence_in_situ_hybridization">FISH</a> experiments.</p>
 
 <ul>
-<li>Added a check to see that dapi file matches the nm file number (for exporting).</li>
+<li><p><a href="#Installation">Installation</a></p>
+
+<ul>
+<li><a href="#compile-max">Compile C functions on MAC</a></li>
+<li><a href="#compile-linux">Compile C functions on Linux</a></li>
+<li><a href="#update">Update</a></li>
+<li><a href="#downgrade">Downgrade</a></li>
+</ul></li>
+<li><p><a href="#usage">Usage</a></p>
+
+<ul>
+<li><a href="#bugs">Bugs and Feature Requests</a></li>
+<li><a href="#workflow">Workflow</a></li>
+<li><a href="#shifts">Shift corrections and Chromatic Aberrations</a></li>
+</ul></li>
 </ul>
 
-<h2>0.597</h2>
+<p><a name="installation"/></p>
 
-<ul>
-<li>Added the option to export 2D masks from NM files</li>
-</ul>
+<h2>Installation</h2>
 
-<h2>0.594</h2>
+<p>To use DOTTER the following is required:
+  * OSX or Ubuntu - will not work on Windows
+  * GIT
+  * MATLAB, R2018B or above.
+  * The GNU scientific library, GSL
+  * A Compiler for C99 that works with Matlab</p>
 
-<ul>
-<li>Updated <code>bfmatlab</code> from 5.7.3 to 5.9.1.</li>
-</ul>
-
-<h2>0.567</h2>
-
-<ul>
-<li><p>Fixed a serious bug in <code>setUserDotsDNA</code> that would overwrite the wrong NM file when switching fields of view fast. Lock variables are used to prevent this happening in the future but more care could be taken also to other parts of the code. This <a href="https://undocumentedmatlab.com/blog/controlling-callback-re-entrancy">discussion</a> contains a few alternatives:</p>
-
-<ul>
-<li><p><code>isMultipleCall</code>
-```
-function flag=isMultipleCall()
-flag = false;
-% Get the stack
-s = dbstack();
-if numel(s)&lt; =2
-% Stack too short for a multiple call
-return
-end</p>
-
-<p>% How many calls to the calling function are in the stack?
-names = {s(:).name};
-TF = strcmp(s(2).name,names);
-count = sum(TF);
-if count>1
-% More than 1
-flag = true;
-end
-end
-<code>
-then in the code a simple
+<p>To install it
+ 1. Get a local copy of the repository, either by downloading it or using <code>git clone</code>
+ 2. Add DOTTER to paths. In MATLAB, go to 'Environment', 'Set Path', and then press 'Add Folder' and navigate to find the folder with DOTTER.
+ 3. Restart MATLAB, when you start it, there will be a message like this in the MATLAB terminal:
+ <code>MATLAB
+DOTTER version 0.708
+BiCroLabs 2015-2021
+Session started 2021-10-27 08:59:36
 </code>
-if isMultipleCall();  return;  end
-```
-can be used.</p></li>
-<li><p>Encapsulation:</p></li>
-</ul>
+ 3. Start DOTTER by typing <code>DOTTER</code> in MATLAB.
+ 4. Compile some of the functions that are written in other languages, in DOTTER
+    go to 'DOTTER'->'Maintenance'->'Compile C functions'. If this does not work
+    right away, see the expanded instructions below.</p>
 
-<p><code>
-varargout = func( varargin )
-% inside of callback, use following syntax:
-varargout = func_queue( @func, varargin )
+<p><a name="compile-mac"/></p>
+
+<h3>Compile C functions on MAC</h3>
+
+<ol>
+<li><p>Install the package manager <a href="https://brew.sh/">brew</a>.</p></li>
+<li><p>Install GSL and pkg-config from the terminal
+<code>shell
+brew install gsl
+brew install pkg-config
+</code></p></li>
+<li><p>Compile in MATLAB</p></li>
+</ol>
+
+<p>To compile in MATLAB you need to have <a href="https://developer.apple.com/xcode/">XCode</a> installed which you can get from the App Store. Unfortunately this is a rather big package which will take some time to get installed. When XCode is installed, ask MATLAB to look for the C compiler:
+``` matlab</p>
+
+<blockquote>
+  <blockquote>
+  <p>mex -setup
+```</p>
+</blockquote>
+
+<p></blockquote></p>
+
+<p>Figure out where MATLAB is installed (it is probably somewhere else on your system)
+``` matlab</p>
+
+<blockquote>
+  <blockquote>
+  <p>fullfile(matlabroot, 'bin')
+ '/home/donald/MATLAB_R2017b/bin'
+```</p>
+</blockquote>
+
+<p></blockquote></p>
+
+<p>Then in a terminal
+<code>matlab
+cd /home/donald/MATLAB_R2017b/bin
+./matlab
 </code></p>
 
-<ul>
-<li>A not so portable solution would be to use an external library with mutextes, semaphores etc.</li>
-</ul></li>
-<li><p>Added <code>df_ls_dapi()</code> to list nm files and see if they map to unique DAPI files. This is to detect possible overwritten nm-files caused by the bug.</p></li>
-</ul>
+<p>open DOTTER, by
+<code>matlab
+DOTTER
+</code>
+Navigate the menu and select: <code>DOTTER</code>-><code>Maintenanace</code>-><code>Compile C Functions</code>. Please note the output in the MATLAB console, if there are any errors, please try to understand what they are. If you get stuck here, please file a bug report.</p>
 
-<h2>0.559</h2>
+<p><a name="compile-linux"/></p>
 
-<ul>
-<li>Changed <code>df_relocateTif</code> so that XYZ.nm always points to a <code>/folder/dapi_XYZ.tif</code> file.</li>
-</ul>
+<h3>Compile C functions on Linux</h3>
 
-<h2>0.552</h2>
+<p>On linux you will need to install:
+ - git
+ - GSL</p>
 
-<ul>
-<li>Fixed an issue where the script for finding a dot threshold would crash if 0 dots were asked for.</li>
-</ul>
+<p><a name="update"/></p>
 
-<h2>0.544</h2>
+<h3>Keeping updated</h3>
 
-<ul>
-<li>Threshold selection now works when non-integer number of dots are specified.</li>
-<li>Possible to specify number of expected dots per channel for the threshold selection.</li>
-<li>Corrections for chromatic aberrations can be run on a set of folders, not just one at a time.</li>
-<li>Changed the <code>extrapvalue</code> of the interpolation function when correction for CC into the mean of the image (was set to 0 before and that caused a lot of false dots to be detected close to the borders, as an alternative, the image could be extended using linear inperpolation into a larger image, interpolated and then clipped).</li>
-<li>Fixed some minor issue in the UX here and there.</li>
-</ul>
+<p>If DOTTER is installed from a zip file, repeat the installation instructions.</p>
 
-<h2>0.525</h2>
-
-<ul>
-<li><code>get_nuclei_manual</code> fixed, would previously skip some numbers in the mask.</li>
-</ul>
-
-<h2>0.521</h2>
-
-<ul>
-<li>Updated <code>df_getNucleiFromNM.m</code> not to crash when a single folder is used as argument.</li>
-</ul>
-
-<h2>0.520</h2>
-
-<ul>
-<li>Added help button in manual dot segmentation mode.</li>
-</ul>
-
-<h2>0.519</h2>
-
-<ul>
-<li><code>df_exp_nucSim</code> renamed to <code>df_dotThresholds</code></li>
-<li>Integrated <code>df_dotThresholds</code> into <code>setUserDotsDNA</code></li>
-</ul>
-
-<h2>0.514</h2>
-
-<ul>
-<li>Collected error messages into log file for <code>df_validateNM</code></li>
-<li>It is now possible to remove blobs in <code>setUserDotsDNA</code>.</li>
-</ul>
-
-<h2>0.506</h2>
-
-<ul>
-<li>Blob detector available as an alternative to detecting diffraction limited dots. Run manually with <code>df_blobsAsDots</code>.</li>
-</ul>
-
-<h2>0.505</h2>
-
-<ul>
-<li>Updated documentation for basic plot: Pixel values. Also fixed a but that would make it crash sometimes.</li>
-</ul>
-
-<h2>0.504</h2>
-
-<ul>
-<li>Fixed an issue where it was not possible to change threshold for
-some images.</li>
-</ul>
-
-<h2>0.503</h2>
-
-<ul>
-<li>Can import segmentations that are binarized and compressed.</li>
-</ul>
-
-<h2>0.502</h2>
-
-<ul>
-<li><code>df_plot</code> batch processing improvements:
-<ul>
-<li>scans subdirectories for <code>.cc</code> files and applies corrections
-without any more interaction.</li>
-<li>log files produced with date, DOTTER version, etc..</li>
-<li>nuclei filters are applied (they were not initially).</li>
-</ul></li>
-</ul>
-
-<h2>0.500</h2>
-
-<ul>
-<li>Can now read nd2 files stored both in XYZ and XYT format. Reason:
-one of the nd2 files that Quim got from the scope was in XYT
-format.</li>
-</ul>
-
-<h2>0.495</h2>
-
-<ul>
-<li>K-means clustering does now support auto detection of the number of
-clusters as well as constraints on the maximum number of dots per
-cluster and channel.</li>
-<li>Same structure for all tests to run, they end with <code>_df.m</code>.</li>
-<li>Bugs detected in several of the <code>.c</code> files, <code>mwSize</code> was not used.
-Corrected.</li>
-<li>Other minor bug fixes.</li>
-<li>New measurements available for <code>df_plot</code>.</li>
-</ul>
-
-<h2>0.486</h2>
-
-<ul>
-<li>Adding the option to import masks generated externally.</li>
-</ul>
-
-<h2>0.485</h2>
-
-<ul>
-<li><code>df_plot</code> did behave unreasonable if images with mixed sets of
-channels were loaded. This is prevented now by refusing to load
-such images.</li>
-<li>Added more measurement options.</li>
-</ul>
-
-<h2>0.483</h2>
-
-<ul>
-<li>Moved to github.</li>
-</ul>
-
-<h2>0.479</h2>
-
-<ul>
-<li>Changes in detection of local maxima. Previously a
-3x3x3 unit cube was used. Now a 3D 'plus' is used. Might be too
-sensitive for really noisy images.</li>
-</ul>
-
-<h2>0.478</h2>
-
-<ul>
-<li>SetUserDots
-<ul>
-<li>Dots can be added with the right button</li>
-<li>The closest dot is picked (behaviour is still undefined if there
-are two identical dots)</li>
-</ul></li>
-</ul>
-
-<h2>0.471</h2>
-
-<ul>
-<li>Bug fix, MaxDots would not be applied to the last channel.</li>
-</ul>
-
-<h2>0.462</h2>
-
-<ul>
-<li>Support for up to eight clusters in <code>setUserDotsDNA</code></li>
-<li>Hierachical clustering, need some validation before use.</li>
-</ul>
-
-<h2>0.460, 2017-11-21</h2>
-
-<ul>
-<li>Contours for dilated nuclei also shown</li>
-</ul>
-
-<h2>0.456, 2017-11-17</h2>
-
-<ul>
-<li>Changes in <code>setUserDotsDNA</code>:
-<ul>
-<li>Possible to turn on/off markers, per class</li>
-<li>Plots for dots per nuclei in the current slide</li>
-<li>Possible to jump directly to any nuclei.</li>
-</ul></li>
-</ul>
-
-<h2>0.455, 2017-11-17</h2>
-
-<ul>
-<li>First clustering plugins put in place.</li>
-</ul>
-
-<h2>0.454, 2017-11-16</h2>
-
-<ul>
-<li><em>Visual thresholds</em> works again in setUserDotsDNA</li>
-<li>Major improvements in the export GUI.</li>
-<li>Docked the nd2tif conversion dialog into DOTTER.</li>
-<li>Rewrote the logistics beyond the clustering in setUserDotsDNA so
-that it will be possible to write new clustering methods as
-plugins.</li>
-</ul>
-
-<h2>0.449, 2017-11-15</h2>
-
-<ul>
-<li>Added missing help section.</li>
-<li>Linked axes when plotting fwhm.</li>
-</ul>
-
-<h2>0.446, 2017-11-07</h2>
-
-<ul>
-<li>Fixed a bug in <code>A_settings</code>, it did not care about what ranking
-method that was used before.</li>
-<li>Set the number of dots to calculate fwhm for to be variable and
-increased the default number.</li>
-<li>Set <em>nkmers</em> to 96 by default.</li>
-</ul>
-
-<h2>0.440, 2017-11-03</h2>
-
-<ul>
-<li>Updated functions for correction of chromatic aberrations. The
-major change is how the dots are clustered which much smarter now.
-On top of that the API is completely rewritten except for the piece of
-GUI used to create the cc-files that needs to be refreshed at some
-point. Properties:
-<ul>
-<li>Handles bead samples with more dots without getting puzzled and
-seems to be more stable in general.</li>
-<li>Much faster in correcting 3D images.</li>
-<li>Can be applied in <code>df_plot</code> as well as when exporting userDots.</li>
-<li>cc-files can be 'viewed' for some quick statistics.</li>
-</ul></li>
-</ul>
-
-<h2>0.428, 2017-10-30</h2>
-
-<ul>
-<li>'setUserDotsDNA'
-<ul>
-<li>Looking for the double number of dots for G2 nuclei.</li>
-<li>Showing that the outlier distance is given in pixels.</li>
-<li>Load/save metadata ok</li>
-</ul></li>
-</ul>
-
-<h2>0.427, 2017-10-30</h2>
-
-<ul>
-<li>Working towards integration of DNA- and RNA-FISH analysis.</li>
-<li>New functions to compare dot pickings, <code>df_compareUserDots</code> and
-<code>df_compareUserDotsGUI</code>.</li>
-<li><code>setUserDotsDNA</code> now dilates the mask by default 10 pixels before
-assigning dots to nuclei.</li>
-<li>Set a max area in the cell segmentation gui <code>get_nuclei_dapi_ui</code> to
-15000 pixels by default. No key to change this but the property is
-accessible by pressing <code>e</code>.</li>
-</ul>
-
-<h2>0.425, 2017-10-24</h2>
-
-<ul>
-<li><code>get_nuclei_manual.m</code> got some improvements. It is now possible to
-refine the contours with the button <code>s</code>.</li>
-<li>Removed any non alpha-numeric character from channel names when
-converting to tif.
-<ul>
-<li>Useful example on how to update the name of the DAPI file reference
-for all NM files in a folder:
-<code>
-files = dir('*.NM');
-for kk = 1:numel(files)
-load(files(kk).name, '-mat');
-M.dapifile  = regexprep(M.dapifile,'_*','_')
-</code></li>
-<li>Better <em>glow filter</em> in the nuclei segmentation.</li>
-<li>HP filter enabled by default in the nuclei segmentation</li>
-<li>Fixed flipped image in some cases (the image was display upside
-down)</li>
-<li>Fixed some minor things in the <code>setUserDotsDNA</code>, in some cases dots
-could not be clicked.</li>
-<li>Fixed some broken keyboard shortcuts in <code>setUserDotsDNA</code>.</li>
-</ul></li>
-</ul>
-
-<h2>0.416, 2017-10-13</h2>
-
-<ul>
-<li>setUserDots will now avoid fields with 0 nuclei instead of
-crashing.</li>
-</ul>
-
-<h2>0.415, 2017-10-12</h2>
-
-<ul>
-<li>Major changes in <code>setUserDotsDNA</code> which includes filtering on Z and
-FWHM. Also some batch processing included now.</li>
-</ul>
-
-<h2>0.410, 2017-09-29</h2>
-
-<ul>
-<li><code>df_fwhm</code> is now about 14x faster by using a new function to
-determine fwhm from 1d lines that I implemented in C <code>df_fwhm1d</code>.
-Compared to the previous routine, <code>getw</code>, <code>df_fwhm1d</code> is about 1000x
-faster.</li>
-<li>The tool to correct for chromatic aberrations in images seems to
-run well again. It was broken at some point when a bunch of
-functions were renamed.</li>
-</ul>
-
-<h2>0.390, 2017-09-21</h2>
-
-<ul>
-<li>New plot tool, accessible from <em>DNA-FISH->basic plots</em>. File:
-<code>df_plot</code>.</li>
-<li>Changes in menu</li>
-<li>Bug fixes in <code>df_getNucleiFromNM</code></li>
-</ul>
-
-<h2>0.388, 2017-09-20</h2>
-
-<ul>
-<li>Dot's can now be localized using weighted centre of mass via <code>df_com3</code>. This option is enabled in <em>nuclei -> find nuclei and dots</em>. Will be default after some more testing.</li>
-<li>Better integration with DAPI threshold (an upper limit on the
-integrated DAPI intensity). A DAPI threshold is picked already
-directly after nuclei are segmented and is used when selecting
-userDots and when exporting userDots.</li>
-<li>Old data sets have to be given a DAPI threshold from <em>nuclei->set upper DAPI threshold
-for calc folder</em>.</li>
-</ul>
-
-<h2>0.387, 2017-09-19</h2>
-
-<ul>
-<li>Now asks for number of kmers per probe for new experiments, this
-information is saved to the metadata, M.</li>
-<li>By default generates plots showing dot threshold vs how similar the
-distribution of dots per nuclei is to a binomial distribution, for
-an explanation, see the notes from the GM 20170915.</li>
-<li><code>df_setNUserDotsDNA</code> now compatible with <code>setUserDotsDNA</code> in the
-sense that dots can be edited in the later now.</li>
-<li>Fixed a bug in <code>setUserDotsDNA</code> which caused dots from all channels
-to be reset when the threshold was changed for one channel.</li>
-</ul>
-
-<h2>0.385, 2017-09-13</h2>
-
-<ul>
-<li>New function: <code>df_getFWHMstrongest</code>, calculates the FWHM for the
-strongest dot for each nuclei for all fields in a calc-folder.
-Useful for setting limits on FWHM later on. Found in menu: <em>dots->Get
-fwhm for strongest dots</em>.</li>
-</ul>
-
-<h2>0.378, 2017-09-11</h2>
-
-<ul>
-<li><code>D_integralIntensity</code> now outputs the sum, mean and std for each
-nuclei and channel.</li>
-<li><code>df_dotsPerNucleiMM</code> (which has to be called manually by typing the
-function name in MATLAB) measures the number of dots per nuclei by the
-following procedure:
-<ul>
-<li>For each nuclei and non-dapi channel, measure mean and standard deviation</li>
-<li>Identify pixels stronger than mean+2.5 x std.</li>
-<li>Each region with 2 or more pixels is counted as a dot.</li>
-</ul></li>
-</ul>
-
-<h2>0.375, 2017-09-07</h2>
-
-<ul>
-<li>Fixed some bugs in <code>A_cells</code> introduced on 0.373.</li>
-</ul>
-
-<h2>0.373, 2017-08-30</h2>
-
-<ul>
-<li>When running <em>find nuclei and dots</em> the user is now asked to
-select which fields to process. Should be useful to correct
-individual fields. These changes are implemented in <code>A_cells()</code></li>
-</ul>
-
-<h2>0.372, 2017-08-30</h2>
-
-<ul>
-<li>It is now possible to delete nuclei in the manual segmentation UI
-by right clicking inside them. This feature was asked for.</li>
-<li>factorization, added <code>df_dPeriphery.m</code> for calculation of distance
-to periphery for a mask and some dots.</li>
-<li>Closed bug B1 and B2.
-<ul>
-<li>Added a warning in the cell-segmentation interface if the
-most-in-focus slice is close to the first or last slize.</li>
-</ul></li>
-</ul>
-
-<h2>0.371, 2017-08-30</h2>
-
-<ul>
-<li>Also converts <code>czi</code>-files from the confocal. This was already
-included in the bioformats package so no extra packages needed.</li>
-<li>Eliminated a warning message from
-<code>A_generate_segmentation_preview.m</code> when no nuclei were segmented
-for a field of view.</li>
-<li>Fixed error in <code>A_cells_generate_dot_curves.m</code>. Did not save the
-correct window to the <code>...dpn.png</code> images.</li>
-<li>made <code>df_getNucleiFromNM</code> less verbosive.</li>
-</ul>
-
-<h2>0.370, 2017-08-28</h2>
-
-<ul>
-<li>New functionality: <code>df_setNUserDotsDNA</code> can be used to set a
-certain number of dots for each nuclei.</li>
-<li>Spotted and corrected a bug in <code>twomeans.m</code>. When only two dots
-were given as input they were sometimes assigned the same starting
-label. The input is now balanced so that there are equal number of
-dots in the initial guess.</li>
-</ul>
-
-<h2>0.365, 2017-08-23</h2>
-
-<ul>
-<li><p>DNA-FISH/Get basic properties of clusters/alleles
-Calls <code>DOTTER.m/@userDotsAlleles</code> to export a table for a set of NM
-files containing</p>
-
-<ul>
-<li>File name</li>
-<li>Nuclei number</li>
-<li>Number of dots for each allele</li>
-<li>Distance between alleles, measured as centroid distance</li>
-<li>Distance between each allele and the periphery of the nuclei</li>
-<li>Volume of each allele</li>
-</ul></li>
-<li><p>setUserDotsDNA, properly closes the climSlider before opening a new
-one -- not cluttering the screen with windows any more.</p></li>
-<li><p>Fixed export to 'base' of DAPI and Area when measuring those
-properties. I.e., when doing 'Get nuclei DAPI intensity and area from NE files', then it is possible to export or visualize from the MATLAB command window</p>
+<p>If DOTTER was installed via git GIT you can go to a terminal, <code>cd</code> to
+the directory with DOTTER and do a</p>
 
 <p><code>
-scatter(A,D)
-xlabel('Area [pixels]')
-ylabel('DAPI [au]')
-</code></p></li>
-<li><p><code>df_getNucleiFromNM.m</code>,</p>
+git pull
+</code>
+Then build it C-functions again.</p>
+
+<p><a name="downgrade"/></p>
+
+<h3>Downgrading</h3>
+
+<p>In case that you want to use an older version, <code>git</code> is your friend.
+To see all old version use (in terminal)</p>
+
+<p><code>shell
+git log --pretty=format:'%h %ad | %s%d [%an]' --graph --date=short
+</code></p>
+
+<p>and then to get a specific version, use</p>
+
+<p><code>shell
+git checkout &lt;hash&gt;
+</code></p>
+
+<p>Example:</p>
+
+<p>``` shell
+git log --pretty=format:'%h %ad | %s%d [%an]' --graph --date=short
+* 57a3363 2017-11-24 | v 0.471 [erikw]
+* 8d18c29 2017-11-22 | v 0.462 [erikw]
+...
+git checkout 8d18c29</p>
+
+<p>```</p>
+
+<p><a name="usage"/></p>
+
+<h2>Usage</h2>
+
+<p><a name="bugs"/></p>
+
+<h3>Bugs and Feature Requests</h3>
+
+<p>Please use the <a href="https://github.com/elgw/dotter/issues">issues</a> page on github.</p>
+
+<p><a name="Workflow"/></p>
+
+<h3>Workflow</h3>
+
+<p>The general workflow is:</p>
 
 <ul>
-<li>added <em>select NM files(s)</em> to the prompt</li>
-<li>Now also exports the meta data, <code>M</code> from each field and each
-nuclei point to a <code>M</code> using the field <code>.metaNo</code></li>
-<li>this function also appends clusters to each N, N.cluster{} which
-is convenient for further processing</li>
+<li>Acquire images</li>
+<li>Convert native image formats such that <code>nd2</code> to <code>tif</code> using [radiant](.</li>
+<li>Correct for chromatic aberrations using calibration images of beads</li>
+<li>Detect/segment nuclei and dots</li>
+<li>Select dots</li>
+<li>Analyze the results, plot and export</li>
 </ul>
 
-<p><p>Example:
-<code>
-[N, M] = df_getNucleiFromNM(); # opens file selector
-Loaded 11 files, 238 nuclei, 420 clusters into M and N
-185 nuclei has two clusters
-</code></p></li>
-</ul></p>
+<p><a name="shifts"/></p>
 
-<h2>0.355, 2017-08-21</h2>
+<h3>Shifts and chromatic aberrations</h3>
+
+<p>Files: <code>df_cc_*.m</code>.</p>
+
+<p>This section describes geometric aberrations to microscopy images and what we
+can do about them. In short there are two major sources,</p>
+
+<ol>
+<li>Shifts between channels, caused mainly by incorrectly aligned
+mirrors in the optical path (they might not be mechanically
+stable and wiggle around).</li>
+<li>Chromatic aberrations, including a wavelength dependent
+magnifications and some other non-linearities.</li>
+</ol>
+
+<h4>Detecting them</h4>
+
+<p>These disturbances are easiest to see when imaging beads, small
+particles which emit light at all wavelengths that we are interested
+in. In the ideal case, a field of view with beads captured at any
+wavelength should look the same -- but they look different.</p>
+
+<p>Given an image with beads, we detect and localize dots from each
+channel, to get $x<em>1^A, x</em>2^A, ...$ for channel A and $x<em>1^B, X</em>2^B,
+...$ for channel B, etc.</p>
+
+<p>First we have to identify which dots corresponds to the same bead.</p>
 
 <ul>
-<li>Improvements in the interface when exporting dots</li>
-<li>Improvements in the interface when measuring DAPI contents and area</li>
-<li>Showing free disk drive space when starting conversion from nd2 tif</li>
-<li>Removed green background colours in some dialogue boxes.</li>
-<li>Late is better than never, introduced this changelog.</li>
+<li><em>Algorithm 1</em> -- translation detection</li>
+<li>For each $x<em>i^A$, find the closest point in channel B,
+$m</em>B(x_i^A)$.</li>
+<li><p>Look at the distribution of $\delta<em>i = (x</em>i^A-m<em>B(x</em>i^A))$. Assumption: in
+most cases the closest point to $x<em>i$ in channel B corresponds to
+the same bead. $\hat{\delta} = \hat{r}
+(cos \hat{\theta},\sin \hat{\theta})$.
+$\hat{r}=median(\delta</em>i)$, $\hat{\theta} = atan2(\sum\delta_i)$.</p>
+
+<ol>
+<li>$\hat{x}<em>i^A = x</em>i^A + \delta<em>i$, $\hat{A} = \{ \hat{a}</em>i^A
+\}$</li>
+<li>Match $\hat{A}$ vs $\hat{B}$ as in step 1 and 2 above, assume that
+two dots corresponds to the same bead whenever $\delta_i|<T$,
+where $T$ is a threshold set so to tolerate the small non-linear
+deformations caused by chromatic aberrations.</li>
+<li>In the end, a set of matched points is returned, $\{ (x<em>i^A,
+x</em>j^B) : |(x^A<em>i+delta-x^B</em>j)|<T \}$</li>
+</ol></li>
+<li><p><em>Algorithm 2</em> -- find polynomial transformation between channels.</p>
+
+<p>This is quite straight forward, see
+<a href="http://dx.doi.org/10.1046/j.1365-2818.2000.00754.x">kozubek,2000</a>.
+Some notes A) Order 2 is used by default since order 3 does not show
+an significant advantage. B) In z, a constant offset is used rather
+than a polynomial model.</p></li>
+</ul>
+
+<h4>In practice</h4>
+
+<p>Whenever an important experiment is about to be image,
+ 1. Prepare and image beads for all relevant channels.
+ 2. Create a correction file (.cc) in DOTTER.</p>
+
+<ol>
+<li>Apply the correction, either on A) images directly or B) when dot
+selection/detection is done. (A) is the obvious choice when the
+shifts are large, otherwhise it will be hard to determine which dots
+that belong to which nuclei. Alternative B) can always be used (just
+make sure that A was not applied before).</li>
+</ol>
+
+<p><a name="QA"/></p>
+
+<h2>Questions and Answers</h2>
+
+<ul>
+<li><p><em>I set a value somewhere and now I can't change it!</em></p>
+
+<p>Data that is not specific to any experiment is saved in the
+folder <code>~/.DOTTER/</code>. Remove the whole folder to reset the
+configuration. This includes default directories, window placements
+and emission wavelengths for fluorophores.</p></li>
 </ul>
