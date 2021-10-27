@@ -1,4 +1,5 @@
 <link rel="stylesheet" href="style.css">
+
 ![DOTTER LOGO](logo_758.jpg)
 
 # DOTTER
@@ -8,16 +9,15 @@ DOTTER is a MATLAB toolbox developed for internal use at [bienkocrosettolabs](ht
 The purpose of the pipeline is to extract dots and segment nuclei in wide field images of [FISH](https://en.wikipedia.org/wiki/Fluorescence_in_situ_hybridization) experiments.
 
  * <a href="#Installation">Installation</a>
-  * <a href="#compile-max">Compile C functions on MAC</a>
-  * <a href="#compile-linux">Compile C functions on Linux</a>
-  * <a href="#update">Update</a>
-  * <a href="#downgrade">Downgrade</a>
+   * <a href="#compile-max">Compile C functions on MAC</a>
+   * <a href="#compile-linux">Compile C functions on Linux</a>
+   * <a href="#update">Update</a>
+   * <a href="#downgrade">Downgrade</a>
 
  * <a href="#usage">Usage</a>
-  * <a href="#bugs">Bugs and Feature Requests</a>
-  * <a href="#workflow">Workflow</a>
-  * <a href="#shifts">Shift corrections and Chromatic Aberrations</a>
-
+   * <a href="#bugs">Bugs and Feature Requests</a>
+   * <a href="#workflow">Workflow</a>
+   * <a href="#shifts">Shift corrections and Chromatic Aberrations</a>
 
 <a name="installation"/>
 ## Installation
