@@ -172,8 +172,7 @@ brew install pkg-config</code></pre>
 * 57a3363 2017-11-24 | v 0.471 [erikw]
 * 8d18c29 2017-11-22 | v 0.462 [erikw]
 ...
-git checkout 8d18c29
-</code></pre>
+git checkout 8d18c29</code></pre>
 <p><a name="usage"/></p>
 <h2 id="usage">Usage</h2>
 <p><a name="bugs"/></p>
@@ -184,7 +183,7 @@ git checkout 8d18c29
 <p>The general workflow is:</p>
 <ul>
 <li>Acquire images</li>
-<li>Convert native image formats such that <code>nd2</code> to <code>tif</code> using [radiant](.</li>
+<li>Convert native image formats such that <code>nd2</code> to <code>tif</code> using <a href="https://github.com/ggirelli/radiantkit">radiantkit</a>.</li>
 <li>Correct for chromatic aberrations using calibration images of beads</li>
 <li>Detect/segment nuclei and dots</li>
 <li>Select dots</li>
@@ -192,7 +191,6 @@ git checkout 8d18c29
 </ul>
 <p><a name="shifts"/></p>
 <h3 id="shifts-and-chromatic-aberrations">Shifts and chromatic aberrations</h3>
-<p>Files: <code>df_cc_*.m</code>.</p>
 <p>This section describes geometric aberrations to microscopy images and what we can do about them. In short there are two major sources,</p>
 <ol type="1">
 <li>Shifts between channels, caused mainly by incorrectly aligned mirrors in the optical path (they might not be mechanically stable and wiggle around).</li>
@@ -208,7 +206,7 @@ git checkout 8d18c29
 <ol type="1">
 <li>For each <span class="math inline"><em>x</em><sub><em>i</em></sub><sup><em>A</em></sup></span>, find the closest point in channel B, <span class="math inline"><em>m</em><sub><em>B</em></sub>(<em>x</em><sub><em>i</em></sub><sup><em>A</em></sup>)</span>.</li>
 <li>Look at the distribution of <span class="math inline"><em>δ</em><sub><em>i</em></sub> = (<em>x</em><sub><em>i</em></sub><sup><em>A</em></sup> − <em>m</em><sub><em>B</em></sub>(<em>x</em><sub><em>i</em></sub><sup><em>A</em></sup>))</span>. Assumption: in most cases the closest point to <span class="math inline"><em>x</em><sub><em>i</em></sub></span> in channel B corresponds to the same bead. <span class="math inline"><em>δ̂</em> = <em>r̂</em>(<em>c</em><em>o</em><em>s</em><em>θ̂</em>, sin <em>θ̂</em>)</span>. <span class="math inline"><em>r̂</em> = <em>m</em><em>e</em><em>d</em><em>i</em><em>a</em><em>n</em>(<em>δ</em><sub><em>i</em></sub>)</span>, <span class="math inline"><em>θ̂</em> = <em>a</em><em>t</em><em>a</em><em>n</em>2(∑<em>δ</em><sub><em>i</em></sub>)</span>.</li>
-<li><span class="math inline"><em>x̂</em><sub><em>i</em></sub><sup><em>A</em></sup> = <em>x</em><sub><em>i</em></sub><sup><em>A</em></sup> + <em>δ</em><sub><em>i</em></sub></span>, <span class="math inline">$\hat{A} = \\{ \hat{a}_i^A \\}$</span></li>
+<li><span class="math inline"><em>x̂</em><sub><em>i</em></sub><sup><em>A</em></sup> = <em>x</em><sub><em>i</em></sub><sup><em>A</em></sup> + <em>δ</em><sub><em>i</em></sub></span>, <span class="math inline"><em>Â</em> = <em>â</em><sub><em>i</em></sub><sup><em>A</em></sup></span></li>
 <li>Match <span class="math inline"><em>Â</em></span> vs <span class="math inline"><em>B̂</em></span> as in step 1 and 2 above, assume that two dots corresponds to the same bead whenever <span class="math inline"><em>δ</em><sub><em>i</em></sub>| &lt; <em>T</em></span>, where <span class="math inline"><em>T</em></span> is a threshold set so to tolerate the small non-linear deformations caused by chromatic aberrations.</li>
 <li>In the end, a set of matched points is returned, <span class="math inline">$\\{ (x_i^A, x_j^B) : |(x^A_i+delta-x^B_j)|&lt;T \\}$</span></li>
 </ol>
