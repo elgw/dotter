@@ -18,8 +18,10 @@ The purpose of the pipeline is to extract dots and segment nuclei in wide field 
    * <a href="#bugs">Bugs and Feature Requests</a>
    * <a href="#workflow">Workflow</a>
    * <a href="#shifts">Shift corrections and Chromatic Aberrations</a>
+   * <a href="#QA">Questions and Answers</a>
 
 <a name="installation"/>
+
 ## Installation
 
 To use DOTTER the following is required:
@@ -44,6 +46,7 @@ Session started 2021-10-27 08:59:36
     right away, see the expanded instructions below.
 
 <a name="compile-mac"/>
+
 ### Compile C functions on MAC
 
 1. Install the package manager [brew](https://brew.sh/).
@@ -80,12 +83,14 @@ DOTTER
 Navigate the menu and select: `DOTTER`->`Maintenanace`->`Compile C Functions`. Please note the output in the MATLAB console, if there are any errors, please try to understand what they are. If you get stuck here, please file a bug report.
 
 <a name="compile-linux"/>
+
 ### Compile C functions on Linux
 On linux you will need to install:
  - git
  - GSL
 
 <a name="update"/>
+
 ### Keeping updated
 If DOTTER is installed from a zip file, repeat the installation instructions.
 
@@ -98,6 +103,7 @@ git pull
 Then build it C-functions again.
 
 <a name="downgrade"/>
+
 ### Downgrading
 In case that you want to use an older version, `git` is your friend.
 To see all old version use (in terminal)
@@ -124,13 +130,16 @@ git checkout 8d18c29
 ```
 
 <a name="usage"/>
+
 ## Usage
 
 <a name="bugs"/>
+
 ### Bugs and Feature Requests
 Please use the [issues](https://github.com/elgw/dotter/issues) page on github.
 
-<a name="Workflow"/>
+<a name="workflow"/>
+
 ### Workflow
 
 The general workflow is:
@@ -209,6 +218,7 @@ make sure that A was not applied before).
 
 
 <a name="QA"/>
+
 ## Questions and Answers
  * _I set a value somewhere and now I can't change it!_
 
