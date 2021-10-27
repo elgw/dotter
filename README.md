@@ -35,11 +35,13 @@ To install it
  1. Get a local copy of the repository, either by downloading it or using `git clone`
  2. Add DOTTER to paths. In MATLAB, go to 'Environment', 'Set Path', and then press 'Add Folder' and navigate to find the folder with DOTTER.
  3. Restart MATLAB, when you start it, there will be a message like this in the MATLAB terminal:
- ``` MATLAB
+
+ ```
 DOTTER version 0.708
 BiCroLabs 2015-2021
 Session started 2021-10-27 08:59:36
  ```
+
  3. Start DOTTER by typing `DOTTER` in MATLAB.
  4. Compile some of the functions that are written in other languages, in DOTTER
     go to 'DOTTER'->'Maintenance'->'Compile C functions'. If this does not work
