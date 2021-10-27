@@ -150,17 +150,21 @@ brew install pkg-config</code></pre>
 <p>Navigate the menu and select: <code>DOTTER</code>-&gt;<code>Maintenanace</code>-&gt;<code>Compile C Functions</code>. Please note the output in the MATLAB console, if there are any errors, please try to understand what they are. If you get stuck here, please file a bug report.</p>
 <p><a name="compile-linux"/></p>
 <h3 id="compile-c-functions-on-linux">Compile C functions on Linux</h3>
-<p>On linux you will need to install: * git * GSL libraries</p>
+<p>On linux you will need to install:</p>
+<ul>
+<li>git</li>
+<li>GSL libraries</li>
+</ul>
 <p><a name="update"/></p>
 <h3 id="keeping-updated">Keeping updated</h3>
 <p>If DOTTER is installed from a zip file, repeat the installation instructions.</p>
 <p>If DOTTER was installed via git GIT you can go to a terminal, <code>cd</code> to the directory with DOTTER and do a</p>
-<pre><code>git pull</code></pre>
+<pre class="shell"><code>git pull</code></pre>
 <p>Then build it C-functions again.</p>
 <p><a name="downgrade"/></p>
 <h3 id="downgrading">Downgrading</h3>
 <p>In case that you want to use an older version, <code>git</code> is your friend. To see all old version use (in terminal)</p>
-<p><code>shell git log --pretty=format:'%h %ad | %s%d [%an]' --graph --date=short</code></p>
+<pre class="shell"><code>git log --pretty=format:&#39;%h %ad | %s%d [%an]&#39; --graph --date=short</code></pre>
 <p>and then to get a specific version, use</p>
 <pre class="shell"><code>git checkout &lt;hash&gt;</code></pre>
 <p>Example:</p>
