@@ -96,6 +96,7 @@
 <li><a href="#bugs">Bugs and Feature Requests</a></li>
 <li><a href="#workflow">Workflow</a></li>
 <li><a href="#shifts">Shift corrections and Chromatic Aberrations</a></li>
+<li><a href="#exportColumns">Exported dot tables</a></li>
 <li><a href="#QA">Questions and Answers</a></li>
 </ul></li>
 </ul>
@@ -215,6 +216,9 @@ git checkout 8d18c29</code></pre>
 <ol start="3" type="1">
 <li>Apply the correction, either on A) images directly or B) when dot selection/detection is done. (A) is the obvious choice when the shifts are large, otherwhise it will be hard to determine which dots that belong to which nuclei. Alternative B) can always be used (just make sure that A was not applied before).</li>
 </ol>
+<p><a name="exportColumns"></p>
+<h2 id="exported-dot-tables">Exported dot tables</h2>
+<p>The columns in the csv files produced by ‘DOTTER’-&gt;‘Measure’-&gt;‘Export Dots’ are: - <code>File</code> – The NM file that the dot was stored in. - <code>Channel</code> – The flourophore or channel name of the images file, i.e. in an image called <code>tmr_001.tif</code> the value in this column will be <code>tmr</code> - <code>Nuclei</code> – The nuclei number in this FOV. The same as the pixel value of <code>M.mask</code> - <code>x,y,z</code> – the coordinate of the dot, integers if no fitting was used or if the fitting failed. - <code>Value</code> – Depending on how the dots were ranked, the value of the ranking (for example the DoG value if DoG was used). - <code>FWHM</code> – FWHM in 2D based on 1D lines crossing the dot in x and y. - <code>SNR</code> – Signal To Noise Ratio, defined by <code>df_snr</code> - <code>NSNR</code> – Signal To Noise Ratio relative to the nuclei, see <code>df_nsnr</code> - <code>Label</code> – The label given to the point, will be set if any clustering was used. - <code>PixelValue</code> – The pixel value, i.e., the value of the image over the dot. - <code>FWHM_fitting</code> – FWHM determined by fitting (if enabled). - <code>lamin_distance_2d_pixels</code> – 2D lamin distance given in pixels.</p>
 <p><a name="QA"/></p>
 <h2 id="questions-and-answers">Questions and Answers</h2>
 <ul>

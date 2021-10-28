@@ -161,7 +161,7 @@ if s.calcFWHM < 0 % if not set;
 end
 
 if ~exist('outFile', 'var')
-    if extractUserDots
+    if s.extractUserDots
         sugFile = 'UserDots.csv';
     else
         sugFile = 'AllDots.csv';
@@ -174,6 +174,9 @@ if ~exist('outFile', 'var')
     outFile = [B, A];
 end
 
+% Calculate lamin distance from nuclei mask
+s.calcLDIST = 1;
+
 
 % If the input seems ok, show settings
 s.logFileName = [tempdir() 'df_exportDots.txt'];
@@ -183,6 +186,7 @@ fprintf(s.logFile, '\n SETTINGS\n');
 fprintf(s.logFile, ' calcFWHM: %d\n', s.calcFWHM);
 fprintf(s.logFile, ' calcSNR: %d\n', s.calcSNR);
 fprintf(s.logFile, ' UserDots: %d\n', s.extractUserDots);
+fprintf(s.logFile, ' Calculate Lamin Distance: %d\n', s.calcLDIST);
 fprintf(s.logFile, ' Centroids: %d\n', s.centroids);
 fprintf(s.logFile, ' maxDots: %d\n', s.maxDots);
 fprintf(s.logFile, ' nucleiSelection: %d\n', s.nucleiSelection);
@@ -256,7 +260,9 @@ if numel(T) == 0
 end
 
 Table = cell2table(T);
-Table.Properties.VariableNames = {'File', 'Channel', 'Nuclei', 'x', 'y', 'z', 'Value','FWHM', 'SNR', 'NSNR', 'Label', 'PixelValue', 'FWHM_fitting'};
+Table.Properties.VariableNames = {'File', 'Channel', 'Nuclei', ...
+    'x', 'y', 'z', 'Value','FWHM', 'SNR', 'NSNR', 'Label', 'PixelValue', ...
+    'FWHM_fitting', 'lamin_distance_2d_pixels'};
 
 %keyboard
 
@@ -375,7 +381,7 @@ for nn = 1:numel(N)
         if size(dots,2)==3
             dots = [dots, zeros(size(dots,1),1)];
         end
-        
+                        
         if s.calcFWHM
             %if nn == 47 
             %    if cc == 6
@@ -386,8 +392,7 @@ for nn = 1:numel(N)
             dfwhm = df_fwhm(imFile, dots(:,1:3));
             
         else
-            dfwhm = -2*ones(size(dots,1), 1);
-            
+            dfwhm = -2*ones(size(dots,1), 1);            
         end
         
         if s.getPixelValues           
@@ -429,6 +434,15 @@ for nn = 1:numel(N)
             fwhm_fitting = -1*ones(size(dots, 1), 1);
         end
         
+        if s.calcLDIST
+            if ~isfield(M, 'dmask')
+                M.dmask = df_mask_ldist(M.mask);
+            end
+            ldist = interpn(M.dmask, dots(:,1), dots(:,2));           
+        else
+            ldist = -1*ones(size(dots,1), 1);
+        end
+        
         %% Apply cc-correction
         if isfield(s, 'ccData')
             fprintf(s.logFile, ' + Applying cc\n');
@@ -439,7 +453,7 @@ for nn = 1:numel(N)
                 'ccData', s.ccData);
         end
         
-        TFC = [TFC; dots, dfwhm, dsnr, dnsnr, N{nn}.userDotsLabels{cc}(:), pixel_values, fwhm_fitting];
+        TFC = [TFC; dots, dfwhm, dsnr, dnsnr, N{nn}.userDotsLabels{cc}(:), pixel_values, fwhm_fitting, ldist];
         nucNum = [nucNum; nn*ones(size(dots,1),1)];
     end
 end
@@ -448,6 +462,9 @@ TFC = [nucNum, TFC];
 end
 
 function TFC = extractAllDotsForChannel(s, cc, M, N, imFile)
+%% This path extracts all dots, not the userDots
+% Returns a matrix
+
 % Take the dots from M.dots{cc}
 TFC = M.dots{cc}(:, 1:4);
 TFC = double(TFC);
@@ -494,9 +511,21 @@ if strcmpi(s.fitting, 'dotFitting')
     dotFittingSettings.sigmaXY = df_getEmission(M.channels{cc});
     F=dotFitting(imFile, TFC(:,1:3), dotFittingSettings);
     TFC(:,1:3) = F(:,1:3);
+	fwhm_fitting = 2*F(:,6)*sqrt(2*log(2));            
+else
+  	fwhm_fitting = -1*ones(size(TFC, 1), 1);
 end
 
-TFC = [TFC, dfwhm, dsnr, dnsnr, zeros(size(TFC,1),1), pixel_values];
+if s.calcLDIST
+    if ~isfield(M, 'dmask')
+        M.dmask = df_mask_ldist(M.mask);
+    end
+    ldist = interpn(M.dmask, TFC(:,1), TFC(:,2));
+else
+    ldist = -1*ones(size(TFC,1), 1);
+end
+
+TFC = [TFC, dfwhm, dsnr, dnsnr, zeros(size(TFC,1),1), pixel_values, fwhm_fitting, ldist];
 [~, nucNum] = associate_dots_to_nuclei(N, M.mask, TFC, cc);
 TFC = [double(nucNum), TFC];
 assert(isequal(class(TFC), 'double'));

@@ -20,6 +20,7 @@ The purpose of the pipeline is to extract dots and segment nuclei in wide field 
    * <a href="#bugs">Bugs and Feature Requests</a>
    * <a href="#workflow">Workflow</a>
    * <a href="#shifts">Shift corrections and Chromatic Aberrations</a>
+   * <a href="#exportColumns">Exported dot tables</a>
    * <a href="#QA">Questions and Answers</a>
 
 <a name="installation"/>
@@ -221,6 +222,22 @@ shifts are large, otherwhise it will be hard to determine which dots
 that belong to which nuclei. Alternative B) can always be used (just
 make sure that A was not applied before).
 
+<a name="exportColumns">
+
+## Exported dot tables
+The columns in the csv files produced by 'DOTTER'->'Measure'->'Export Dots' are:
+ - `File` -- The NM file that the dot was stored in.
+ - `Channel` -- The flourophore or channel name of the images file, i.e. in an image called `tmr_001.tif` the value in this column will be `tmr`
+ - `Nuclei` -- The nuclei number in this FOV. The same as the pixel value of `M.mask`
+ - `x,y,z` -- the coordinate of the dot, integers if no fitting was used or if the fitting failed.
+ - `Value` -- Depending on how the dots were ranked, the value of the ranking (for example the DoG value if DoG was used).
+ - `FWHM` -- FWHM in 2D based on 1D lines crossing the dot in x and y.
+ - `SNR` -- Signal To Noise Ratio, defined by `df_snr`
+ - `NSNR` -- Signal To Noise Ratio relative to the nuclei, see `df_nsnr`
+ - `Label` -- The label given to the point, will be set if any clustering was used.
+ - `PixelValue` -- The pixel value, i.e., the value of the image over the dot.
+ - `FWHM_fitting` -- FWHM determined by fitting (if enabled).
+ - `lamin_distance_2d_pixels` -- 2D lamin distance given in pixels.
 
 <a name="QA"/>
 

@@ -56,6 +56,15 @@ if( strcmp(pclass, 'double') )
     return;
 end
 
+if( strcmp(pclass, 'single') )
+    if iscell(acell)
+        fprintf(fid, '%.3f', acell{1});
+    else
+        fprintf(fid, '%.3f', acell);
+    end
+    return;
+end
+
 if( strcmp(pclass, 'uint16') )
     if iscell(acell)
         fprintf(fid, '%d', acell{1});
