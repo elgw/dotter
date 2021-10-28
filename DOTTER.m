@@ -404,11 +404,11 @@ uimenu(mDNA, 'Label', 'Export 2D masks', 'Callback', @run_exportMasks, ...
         %D_find_triplets
     end
 
-    function convert_nd2(varargin)
-        %warndlg('DOTTER does not transfer the metadata to the tif files. Please consider using GG''s radiantkit instead.');
+    function convert_nd2(varargin)       
         gui_tabs_enable();
         t = uitab(gui.tabs, 'Title', 'Bioformats to tif');
         nd2tif_g('tab', t, 'closefun', @gui_tabs_update);
+        warndlg('DOTTER does not transfer the metadata to the tif files. Please use radiantkit instead.', 'modal');
     end
 
     function openChangelog(varargin)
