@@ -212,15 +212,17 @@ git checkout 8d18c29</code></pre>
 </ul>
 <p>This is quite straight forward, see <a href="http://dx.doi.org/10.1046/j.1365-2818.2000.00754.x">kozubek</a>. Some notes A) Order 2 is used by default since order 3 does not show an significant advantage. B) In z, a constant offset is used rather than a polynomial model.</p>
 <h4 id="in-practice">In practice</h4>
-<p>Whenever an important experiment is about to be image, 1. Prepare and image beads for all relevant channels. 2. Create a correction file (.cc) in DOTTER.</p>
-<ol start="3" type="1">
-<li>Apply the correction, either on A) images directly or B) when dot selection/detection is done. (A) is the obvious choice when the shifts are large, otherwhise it will be hard to determine which dots that belong to which nuclei. Alternative B) can always be used (just make sure that A was not applied before).</li>
+<p>Whenever an important experiment is about to be image,</p>
+<ol type="1">
+<li><p>Prepare and image beads for all relevant channels.</p></li>
+<li><p>Create a correction file (.cc) in DOTTER.</p></li>
+<li><p>Apply the correction, either on A) images directly or B) when dot selection/detection is done. (A) is the obvious choice when the shifts are large, otherwhise it will be hard to determine which dots that belong to which nuclei. Alternative B) can always be used (just make sure that A was not applied before).</p></li>
 </ol>
 <p><a name="exportColumns"></p>
 <h2 id="exported-dot-tables">Exported dot tables</h2>
 <p>The columns in the csv files produced by ‘DOTTER’-&gt;‘Measure’-&gt;‘Export Dots’ are:</p>
 <ol type="1">
-<li>Col <code>File</code> – The NM file that the dot was stored in.</li>
+<li><code>File</code> – The NM file that the dot was stored in.</li>
 <li><code>Channel</code> – The flourophore or channel name of the images file, i.e. in an image called <code>tmr_001.tif</code> the value in this column will be <code>tmr</code></li>
 <li><code>Nuclei</code> – The nuclei number in this FOV. The same as the pixel value of <code>M.mask</code></li>
 <li><code>x,y,z</code> – the coordinate of the dot, integers if no fitting was used or if the fitting failed.</li>
@@ -238,9 +240,9 @@ git checkout 8d18c29</code></pre>
 <ul>
 <li><p><em>I set a value somewhere and now I can’t change it!</em></p>
 <p>Data that is not specific to any experiment is saved in the folder <code>~/.DOTTER/</code>. Remove the whole folder to reset the configuration. This includes default directories, window placements and emission wavelengths for fluorophores.</p></li>
-<li><p><em>Equations look funky on this page!</em></p></li>
+<li><p><em>Equations look funky on this page!</em></p>
+<p>This document is converted to HTML by Pandoc and should look better when displayed from ‘DOTTER’-&gt;‘Help’.</p></li>
 </ul>
-<p>This document is converted to HTML by Pandoc and should look better when displayed from ‘DOTTER’-&gt;‘Help’.</p>
 <hr/>
 <p>Didn’t find what you were looking for? Please file a <a href="#bugs">bug report</a>.</p>
 <p><a href="#top">top</a></p>
