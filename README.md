@@ -226,18 +226,18 @@ make sure that A was not applied before).
 
 ## Exported dot tables
 The columns in the csv files produced by 'DOTTER'->'Measure'->'Export Dots' are:
- - `File` -- The NM file that the dot was stored in.
- - `Channel` -- The flourophore or channel name of the images file, i.e. in an image called `tmr_001.tif` the value in this column will be `tmr`
- - `Nuclei` -- The nuclei number in this FOV. The same as the pixel value of `M.mask`
- - `x,y,z` -- the coordinate of the dot, integers if no fitting was used or if the fitting failed.
- - `Value` -- Depending on how the dots were ranked, the value of the ranking (for example the DoG value if DoG was used).
- - `FWHM` -- FWHM in 2D based on 1D lines crossing the dot in x and y.
- - `SNR` -- Signal To Noise Ratio, defined by `df_snr`
- - `NSNR` -- Signal To Noise Ratio relative to the nuclei, see `df_nsnr`
- - `Label` -- The label given to the point, will be set if any clustering was used.
- - `PixelValue` -- The pixel value, i.e., the value of the image over the dot.
- - `FWHM_fitting` -- FWHM determined by fitting (if enabled).
- - `lamin_distance_2d_pixels` -- 2D lamin distance given in pixels.
+ 1. `File` -- The NM file that the dot was stored in.
+ 2. `Channel` -- The flourophore or channel name of the images file, i.e. in an image called `tmr_001.tif` the value in this column will be `tmr`
+ 3. `Nuclei` -- The nuclei number in this FOV. The same as the pixel value of `M.mask`
+ 4. `x,y,z` -- the coordinate of the dot, integers if no fitting was used or if the fitting failed.
+ 5. `Value` -- Depending on how the dots were ranked, the value of the ranking (for example the DoG value if DoG was used).
+ 6. `FWHM` -- FWHM in 2D based on 1D lines crossing the dot in x and y.
+ 7. `SNR` -- Signal To Noise Ratio, defined by `df_snr`
+ 8. `NSNR` -- Signal To Noise Ratio relative to the nuclei, see `df_nsnr`
+ 9. `Label` -- The label given to the point, will be set if any clustering was used.
+ 10. `PixelValue` -- The pixel value, i.e., the value of the image over the dot.
+ 11. `FWHM_fitting` -- FWHM determined by fitting (if enabled).
+ 12. `lamin_distance_2d_pixels` -- 2D lamin distance given in pixels.
 
 <a name="QA"/>
 
@@ -248,6 +248,10 @@ The columns in the csv files produced by 'DOTTER'->'Measure'->'Export Dots' are:
    folder `~/.DOTTER/`. Remove the whole folder to reset the
    configuration. This includes default directories, window placements
    and emission wavelengths for fluorophores.
+
+ * _Equations look funky on this page!_
+
+ This document is converted to HTML by Pandoc and should look better when displayed from 'DOTTER'->'Help'.
 
 <hr/>
 Didn't find what you were looking for? Please file a <a href="#bugs">bug report</a>.
