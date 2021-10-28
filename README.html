@@ -218,7 +218,21 @@ git checkout 8d18c29</code></pre>
 </ol>
 <p><a name="exportColumns"></p>
 <h2 id="exported-dot-tables">Exported dot tables</h2>
-<p>The columns in the csv files produced by ‘DOTTER’-&gt;‘Measure’-&gt;‘Export Dots’ are: 1. <code>File</code> – The NM file that the dot was stored in. 2. <code>Channel</code> – The flourophore or channel name of the images file, i.e. in an image called <code>tmr_001.tif</code> the value in this column will be <code>tmr</code> 3. <code>Nuclei</code> – The nuclei number in this FOV. The same as the pixel value of <code>M.mask</code> 4. <code>x,y,z</code> – the coordinate of the dot, integers if no fitting was used or if the fitting failed. 5. <code>Value</code> – Depending on how the dots were ranked, the value of the ranking (for example the DoG value if DoG was used). 6. <code>FWHM</code> – FWHM in 2D based on 1D lines crossing the dot in x and y. 7. <code>SNR</code> – Signal To Noise Ratio, defined by <code>df_snr</code> 8. <code>NSNR</code> – Signal To Noise Ratio relative to the nuclei, see <code>df_nsnr</code> 9. <code>Label</code> – The label given to the point, will be set if any clustering was used. 10. <code>PixelValue</code> – The pixel value, i.e., the value of the image over the dot. 11. <code>FWHM_fitting</code> – FWHM determined by fitting (if enabled). 12. <code>lamin_distance_2d_pixels</code> – 2D lamin distance given in pixels.</p>
+<p>The columns in the csv files produced by ‘DOTTER’-&gt;‘Measure’-&gt;‘Export Dots’ are:</p>
+<ol type="1">
+<li>Col <code>File</code> – The NM file that the dot was stored in.</li>
+<li><code>Channel</code> – The flourophore or channel name of the images file, i.e. in an image called <code>tmr_001.tif</code> the value in this column will be <code>tmr</code></li>
+<li><code>Nuclei</code> – The nuclei number in this FOV. The same as the pixel value of <code>M.mask</code></li>
+<li><code>x,y,z</code> – the coordinate of the dot, integers if no fitting was used or if the fitting failed.</li>
+<li><code>Value</code> – Depending on how the dots were ranked, the value of the ranking (for example the DoG value if DoG was used).</li>
+<li><code>FWHM</code> – FWHM in 2D based on 1D lines crossing the dot in x and y.</li>
+<li><code>SNR</code> – Signal To Noise Ratio, defined by <code>df_snr</code></li>
+<li><code>NSNR</code> – Signal To Noise Ratio relative to the nuclei, see <code>df_nsnr</code></li>
+<li><code>Label</code> – The label given to the point, will be set if any clustering was used.</li>
+<li><code>PixelValue</code> – The pixel value, i.e., the value of the image over the dot.</li>
+<li><code>FWHM_fitting</code> – FWHM determined by fitting (if enabled).</li>
+<li><code>lamin_distance_2d_pixels</code> – 2D lamin distance given in pixels.</li>
+</ol>
 <p><a name="QA"/></p>
 <h2 id="questions-and-answers">Questions and Answers</h2>
 <ul>
