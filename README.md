@@ -13,7 +13,7 @@ The purpose of the pipeline is to extract dots and segment nuclei in wide field 
  * <a href="#Installation">Installation</a>
    * <a href="#compile-max">Compile C functions on MAC</a>
    * <a href="#compile-linux">Compile C functions on Linux</a>
-   * <a href="#update">Update</a>
+   * <a href="#upgrade">Upgrade</a>
    * <a href="#downgrade">Downgrade</a>
 
  * <a href="#usage">Usage</a>
@@ -98,9 +98,9 @@ On linux you will need to install:
  * git
  * GSL libraries
 
-<a name="update"/>
+<a name="upgrade"/>
 
-### Keeping updated
+### Keeping updated / Upgrade
 If DOTTER is installed from a zip file, repeat the installation instructions.
 
 If DOTTER was installed via git GIT you can go to a terminal, `cd` to
@@ -213,6 +213,7 @@ than a polynomial model.
 #### In practice
 
 Whenever an important experiment is about to be image,
+
  1. Prepare and image beads for all relevant channels.
  2. Create a correction file (.cc) in DOTTER.
 
@@ -226,6 +227,7 @@ make sure that A was not applied before).
 
 ## Exported dot tables
 The columns in the csv files produced by 'DOTTER'->'Measure'->'Export Dots' are:
+
  1. `File` -- The NM file that the dot was stored in.
  2. `Channel` -- The flourophore or channel name of the images file, i.e. in an image called `tmr_001.tif` the value in this column will be `tmr`
  3. `Nuclei` -- The nuclei number in this FOV. The same as the pixel value of `M.mask`
@@ -251,7 +253,7 @@ The columns in the csv files produced by 'DOTTER'->'Measure'->'Export Dots' are:
 
  * _Equations look funky on this page!_
 
- This document is converted to HTML by Pandoc and should look better when displayed from 'DOTTER'->'Help'.
+    This document is converted to HTML by Pandoc and should look better when displayed from 'DOTTER'->'Help'.
 
 <hr/>
 Didn't find what you were looking for? Please file a <a href="#bugs">bug report</a>.
