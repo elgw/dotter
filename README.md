@@ -276,7 +276,7 @@ DOTTER includes the following libraries / external code:
  - geom3d from [matGeom](https://github.com/mattools/matGeom/)
    Copyright (c) 2019, David Legland
    [license](https://github.com/mattools/matGeom/blob/master/LICENSE.txt)
- - structdlg
+ - [structdlg](https://se.mathworks.com/matlabcentral/fileexchange/6668-structdlg-structure-based-gui-definition)
    Copyright (c) 2005, Alon Fishbach
  - [maxflow](http://pub.ist.ac.at/~vnk/software.html)
    Copyright 2001-2006 Vladimir Kolmogorov and Yuri Boykov
