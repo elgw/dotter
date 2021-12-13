@@ -6,14 +6,21 @@
 
 # DOTTER
 
-DOTTER is a MATLAB toolbox developed for internal use at [bienkocrosettolabs](https://bienkocrosettolabs.org/).
+DOTTER is a MATLAB toolbox/pipeline developed at the
+[bienkocrosettolabs](https://bienkocrosettolabs.org/).
+The purpose of the pipeline is to extract dots and segment nuclei in wide field
+images of [FISH](https://en.wikipedia.org/wiki/Fluorescence_in_situ_hybridization) experiments.
 
-The purpose of the pipeline is to extract dots and segment nuclei in wide field images of [FISH](https://en.wikipedia.org/wiki/Fluorescence_in_situ_hybridization) experiments.
+## Caveats
+ - The software is developed for internal use only. At this time we can not
+   give any support or help.
+ - The software is neither polished or bug free, and has a large backlog, due to
+   other priorities. Hopefully I'll find time to fresh it up some day.
 
  * <a href="#Installation">Installation</a>
    * <a href="#compile-max">Compile C functions on MAC</a>
    * <a href="#compile-linux">Compile C functions on Linux</a>
-   * <a href="#update">Update</a>
+   * <a href="#upgrade">Upgrade</a>
    * <a href="#downgrade">Downgrade</a>
 
  * <a href="#usage">Usage</a>
@@ -98,9 +105,9 @@ On linux you will need to install:
  * git
  * GSL libraries
 
-<a name="update"/>
+<a name="upgrade"/>
 
-### Keeping updated
+### Keeping updated / Upgrade
 If DOTTER is installed from a zip file, repeat the installation instructions.
 
 If DOTTER was installed via git GIT you can go to a terminal, `cd` to
@@ -141,6 +148,9 @@ git checkout 8d18c29
 
 ## Usage
 
+At this time there is no manual or user guide, hands on knowledge is passed down
+from one user to the other.
+
 <a name="bugs"/>
 
 ### Bugs and Feature Requests
@@ -163,12 +173,11 @@ The general workflow is:
 
 ### Shifts and chromatic aberrations
 
-This section describes geometric aberrations to microscopy images and what we
-can do about them. In short there are two major sources,
+There are two major sources of geometric distortions to the images,
 
  1. Shifts between channels, caused mainly by incorrectly aligned
     mirrors in the optical path (they might not be mechanically
-stable and wiggle around).
+    stable and wiggle around).
  2. Chromatic aberrations, including a wavelength dependent
     magnifications and some other non-linearities.
 
@@ -213,6 +222,7 @@ than a polynomial model.
 #### In practice
 
 Whenever an important experiment is about to be image,
+
  1. Prepare and image beads for all relevant channels.
  2. Create a correction file (.cc) in DOTTER.
 
@@ -226,18 +236,19 @@ make sure that A was not applied before).
 
 ## Exported dot tables
 The columns in the csv files produced by 'DOTTER'->'Measure'->'Export Dots' are:
- - `File` -- The NM file that the dot was stored in.
- - `Channel` -- The flourophore or channel name of the images file, i.e. in an image called `tmr_001.tif` the value in this column will be `tmr`
- - `Nuclei` -- The nuclei number in this FOV. The same as the pixel value of `M.mask`
- - `x,y,z` -- the coordinate of the dot, integers if no fitting was used or if the fitting failed.
- - `Value` -- Depending on how the dots were ranked, the value of the ranking (for example the DoG value if DoG was used).
- - `FWHM` -- FWHM in 2D based on 1D lines crossing the dot in x and y.
- - `SNR` -- Signal To Noise Ratio, defined by `df_snr`
- - `NSNR` -- Signal To Noise Ratio relative to the nuclei, see `df_nsnr`
- - `Label` -- The label given to the point, will be set if any clustering was used.
- - `PixelValue` -- The pixel value, i.e., the value of the image over the dot.
- - `FWHM_fitting` -- FWHM determined by fitting (if enabled).
- - `lamin_distance_2d_pixels` -- 2D lamin distance given in pixels.
+
+ 1. `File` -- The NM file that the dot was stored in.
+ 2. `Channel` -- The flourophore or channel name of the images file, i.e. in an image called `tmr_001.tif` the value in this column will be `tmr`
+ 3. `Nuclei` -- The nuclei number in this FOV. The same as the pixel value of `M.mask`
+ 4. `x,y,z` -- the coordinate of the dot, integers if no fitting was used or if the fitting failed.
+ 5. `Value` -- Depending on how the dots were ranked, the value of the ranking (for example the DoG value if DoG was used).
+ 6. `FWHM` -- FWHM in 2D based on 1D lines crossing the dot in x and y.
+ 7. `SNR` -- Signal To Noise Ratio, defined by `df_snr`
+ 8. `NSNR` -- Signal To Noise Ratio relative to the nuclei, see `df_nsnr`
+ 9. `Label` -- The label given to the point, will be set if any clustering was used.
+ 10. `PixelValue` -- The pixel value, i.e., the value of the image over the dot.
+ 11. `FWHM_fitting` -- FWHM determined by fitting (if enabled).
+ 12. `lamin_distance_2d_pixels` -- 2D lamin distance given in pixels.
 
 <a name="QA"/>
 
@@ -249,7 +260,26 @@ The columns in the csv files produced by 'DOTTER'->'Measure'->'Export Dots' are:
    configuration. This includes default directories, window placements
    and emission wavelengths for fluorophores.
 
+ * _Equations look funky on this page!_
+
+    This document is converted to HTML by Pandoc and should look better when displayed from 'DOTTER'->'Help'.
+
 <hr/>
 Didn't find what you were looking for? Please file a <a href="#bugs">bug report</a>.
+
+## License
+
+DOTTER is available under the MIT license. It includes the following libraries / external code:
+
+ - [bfmatlab](https://docs.openmicroscopy.org/bio-formats/6.3.1/users/matlab/index.html)
+   [GNU Copyleft](http://www.gnu.org/copyleft/)
+ - geom3d from [matGeom](https://github.com/mattools/matGeom/)
+   Copyright (c) 2019, David Legland
+   [license](https://github.com/mattools/matGeom/blob/master/LICENSE.txt)
+ - [structdlg](https://se.mathworks.com/matlabcentral/fileexchange/6668-structdlg-structure-based-gui-definition)
+   Copyright (c) 2005, Alon Fishbach
+ - [maxflow](http://pub.ist.ac.at/~vnk/software.html)
+   Copyright 2001-2006 Vladimir Kolmogorov and Yuri Boykov
+   GPL
 
 <a href="#top">top</a>
