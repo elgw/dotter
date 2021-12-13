@@ -7,16 +7,11 @@
 # DOTTER
 
 DOTTER is a MATLAB toolbox/pipeline developed at the
-[bienkocrosettolabs](https://bienkocrosettolabs.org/).
-The purpose of the pipeline is to extract dots and segment nuclei in wide field
+[bienkocrosettolabs](https://bienkocrosettolabs.org/)
+used to extract dots and segment nuclei in wide field
 images of [FISH](https://en.wikipedia.org/wiki/Fluorescence_in_situ_hybridization) experiments.
 
-## Caveats
- - The software is developed for internal use only. At this time we can not
-   give any support or help.
- - The software is neither polished or bug free, and has a large backlog, due to
-   other priorities. Hopefully I'll find time to fresh it up some day.
-
+ * <a href="#caveats">Caveats</a>
  * <a href="#Installation">Installation</a>
    * <a href="#compile-max">Compile C functions on MAC</a>
    * <a href="#compile-linux">Compile C functions on Linux</a>
@@ -29,6 +24,16 @@ images of [FISH](https://en.wikipedia.org/wiki/Fluorescence_in_situ_hybridizatio
    * <a href="#shifts">Shift corrections and Chromatic Aberrations</a>
    * <a href="#exportColumns">Exported dot tables</a>
    * <a href="#QA">Questions and Answers</a>
+
+
+<a name="caveats">
+
+## Caveats
+ - The software is developed for internal use only. At this time we can not
+   give any support or help.
+ - The software is neither polished or bug free, and has a large backlog, due to
+   other priorities. Hopefully I'll find time to fresh it up some day.
+
 
 <a name="installation"/>
 
