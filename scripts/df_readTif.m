@@ -135,9 +135,11 @@ fid = fopen(file, 'r');
 pat='scaling: (?<scale>[0-9\.]+)';
 while ~feof(fid)
     line = fgetl(fid);
-    names = regexp(line, pat, 'names');
-    if numel(names) == 1
-        scale = str2num(names.scale);
+    if ischar(line) > 0
+        names = regexp(line, pat, 'names');
+        if numel(names) == 1
+            scale = str2num(names.scale);
+        end
     end
 end
 

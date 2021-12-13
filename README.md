@@ -6,9 +6,16 @@
 
 # DOTTER
 
-DOTTER is a MATLAB toolbox developed for internal use at [bienkocrosettolabs](https://bienkocrosettolabs.org/).
+DOTTER is a MATLAB toolbox/pipeline developed at the
+[bienkocrosettolabs](https://bienkocrosettolabs.org/).
+The purpose of the pipeline is to extract dots and segment nuclei in wide field
+images of [FISH](https://en.wikipedia.org/wiki/Fluorescence_in_situ_hybridization) experiments.
 
-The purpose of the pipeline is to extract dots and segment nuclei in wide field images of [FISH](https://en.wikipedia.org/wiki/Fluorescence_in_situ_hybridization) experiments.
+## Caveats
+ - The software is developed for internal use only. At this time we can not
+   give any support or help.
+ - The software is neither polished or bug free, and has a large backlog, due to
+   other priorities. Hopefully I'll find time to fresh it up some day.
 
  * <a href="#Installation">Installation</a>
    * <a href="#compile-max">Compile C functions on MAC</a>
@@ -141,6 +148,9 @@ git checkout 8d18c29
 
 ## Usage
 
+At this time there is no manual or user guide, hands on knowledge is passed down
+from one user to the other.
+
 <a name="bugs"/>
 
 ### Bugs and Feature Requests
@@ -163,12 +173,11 @@ The general workflow is:
 
 ### Shifts and chromatic aberrations
 
-This section describes geometric aberrations to microscopy images and what we
-can do about them. In short there are two major sources,
+There are two major sources of geometric distortions to the images,
 
  1. Shifts between channels, caused mainly by incorrectly aligned
     mirrors in the optical path (they might not be mechanically
-stable and wiggle around).
+    stable and wiggle around).
  2. Chromatic aberrations, including a wavelength dependent
     magnifications and some other non-linearities.
 
@@ -257,5 +266,20 @@ The columns in the csv files produced by 'DOTTER'->'Measure'->'Export Dots' are:
 
 <hr/>
 Didn't find what you were looking for? Please file a <a href="#bugs">bug report</a>.
+
+## License
+
+DOTTER includes the following libraries / external code:
+
+ - [bfmatlab](https://docs.openmicroscopy.org/bio-formats/6.3.1/users/matlab/index.html)
+   [GNU Copyleft](http://www.gnu.org/copyleft/)
+ - geom3d from [matGeom](https://github.com/mattools/matGeom/)
+   Copyright (c) 2019, David Legland
+   [license](https://github.com/mattools/matGeom/blob/master/LICENSE.txt)
+ - structdlg
+   Copyright (c) 2005, Alon Fishbach
+ - [maxflow](http://pub.ist.ac.at/~vnk/software.html)
+   Copyright 2001-2006 Vladimir Kolmogorov and Yuri Boykov
+   GPL
 
 <a href="#top">top</a>
