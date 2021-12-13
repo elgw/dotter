@@ -269,7 +269,7 @@ Didn't find what you were looking for? Please file a <a href="#bugs">bug report<
 
 ## License
 
-DOTTER includes the following libraries / external code:
+DOTTER is available under the MIT license. It includes the following libraries / external code:
 
  - [bfmatlab](https://docs.openmicroscopy.org/bio-formats/6.3.1/users/matlab/index.html)
    [GNU Copyleft](http://www.gnu.org/copyleft/)
