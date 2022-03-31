@@ -14,11 +14,10 @@ bool double_vector_isFinite(double * V, size_t N)
   return true;
 }
 
-void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray
-    *prhs[])
+void mexFunction(int nlhs, mxArray *plhs[],
+                 int nrhs, const mxArray *prhs[])
 {
-
-  int minSize = 7;
+  int minSize = 7; /* Minimal number of pixels */
 
   if(nrhs != 1)
     mexErrMsgTxt("You have to provide one profile as input (double vector)");
@@ -26,11 +25,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray
   if( ! mxIsDouble(prhs[0]))
   { mexErrMsgTxt("Check the data type of the input arguments."); }
 
-  int N =mxGetNumberOfElements(prhs[0]); 
+  int N =mxGetNumberOfElements(prhs[0]);
   if (N%2 == 0)
     mexErrMsgTxt("signal has to have an odd number of elements");
-
-
 
   int N2 = (N-1)/2;
 
@@ -41,16 +38,16 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray
 
   const mwSize ut_dim[]={1,1, 1};
 
-  plhs[0] = mxCreateNumericArray(2, ut_dim, mxDOUBLE_CLASS, mxREAL);  
-  double * fwhmvalues = (double *) mxGetPr(plhs[0]); 
+  plhs[0] = mxCreateNumericArray(2, ut_dim, mxDOUBLE_CLASS, mxREAL);
+  double * fwhmvalues = (double *) mxGetPr(plhs[0]);
   double * x = malloc(N*sizeof(double));
 
   for(int kk = 0; kk<N; kk++)
     x[kk] = kk-N2;
 
   if( double_vector_isFinite(y, N) )
-  {    
-    if(fwhm(x, y, N, fwhmvalues))
+  {
+    if(fwhm1d(x, y, N, fwhmvalues))
     {
       // if failed for some reason, return -1
       fwhmvalues[0] = -1;
@@ -58,6 +55,4 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray
   } else { // if not finite signal, return -1
     fwhmvalues[0] = -1;
   }
-
-
 }

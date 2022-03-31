@@ -23,7 +23,7 @@ void showMatrix(double * I, size_t M, size_t N)
   }
 }
 
-int imshift3(double * V, size_t M, size_t N, size_t P, 
+int imshift3(double * V, size_t M, size_t N, size_t P,
     double dx, double dy, double dz, int method)
 {
 
@@ -36,7 +36,7 @@ int imshift3(double * V, size_t M, size_t N, size_t P,
   status = generateShift(&Kx, dx, &nKx, method);
   if(status != 0)
     return -1;
-      
+
   status = generateShift(&Ky, dy, &nKy, method);
   if(status != 0) {
     free(Kx);
@@ -50,7 +50,7 @@ int imshift3(double * V, size_t M, size_t N, size_t P,
     return -3;
   }
 
-  status = conv1_3(V, M, N, P, 
+  status = conv1_3(V, M, N, P,
       Kx, nKx,
       Ky, nKy,
       Kz, nKz);
@@ -63,7 +63,7 @@ int imshift3(double * V, size_t M, size_t N, size_t P,
 }
 
 int generateShift(double ** K, double delta, size_t * size, int order)
-  /** Allocate space for a 1D shifting kernel, K, 
+  /** Allocate space for a 1D shifting kernel, K,
    * shifted by delta in [-1,1]
    * returns the size of the kernel in size
    * order sets the polynomial order, 1 = linear, 2 = quadratic
@@ -110,7 +110,7 @@ int generateShift(double ** K, double delta, size_t * size, int order)
       if(ax<=1)
         K[0][kk] = (a+2)*ax*ax*ax - (a+3)*ax*ax + 1;
       if(ax>1)
-        K[0][kk] = a*ax*ax*ax -5*a*ax*ax  +8*a*ax -4*a;
+        K[0][kk] = a*ax*ax*ax - 5*a*ax*ax + 8*a*ax -4*a;
       if(ax>2)
         K[0][kk] = 0;
     }

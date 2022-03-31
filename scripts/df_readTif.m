@@ -74,11 +74,11 @@ if ~(numel(intersect(imBits, [8,16,32]))==1)
 end
 
 
-if numel(tiffInfo) == 1
-    % use imread to read 2D images
-    V = imread(filename);
-    return
-end
+%if numel(tiffInfo) == 1
+%    % use imread to read 2D images
+%    V = imread(filename);
+%    return
+%end
 
 % In order to pre-allocate the output array, figure out the format.
 
@@ -90,7 +90,7 @@ if isfield(tiffInfo, 'SampleFormat')
         isFloat = 0;
     end
 else
-    warning('SampleFormat not specified, assuming fix point');
+    %warning('SampleFormat not specified, assuming fix point');
     isFloat = 0;
 end
 

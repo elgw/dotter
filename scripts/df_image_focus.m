@@ -19,7 +19,7 @@ for kk = 1:numel(varargin)
 end
 
 if numel(V) == 0
-    error('No image provided\n');
+    error('No image provided');
 end
 
 if(numel(size(V)) ~= 3)

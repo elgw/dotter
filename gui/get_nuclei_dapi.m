@@ -1,5 +1,13 @@
 function [nuclei, mask, s]= get_nuclei_dapi(I, s, varargin)
 % Find the nuclei in the dapi stack I
+% [nuclei, mask, s]= get_nuclei_dapi(I, s, varargin)
+% s.minarea
+% s.useWatershed
+% s.minarea
+% s.maxarea
+% s.preFilter
+% s.hpSigma
+
 disp('Looking for cells ...')
 
 I = double(I);

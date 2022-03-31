@@ -113,8 +113,9 @@ end
 
 axis image
 
-
-setZauto();
+if numel(size(V)) == 3
+    setZauto();
+end
 
 %% Add controls
 
@@ -519,8 +520,7 @@ end
         % in-contrast slices. Other approaches could also be considered
         % like setting at threshold at .5*(max-min)+min
         
-        if numel(s.contrast) == 0
-            
+        if numel(s.contrast) == 0            
             s.contrast = df_image_focus('image', V);
                                     
             ma = max(s.contrast);

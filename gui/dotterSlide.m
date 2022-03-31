@@ -59,6 +59,7 @@ I = double(I);
 if ~exist('P', 'var')
     P = [];
 end
+P = double(P);
 
 if ~exist('s', 'var')
     s.limitedCLIM = 1;

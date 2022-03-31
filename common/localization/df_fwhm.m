@@ -9,6 +9,10 @@ function w = df_fwhm(V, D, varargin)
 %  'interpolation', : 'linear', 'cubic', ... see interpn
 %  'verbose', turns extra output on
 % 'z' get fwhm in z
+% 'side' set the side length of the profiles used to calculate the fwhm.
+% 2xside+1 pixels will be used. For small dots, decrease from the default 
+% side=11 to something smaller.
+% 
 
 if numel(D)==0
     w = [];
@@ -16,7 +20,6 @@ if numel(D)==0
 end
 
 verbose = 0;
-
 useNewFWHM1d = 1;
 s.zMode = 0;
 
@@ -35,10 +38,13 @@ for kk=1:numel(varargin)
         interpolation = varargin{kk+1};
     end
     if strcmpi(varargin{kk}, 'verbose')
-        verbose = 1;
+        verbose = varargin{kk+1};
     end
     if strcmpi(varargin{kk}, 'z')
         s.zMode = 1;
+    end
+    if strcmpi(varargin{kk}, 'side')
+        s.Side = varargin{kk+1};
     end
 end
 
@@ -121,10 +127,7 @@ for kk = 1:size(D,1)
         else
             wy = getw(ly, 0, lzero);
         end
-        
-        
-        
-        
+                                
         if wx<0
             w(kk) = wy;
         end
@@ -136,7 +139,7 @@ for kk = 1:size(D,1)
             w(kk) = min(wx,wy);
         end
         
-        if verbose == 2
+        if verbose > 1
             figure(1)            
             subplot(1,2,1)
             hold off
@@ -148,9 +151,8 @@ for kk = 1:size(D,1)
             subplot(1,2,2)
             imagesc(ROI)
             title(sprintf('%d pixels: %f nm', w(kk), w(kk)*130))
-            pause
-            
             fprintf('wx: %f wy: %f\n', wx, wy);
+            keyboard                       
         end
         
     else
@@ -158,14 +160,6 @@ for kk = 1:size(D,1)
             disp('Out of bounds')
         end
     end
-end
-
-if verbose
-    figure, scatter(w*130, hm), xlabel('Line Scan'), ylabel('Gaussian')
-    a = axis;
-    axis([0, 1000, 0, 1000])
-    keyboard
-    
 end
 
 end

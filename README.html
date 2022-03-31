@@ -81,9 +81,9 @@
 <p><img src="logo_758.jpg" /></p>
 <p><a name="top"/></p>
 <h1 id="dotter">DOTTER</h1>
-<p>DOTTER is a MATLAB toolbox developed for internal use at <a href="https://bienkocrosettolabs.org/">bienkocrosettolabs</a>.</p>
-<p>The purpose of the pipeline is to extract dots and segment nuclei in wide field images of <a href="https://en.wikipedia.org/wiki/Fluorescence_in_situ_hybridization">FISH</a> experiments.</p>
+<p>DOTTER is a MATLAB toolbox/pipeline developed at the <a href="https://bienkocrosettolabs.org/">bienkocrosettolabs</a> used to extract dots and segment nuclei in wide field images of <a href="https://en.wikipedia.org/wiki/Fluorescence_in_situ_hybridization">FISH</a> experiments.</p>
 <ul>
+<li><a href="#caveats">Caveats</a></li>
 <li><a href="#Installation">Installation</a>
 <ul>
 <li><a href="#compile-max">Compile C functions on MAC</a></li>
@@ -99,6 +99,12 @@
 <li><a href="#exportColumns">Exported dot tables</a></li>
 <li><a href="#QA">Questions and Answers</a></li>
 </ul></li>
+</ul>
+<p><a name="caveats"></p>
+<h2 id="caveats">Caveats</h2>
+<ul>
+<li>The software is developed for internal use only. At this time we can not give any support or help.</li>
+<li>The software is neither polished or bug free, and has a large backlog, due to other priorities. Hopefully I’ll find time to fresh it up some day.</li>
 </ul>
 <p><a name="installation"/></p>
 <h2 id="installation">Installation</h2>
@@ -172,6 +178,7 @@ brew install pkg-config</code></pre>
 git checkout 8d18c29</code></pre>
 <p><a name="usage"/></p>
 <h2 id="usage">Usage</h2>
+<p>At this time there is no manual or user guide, hands on knowledge is passed down from one user to the other.</p>
 <p><a name="bugs"/></p>
 <h3 id="bugs-and-feature-requests">Bugs and Feature Requests</h3>
 <p>Please use the <a href="https://github.com/elgw/dotter/issues">issues</a> page on github.</p>
@@ -188,7 +195,7 @@ git checkout 8d18c29</code></pre>
 </ul>
 <p><a name="shifts"/></p>
 <h3 id="shifts-and-chromatic-aberrations">Shifts and chromatic aberrations</h3>
-<p>This section describes geometric aberrations to microscopy images and what we can do about them. In short there are two major sources,</p>
+<p>There are two major sources of geometric distortions to the images,</p>
 <ol type="1">
 <li>Shifts between channels, caused mainly by incorrectly aligned mirrors in the optical path (they might not be mechanically stable and wiggle around).</li>
 <li>Chromatic aberrations, including a wavelength dependent magnifications and some other non-linearities.</li>
@@ -245,6 +252,14 @@ git checkout 8d18c29</code></pre>
 </ul>
 <hr/>
 <p>Didn’t find what you were looking for? Please file a <a href="#bugs">bug report</a>.</p>
+<h2 id="license">License</h2>
+<p>DOTTER is available under the MIT license. It includes the following libraries / external code:</p>
+<ul>
+<li><a href="https://docs.openmicroscopy.org/bio-formats/6.3.1/users/matlab/index.html">bfmatlab</a> <a href="http://www.gnu.org/copyleft/">GNU Copyleft</a></li>
+<li>geom3d from <a href="https://github.com/mattools/matGeom/">matGeom</a> Copyright (c) 2019, David Legland <a href="https://github.com/mattools/matGeom/blob/master/LICENSE.txt">license</a></li>
+<li><a href="https://se.mathworks.com/matlabcentral/fileexchange/6668-structdlg-structure-based-gui-definition">structdlg</a> Copyright (c) 2005, Alon Fishbach</li>
+<li><a href="http://pub.ist.ac.at/~vnk/software.html">maxflow</a> Copyright 2001-2006 Vladimir Kolmogorov and Yuri Boykov GPL</li>
+</ul>
 <p><a href="#top">top</a></p>
 </body>
 </html>
