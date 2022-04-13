@@ -140,6 +140,16 @@ if numel(files) == 0
     df_setConfig('df_exportDots', 'folder', fileparts(files{1}))
 end
 
+%% Did we get any files?
+if isnumeric(files)
+    fprintf('No NM files to process\n');
+    return;
+end
+
+fprintf('%d Files: \n', numel(files));
+fprintf('%s ... \n', files{1});
+
+
 %% Get cc-data
 
 if exist('ccFile', 'var')
@@ -148,8 +158,6 @@ if exist('ccFile', 'var')
     end
 end
 
-fprintf('%d Files: \n', numel(files));
-fprintf('%s ... \n', files{1});
 
 if s.calcFWHM < 0 % if not set;
     a = questdlg('Calculate FWHM from at the dot locations in the images? That will take a lot of time','FWHM', 'Yes', 'No', 'No');

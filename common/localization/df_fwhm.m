@@ -136,7 +136,7 @@ for kk = 1:size(D,1)
         end
         
         if wx>0 && wy>0
-            w(kk) = min(wx,wy);
+            w(kk) = .5*(wx + wy);
         end
         
         if verbose > 1
