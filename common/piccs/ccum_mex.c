@@ -1,12 +1,11 @@
 #include <mex.h>
-#include "ccum.c"
+#include "ccum.h"
 
-#define debug
-
-// Matlab interface to ccum.c
-//
-// Compilation:
-// mex CFLAGS='$CFLAGS -std=c99' ccum_mex.c
+/* Matlab interface to ccum.c
+ *
+ * Compilation:
+ * mex CFLAGS='$CFLAGS -std=c99' ccum_mex.c
+ */
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray
 *prhs[])
@@ -41,7 +40,7 @@ printf("Domain: %f x %f\n", S[0], S[1]);
 printf("piccs done\n");
 #endif
 
-uint64_t nC = 1024; 
+uint64_t nC = 1024;
 printf("nC: %lu\n", nC);
 
 plhs[0] = mxCreateDoubleMatrix(nC, 1, mxREAL);

@@ -16,10 +16,6 @@ test_noise()
 % Produce a plot with error vs sigma.
 % test_sigma()
 
-
-
-
-
 disp('  -- done');
 end
 

@@ -18,7 +18,7 @@ cd([DOTTER_PATH 'common/cluster3e'])
 mex  CFLAGS='$CFLAGS -std=c99 -march=native' COPTIMFLAGS='-DNDEBUG -O3' cluster3ec.c
 
 cd([DOTTER_PATH 'common/piccs/'])
-mex  CFLAGS='$CFLAGS -std=c99 -march=native' COPTIMFLAGS='-DNDEBUG -O3' ccum_mex.c
+mex  CFLAGS='$CFLAGS -std=c99 -march=native' COPTIMFLAGS='-DNDEBUG -O3' ccum_mex.c ccum.c
 
 cd([DOTTER_PATH 'common/mex'])
 mex  CFLAGS='$CFLAGS -std=c99 -march=native' COPTIMFLAGS='-O3 -DNDEBUG' df_eudist.c

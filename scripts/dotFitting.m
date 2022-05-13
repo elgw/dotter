@@ -149,7 +149,7 @@ for kk=1:size(P,1)
                     fprintf('\n')
                 end
             end
-        else % If not in cluster
+        else % If not in cluster            
             FIT = fitxy(V, s, round(P(kk,1:3)));
             PFIT(kk,:) = FIT;
         end

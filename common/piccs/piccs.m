@@ -3,6 +3,10 @@ function [alpha] = piccs(D1, D2, lmin, lmax, imSize)
 % Particle Cross-Correlation Spectroscopy (PICCS)
 % Implementation of semrau2011quantification
 %
+% Notes:
+% - takes 3D coordinates as input but uses only the first two dimensions
+% (i.e. 2D).
+%
 % Input: 
 % D1, D2 : dots from channel 1 and 2
 % lmin and lmax : indicates the region to measure the slope. lmin is
@@ -104,6 +108,7 @@ fprintf('lmax: %f nm\n', lmin);
 fprintf('Image size: %d x %d\n', imSize(1), imSize(2));
 
 fprintf('Calculating C_{cum}\n');
+keyboard
 tic
 C = ccum_mex(D1, D2, imSize, lmax);
 tcorr=toc;
@@ -118,6 +123,8 @@ lmaxLocation = lmax^2/lmax^2*numel(C);
 locmax = round(lmaxLocation);
 locmin = round(lminLocation);
 
+% TODO: Mean square fitting instead of just looking at
+% the end points
 slope = (C(locmax)-C(locmin))/(D(locmax)-D(locmin));
 alpha = C(locmin)-D(locmin)*slope;
 
