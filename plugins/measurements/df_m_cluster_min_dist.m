@@ -19,7 +19,7 @@ M = varargin{1};
 N = varargin{2};
 chan = varargin{3};
 
-d.resolution = M{1}.pixelSize;
+d.resolution = M{1}.voxelSize;
 
 disp(M{1}.channels(chan))
 
@@ -39,20 +39,20 @@ for kk = 1:numel(N)
             D = N{kk}.clusters{ll}.dots{cc};
             A = [A; D];
         end
-        
+
         if size(A,1) == 0
             fprintf('No dots in %s\n', channelsS)
             md = NaN;
-        else            
+        else
             for cc = 1:3
                 A(:,cc) = A(:,cc)*d.resolution(cc);
             end
-            
+
             md = pdist(A(:,1:3));
             md = squareform(md);
             md(1:(size(md,1)+1):end) = inf;
             md = mean(min(md));
-            
+
         end
         IAD = [IAD; md];
     end

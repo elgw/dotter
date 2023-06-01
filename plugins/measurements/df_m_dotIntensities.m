@@ -16,11 +16,11 @@ N = varargin{2};
 chan = varargin{3};
 
 
-if ~isfield(M{1}, 'pixelSize')
+if ~isfield(M{1}, 'voxelSize')
     warning('Pixel size not specified!')
     res = [130,130,300]
 else
-    res = M{1}.pixelSize;
+    res = M{1}.voxelSize;
 end
 
 V = [];

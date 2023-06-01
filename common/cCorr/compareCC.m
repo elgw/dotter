@@ -2,7 +2,7 @@ close all
 
 %% Compare CC corrections from different timepoints
 
-pixelSize = 1;
+voxelSize = 1;
 pixelUnit = 'pixels';
 
 [file, fdir] = uigetfile('/data/current_images/cc/');
@@ -29,7 +29,7 @@ delta = ( (J1(:,1)-J2(:,1)).^2+ (J1(:,2)-J2(:,2)).^2 ).^(1/2);
 delta = reshape(delta, size(X));
 
 figure
-imagesc(delta*pixelSize)
+imagesc(delta*voxelSize)
 title(sprintf('||Ax - Bx|| over the image field'))
 axis off
 axis image
@@ -89,37 +89,37 @@ files = files([4,6]);
 colors = 'rgb';
 
 for kk = 1:numel(files)
-    
+
     dA = load([folder files(kk).name]);
     dA.chan
     mid = [];
     for cc = 1:numel(dA.chan)
         cTo = cc;
-        
+
         Cx = dA.Cx{cTo};
         Cy = dA.Cy{cTo};
-        
+
         %
         A = [Cx(1) ; Cy(1)];
         B = [Cx(2), Cx(3) ; Cy(2) Cy(3)];
         %mid(cc,:) = inv(eye(2)-B)*A;
-        
+
         % find min for ||f(x)-x|| instead
-        
+
         % see cCorrI for how the polynomials are defined.
         afun2 = @(x) norm(sum([[Cx(1) + Cx(2)*x(1) + Cx(3)*x(2) + Cx(4)*x(1)*x(1) + Cx(5)*x(1)*x(2) + Cx(6)*x(2)*x(2)] , ...
                               [Cy(1) + Cy(2)*x(1) + Cy(3)*x(2) + Cy(4)*x(1)*x(1) + Cy(5)*x(1)*x(2) + Cy(6)*x(2)*x(2)]] - [x(1), x(2)]));
-                          
+
         afun = @(x) norm(([poly2mat(x, 3)*Cx, poly2mat(x, 3)*Cy] - x));
         mid(cc,:) = fminsearch(afun, [512,512]);
-        
+
         swell = 1/mean(diag(B));
         swelling(kk,cc) = swell;
         %fprintf('Channel: %s\n', dA.chan{cc});
         %fprintf('0-point: [%f, %f]. Swelling: %f\n', mid(1), mid(2), swell);
         % Also max displacement can be calculated
     end
-    
+
     %plot(mid(1,1), mid(1,2), [colors(kk) 'o'])
     %plot(mid(:,1), mid(:,2), colors(kk))
     mids{kk} = mid;

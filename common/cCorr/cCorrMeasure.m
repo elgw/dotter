@@ -334,7 +334,9 @@ uicontrol(GUI.fig, 'Style', 'pushbutton', ...
     function gui_detectChannels(varargin)
         %% Detect channels
         
+        
         channels = dir([s.folder '*001.tif']);
+        
         fprintf('Found %d channels\n', numel(channels));
         for kk = 1:numel(channels)
             s.chan{kk} = strrep(channels(kk).name, '_001.tif', '');

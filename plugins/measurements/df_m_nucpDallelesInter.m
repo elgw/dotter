@@ -19,7 +19,7 @@ N = varargin{2};
 
 chan = varargin{3};
 
-d.resolution = M{1}.pixelSize;
+d.resolution = M{1}.voxelSize;
 
 disp(M{1}.channels(chan))
 
@@ -46,7 +46,7 @@ for kk = 1:numel(N)
         d2 = N{kk}.clusters{2}.dots{cc};
         A2 = [A2; d2];
     end
-    
+
     if size(A1,1) == 0 || size(A2,1) == 0
         if(size(A1,1) ==0)
             fprintf('No dots in cluster 1 for %s\n', channelsS)
@@ -62,10 +62,10 @@ for kk = 1:numel(N)
         mA1 = mean(A1(:,1:3),1);
         mA2 = mean(A2(:,1:3),1);
         whos
-        
+
         IAD(kk) = norm(d.resolution.*(mA1-mA2));
     end
-    
+
 end
 
 IAD = IAD';

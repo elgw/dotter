@@ -21,11 +21,11 @@ s = varargin{5};
 
 D = [];
 
-if ~isfield(M{1}, 'pixelSize')
+if ~isfield(M{1}, 'voxelSize')
     warning('Pixel size not specified!')
     res = [130,130,300];
 else
-    res = M{1}.pixelSize;
+    res = M{1}.voxelSize;
 end
 
 styles = 'xo';
@@ -36,7 +36,7 @@ if s.plot
 end
 
 for nn = 1:numel(N)
-    if s.plot        
+    if s.plot
         figure(f)
         clf
         title(sprintf('Nuclei %d', nn));
@@ -46,25 +46,25 @@ for nn = 1:numel(N)
         axis image
         set(gco, 'Clim', [0,2]);
     end
-        
+
     for aa = 1:numel(N{nn}.clusters)
         dots = [];
-        
+
         for cc = chan
             cdots = N{nn}.clusters{aa}.dots{cc};
             dots = [dots ; cdots];
             if s.plot
                 %plot3(cdots(:,1), cdots(:,2), cdots(:,3), styles(aa), 'Color', colours(cc,:));
                 if numel(cdots)>0
-                    plot(cdots(:,2), cdots(:,1), styles(aa), 'Color', colours(cc,:));                
+                    plot(cdots(:,2), cdots(:,1), styles(aa), 'Color', colours(cc,:));
                 end
             end
         end
-        
+
         if s.plot
             legend(M{1}.channels);
         end
-        
+
         if size(dots,1)>1
             % Convert pixels to metric distance
             dots(:,1)=dots(:,1)*res(1);
@@ -72,19 +72,19 @@ for nn = 1:numel(N)
             dots(:,3)=dots(:,3)*res(3);
             % Distance matrix between dots
             DM = squareform(pdist(dots(:,1:3), 'euclidean'));
-            
-            % Handle diagonal                                    
-            DM(1:size(DM,1)+1:end) = Inf;            
-            
+
+            % Handle diagonal
+            DM(1:size(DM,1)+1:end) = Inf;
+
             % Get outliner distance
             D = [D; max(min(DM))];
-            
+
         else
             D = [D; nan];
         end
     end
-    
-    if s.plot        
+
+    if s.plot
         fprintf('Nuclei: %d\n', nn);
         set(gca, 'Clim', [0,2])
         bbx = N{nn}.bbx;

@@ -8,7 +8,7 @@ function AD = df_m_nucpDalleles(varargin)
 if numel(varargin)==1
     if strcmpi(varargin{1}, 'getSettings')
         t.string = 'ClusterP: Centroid distances';
-        t.selChan = 1;        
+        t.selChan = 1;
         t.features = 'CP';
         AD = t;
         return
@@ -20,25 +20,25 @@ N = varargin{2};
 chan = varargin{3};
 % chan2 = varargin{4};
 
-if ~isfield(M{1}, 'pixelSize')
+if ~isfield(M{1}, 'voxelSize')
     warning('Pixel size not specified!')
     res = [130,130,300];
 else
-    res = M{1}.pixelSize;
+    res = M{1}.voxelSize;
 end
 
 AD = zeros(numel(N), 1);
 for kk = 1:numel(N)
     A1 = [];
     A2 = [];
-    
+
     for cc = chan
         d1 = N{kk}.clusters{1}.dots{cc};
         A1 = [A1; d1];
         d2 = N{kk}.clusters{2}.dots{cc};
         A2 = [A2; d2];
     end
-    
+
     if size(A1,1) == 0 || size(A2,1) == 0
         fprintf('Only one allele in nuclei %d\n', kk);
         AD(kk) = nan;

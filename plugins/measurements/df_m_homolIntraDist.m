@@ -1,11 +1,11 @@
-function D = df_m_homolVolume(varargin)
+function D = df_m_homolIntraDist(varargin)
 % Returns all pairwise distances from all alleles
 
 if numel(varargin)==1
     if strcmpi(varargin{1}, 'getSettings')
         t.string = 'Cluster Inter Distances';
         t.selChan = 1;
-        t.features = 'alone';        
+        t.features = 'alone';
         D = t;
         return
     end
@@ -16,38 +16,38 @@ N = varargin{2};
 chan = varargin{3};
 s = varargin{5};
 
-if ~isfield(M{1}, 'pixelSize')
+if ~isfield(M{1}, 'voxelSize')
     warning('Pixel size not specified!')
     res = [130,130,300];
 else
-    res = M{1}.pixelSize;
+    res = M{1}.voxelSize;
 end
 
 D = [];
 ND = []; % number of dots
 MM = []; % Number of dots, Volume ; ...
 for nn = 1:numel(N)
-    
+
     for aa = 1:2
         dots = [];
-        
+
         for cc = chan
             cdots = N{nn}.clusters{aa}.dots{cc};
             dots = [dots ; cdots];
-            
+
         end
-        
+
         if size(dots,1)>1
             for kk = 1:3
                 dots(:,kk) = dots(:,kk)*res(kk);
             end
-            
+
             D{end+1} = pdist(dots);
             ND = [size(dots,1), ND];
-            
+
         end
     end
-    
+
 end
 
 
@@ -77,7 +77,7 @@ for kk = 1:max(ND)
    for ll = 1:numel(idx)
        T = [T, D{idx}];
    end
-   mea(kk) = mean(T(:));   
+   mea(kk) = mean(T(:));
    stdv(kk) = std(T(:));
 end
 

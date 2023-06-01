@@ -22,39 +22,39 @@ N = varargin{2};
 chan = varargin{3};
 s = varargin{5};
 
-if ~isfield(M{1}, 'pixelSize')
+if ~isfield(M{1}, 'voxelSize')
     warning('Pixel size not specified!')
     res = [130,130,300];
 else
-    res = M{1}.pixelSize;
+    res = M{1}.voxelSize;
 end
 
 D = [];
 MM = []; % Number of dots, Volume ; ...
 w = waitbar(0, 'Calculating');
 for nn = 1:numel(N)
-    
+
     for aa = 1:numel(N{nn}.clusters)
         dots = [];
-        
+
         for cc = chan
             cdots = N{nn}.clusters{aa}.dots{cc};
             dots = [dots ; cdots];
-            
+
         end
-        
+
         if size(dots,1)>1
             for kk = 1:3
                 dots(:,kk) = dots(:,kk)*res(kk)/1000;
             end
-            
+
             T = getMST(dots(:,1:3));
-            
+
             MM = [MM; df_volumeTubes('data', T, 'radius', s.radius/1000, 'npoints', 100000, 'verbose')];
         else
             MM = [MM; NaN];
         end
-        
+
     end
     waitbar(nn/numel(N), w);
 end
