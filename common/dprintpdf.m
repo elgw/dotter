@@ -32,6 +32,11 @@ for kk = 1:numel(varargin)
     end
 end
 
+if(isequal(filename(end-3:end), '.png'))
+    driver = {'-dpng'};
+end
+
+
 set(fig,'Units','centimeters',...
     'PaperUnits', 'centimeters', ...
     'PaperSize',[w h], ...
@@ -60,11 +65,18 @@ for kk = 1:numel(driver)
         case '-deps'
             ending = '.eps';
     end
-    if(numel(ending) == 0)
-        fprintf('Unknown driver: %s\n', driver{kk})
+    if(isequal(filename(end-3:end), ending))
+        ending = [];
+    end
+        
+    if 0 %isequal(ending, '.pdf')
+        % for 3D plots etc that is saved as rasters... this is necessary
+        % however it does not care about the PaperPosition setting
+        exportgraphics(fig, [filename ending],'ContentType','vector')
     else
         print(driver{kk}, sprintf('-f%d', fig.Number), [filename ending])
     end
+    
 end
 
 end

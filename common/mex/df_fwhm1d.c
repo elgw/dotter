@@ -62,4 +62,6 @@ void mexFunction(int nlhs, mxArray *plhs[],
   } else { // if not finite signal, return -1
     fwhmvalues[0] = -1;
   }
+  free(x);
+  return;
 }
