@@ -20,14 +20,21 @@ void mexFunction(int nlhs, mxArray *plhs[],
   int minSize = 7; /* Minimal number of pixels */
 
   if(nrhs != 1)
+  {
     mexErrMsgTxt("You have to provide one profile as input (double vector)");
+  }
 
   if( ! mxIsDouble(prhs[0]))
-  { mexErrMsgTxt("Check the data type of the input arguments."); }
+  {
+      mexErrMsgTxt("Error: The first argument  must be a 1D-array of type double");
+  }
 
-  int N =mxGetNumberOfElements(prhs[0]);
+  int N = mxGetNumberOfElements(prhs[0]);
   if (N%2 == 0)
-    mexErrMsgTxt("signal has to have an odd number of elements");
+  {
+      // TODO don't see why this is necessary
+      mexErrMsgTxt("signal has to have an odd number of elements");
+  }
 
   int N2 = (N-1)/2;
 
