@@ -5,6 +5,8 @@ function varargout = volumeSlide(V, varargin)
 % Use:
 %  No arguments: a file dialogue is opened
 %
+% 2023-08-15
+% Plays with 'AxesToolbar' introduced in later version of MATLAB
 
 s.nanAlpha = 1;
 s.getSlice = 0;
@@ -48,6 +50,7 @@ newslice = 0; xstart = 0;
 mode = 1; % Scroll z
 s.zstep = 125/200; % distance between z sampling
 s.zstep = 1;
+s.interactive = 1;
 
 for kk = 1:numel(varargin)-1
     if(strcmp(varargin{kk}, 'limitedCLIM'))
@@ -128,6 +131,18 @@ set(fig, 'WindowButtonDownFcn', @startMove);
 set(fig, 'WindowButtonUpFcn', @endMove);
 set(fig, 'WindowKeyPressFcn', @modeSwitch)
 
+drawnow
+ax = findall(fig, 'Type', 'Axes');
+
+% ax.Toolbar
+tbar = ax.Toolbar; % findall(fig,'Type','AxesToolbar');
+if numel(tbar) == 1
+    set(tbar, 'SelectionChangedFcn', @toggle_interactive);
+else   
+    warning('UI does not behave as expected');
+    keyboard 
+end
+
 if nargout == 1
     varargout{1}=V;
 end
@@ -139,11 +154,25 @@ if s.getSlice == 1
     varargout{1} = slice;
 end
 
+    function toggle_interactive(~, event, p)
+        if event.Selection.Value == 'on'
+            s.interactive = 0;
+        else 
+            s.interactive = 1;
+        end
+        
+        
+    end
+
     function cLimChange(varargin)
         set(gca, 'clim', [get(sliderLower, 'Value'), get(sliderUpper, 'Value')]);
     end
 
     function startMove(varargin)
+        if s.interactive == 0
+            return;
+        end
+        
         if mode == 1
             set(fig, 'WindowButtonMotionFcn', @move);
             Q= get(fig, 'CurrentPoint');
@@ -171,6 +200,9 @@ end
     end
 
     function endMove(varargin)
+        if s.interactive == 0
+            return;
+        end
         set(fig, 'WindowButtonMotionFcn', '');
         if mode == 1
             slice = newslice;
@@ -178,6 +210,9 @@ end
     end
 
     function move(varargin)
+        if s.interactive == 0
+            return
+        end
         Q= get(fig, 'CurrentPoint');
         delta = xstart-Q(2);
         newslice = slice+round(delta/10);
