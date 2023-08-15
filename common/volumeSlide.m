@@ -90,8 +90,11 @@ catch
     if(r(1)==r(2))
         r(2) = r(2)+eps();
     end
-    set(gca, 'Clim', r);
-    disp('Set CLim between min and max')
+    
+    if(r(2) > r(1))
+        set(gca, 'Clim', r);
+        disp('Set CLim between min and max')
+    end
 end
 
 sliderLower = uicontrol(fig,'Style','slider',...
