@@ -1,4 +1,4 @@
-function df_buildExternals()
+function df_buildExternals()c
 %% Purpose: build the routines written in C required to run DOTTER
 
 if ~(isunix || ismac)
