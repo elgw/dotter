@@ -34,7 +34,9 @@ for kk = 1:numel(varargin)
 end
 
 if ~exist('cc', 'var')
-    assert(strcmp(ccFile(end-1:end), 'cc'));
+    if strcmp(ccFile(end-1:end), 'cc') == 0
+        warning('The correction file does not end with .cc')
+    end
     cc = load(ccFile, '-mat');
 end
 
@@ -42,14 +44,14 @@ end
 
 ifrom = find(strcmpi(cc.channels, from));
 ito = find(strcmpi(cc.channels, to));
-if(numel(ifrom)~=1)    
+if(numel(ifrom)~=1)
     warning('Could not find channel %s in cc file. Not doing anything!\n', from);
     disp('Available channels:')
     disp(cc.channels)
     varargout{1} = D;
     return;
 end
-if(numel(ito)~=1)    
+if(numel(ito)~=1)
     warning('Could not find channel %s in cc file. Not doing anything!\n', from);
     disp('Available channels:')
     disp(cc.channels)
@@ -67,11 +69,11 @@ if ifrom == ito
 end
 
 % Coefficients
-Cx = cc.Cx{ifrom, ito}; 
+Cx = cc.Cx{ifrom, ito};
 Cy = cc.Cy{ifrom, ito};
 
 if numel(Cx) == 6
-    polyorder = 2;    
+    polyorder = 2;
     D(:,1) = poly2mat(D(:,1:2), polyorder)*Cx; % 2nd order correction
     D(:,2) = poly2mat(D(:,1:2), polyorder)*Cy;
     D(:,3) = D(:,3) + cc.dz{ifrom, ito}; % Just a constant offset

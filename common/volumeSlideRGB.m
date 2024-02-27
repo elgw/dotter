@@ -66,21 +66,6 @@ Line = plot(0,0, 'r', 'LineWidth', 3);
 P = zeros(2,3);
 
 s.limitedCLIM = 0;
-try
-if s.limitedCLIM == 1
-    climVol = quantile16(V, [.1, 1-10^(-4)]); % 4 s
-else
-    climVol = quantile16(V, [.1, 1]); % 4 
-end
-set(gca, 'clim', climVol)
-catch
-    disp('Failed to set the CLim automatically')
-end
-
- 
-%minVal = min(V(:));
-%maxVal = max(V(:));
-%set(gca, 'CLim', [minVal, maxVal]);
 
 colormap gray
 axis image

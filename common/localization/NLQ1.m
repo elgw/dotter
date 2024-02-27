@@ -18,7 +18,11 @@ pause
 end
 
 res = signal(:)-s(:)-BG;
-L = sum(res.^2);
+%L = sum(res.^2);
+
+model = s(:)+BG;
+signal = signal(:);
+L = sum((signal-model).^2./model  - 0.5*log(model) );
 
 if Nphotons<0
     L = 10^9;

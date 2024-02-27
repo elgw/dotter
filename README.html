@@ -1,28 +1,97 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>README</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
 <p><link rel="stylesheet" href="style.css"></p>
-
-<p><img src="logo_758.jpg" alt="" title="" /></p>
-
+<p><img src="logo_758.jpg" /></p>
 <p><a name="top"/></p>
-
-<h1>DOTTER</h1>
-
-<p>DOTTER is a MATLAB toolbox/pipeline developed at the
-<a href="https://bienkocrosettolabs.org/">bienkocrosettolabs</a>
-used to extract dots and segment nuclei in wide field
-images of <a href="https://en.wikipedia.org/wiki/Fluorescence_in_situ_hybridization">FISH</a> experiments.</p>
-
+<h1 id="dotter">DOTTER</h1>
+<p>DOTTER is a MATLAB toolbox/pipeline developed at the <a href="https://bienkocrosettolabs.org/">bienkocrosettolabs</a> used to extract dots and segment nuclei in wide field images of <a href="https://en.wikipedia.org/wiki/Fluorescence_in_situ_hybridization">FISH</a> experiments.</p>
 <ul>
 <li><a href="#caveats">Caveats</a></li>
-<li><p><a href="#Installation">Installation</a></p>
-
+<li><a href="#Installation">Installation</a>
 <ul>
 <li><a href="#compile-max">Compile C functions on MAC</a></li>
 <li><a href="#compile-linux">Compile C functions on Linux</a></li>
 <li><a href="#upgrade">Upgrade</a></li>
 <li><a href="#downgrade">Downgrade</a></li>
 </ul></li>
-<li><p><a href="#usage">Usage</a></p>
-
+<li><a href="#usage">Usage</a>
 <ul>
 <li><a href="#bugs">Bugs and Feature Requests</a></li>
 <li><a href="#workflow">Workflow</a></li>
@@ -31,24 +100,15 @@ images of <a href="https://en.wikipedia.org/wiki/Fluorescence_in_situ_hybridizat
 <li><a href="#QA">Questions and Answers</a></li>
 </ul></li>
 </ul>
-
 <p><a name="caveats"></p>
-
-<h2>Caveats</h2>
-
+<h2 id="caveats">Caveats</h2>
 <ul>
-<li>The software is developed for internal use only. At this time we can not
-give any support or help.</li>
-<li>The software is neither polished or bug free, and has a large backlog, due to
-other priorities. Hopefully I'll find time to fresh it up some day.</li>
+<li>The software is developed for internal use only. At this time we can not give any support or help.</li>
+<li>The software is neither polished or bug free, and has a large backlog, due to other priorities. Hopefully I’ll find time to fresh it up some day.</li>
 </ul>
-
 <p><a name="installation"/></p>
-
-<h2>Installation</h2>
-
+<h2 id="installation">Installation</h2>
 <p>To use DOTTER the following is required:</p>
-
 <ul>
 <li>OSX or Ubuntu - will not work on Windows</li>
 <li>GIT</li>
@@ -56,149 +116,75 @@ other priorities. Hopefully I'll find time to fresh it up some day.</li>
 <li>The GNU scientific library, GSL</li>
 <li>A Compiler for C99 that works with Matlab</li>
 </ul>
-
 <p>To install it</p>
-
-<ol>
+<ol type="1">
 <li>Get a local copy of the repository, either by downloading it or using <code>git clone</code></li>
-<li>Add DOTTER to paths. In MATLAB, go to 'Environment', 'Set Path', and then press 'Add Folder' and navigate to find the folder with DOTTER.</li>
+<li>Add DOTTER to paths. In MATLAB, go to ‘Environment’, ‘Set Path’, and then press ‘Add Folder’ and navigate to find the folder with DOTTER.</li>
 <li>Restart MATLAB, when you start it, there will be a message like this in the MATLAB terminal:</li>
 </ol>
-
-<p><code>
-DOTTER version 0.708
+<pre><code>DOTTER version 0.708
 BiCroLabs 2015-2021
-Session started 2021-10-27 08:59:36
-</code></p>
-
-<ol>
+Session started 2021-10-27 08:59:36</code></pre>
+<ol start="3" type="1">
 <li>Start DOTTER by typing <code>DOTTER</code> in MATLAB.</li>
-<li>Compile some of the functions that are written in other languages, in DOTTER
-go to 'DOTTER'->'Maintenance'->'Compile C functions'. If this does not work
-right away, see the expanded instructions below.</li>
+<li>Compile some of the functions that are written in other languages, in DOTTER go to ‘DOTTER’-&gt;‘Maintenance’-&gt;‘Compile C functions’. If this does not work right away, see the expanded instructions below.</li>
 </ol>
-
 <p><a name="compile-mac"/></p>
-
-<h3>Compile C functions on MAC</h3>
-
-<ol>
-<li>Install the package manager brew.
-See the latest <a href="https://brew.sh/">install instructions</a>.</li>
-<li><p>Install GSL and pkg-config from the terminal
-<code>shell
-brew install gsl
-brew install pkg-config
-</code></p></li>
-<li><p>Compile in MATLAB</p></li>
+<h3 id="compile-c-functions-on-mac">Compile C functions on MAC</h3>
+<ol type="1">
+<li>Install the package manager brew. See the latest <a href="https://brew.sh/">install instructions</a>.</li>
+<li>Install GSL and pkg-config from the terminal</li>
 </ol>
-
-<p>To compile in MATLAB you need to have <a href="https://developer.apple.com/xcode/">XCode</a> installed which you can get from the App Store. Unfortunately this is a rather big package which will take some time to get installed. When XCode is installed, ask MATLAB to look for the C compiler:
-``` matlab</p>
-
-<blockquote>
-  <blockquote>
-  <p>mex -setup
-```</p>
-</blockquote>
-
-<p></blockquote></p>
-
-<p>Figure out where MATLAB is installed (it is probably somewhere else on your system)
-``` matlab</p>
-
-<blockquote>
-  <blockquote>
-  <p>fullfile(matlabroot, 'bin')
- '/home/donald/MATLAB_R2017b/bin'
-```</p>
-</blockquote>
-
-<p></blockquote></p>
-
-<p>Then in a terminal
-<code>matlab
-cd /home/donald/MATLAB_R2017b/bin
-./matlab
-</code></p>
-
-<p>open DOTTER, by
-<code>matlab
-DOTTER
-</code>
-Navigate the menu and select: <code>DOTTER</code>-><code>Maintenanace</code>-><code>Compile C Functions</code>. Please note the output in the MATLAB console, if there are any errors, please try to understand what they are. If you get stuck here, please file a bug report.</p>
-
+<pre class="shell"><code>brew install gsl
+brew install pkg-config</code></pre>
+<ol start="3" type="1">
+<li>Compile in MATLAB</li>
+</ol>
+<p>To compile in MATLAB you need to have <a href="https://developer.apple.com/xcode/">XCode</a> installed which you can get from the App Store. Unfortunately this is a rather big package which will take some time to get installed. When XCode is installed, ask MATLAB to look for the C compiler:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode matlab"><code class="sourceCode matlab"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="op">&gt;&gt;</span> <span class="va">mex</span> <span class="op">-</span><span class="va">setup</span></span></code></pre></div>
+<p>Figure out where MATLAB is installed (it is probably somewhere else on your system)</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode matlab"><code class="sourceCode matlab"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="op">&gt;&gt;</span> <span class="va">fullfile</span>(<span class="va">matlabroot</span><span class="op">,</span> <span class="ss">&#39;bin&#39;</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a> <span class="ss">&#39;/home/donald/MATLAB_R2017b/bin&#39;</span></span></code></pre></div>
+<p>Then in a terminal</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode matlab"><code class="sourceCode matlab"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="va">cd</span> <span class="op">/</span><span class="va">home</span><span class="op">/</span><span class="va">donald</span><span class="op">/</span><span class="va">MATLAB_R2017b</span><span class="op">/</span><span class="va">bin</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a><span class="op">./</span><span class="va">matlab</span></span></code></pre></div>
+<p>open DOTTER, by</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode matlab"><code class="sourceCode matlab"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="va">DOTTER</span></span></code></pre></div>
+<p>Navigate the menu and select: <code>DOTTER</code>-&gt;<code>Maintenanace</code>-&gt;<code>Compile C Functions</code>. Please note the output in the MATLAB console, if there are any errors, please try to understand what they are. If you get stuck here, please file a bug report.</p>
 <p><a name="compile-linux"/></p>
-
-<h3>Compile C functions on Linux</h3>
-
+<h3 id="compile-c-functions-on-linux">Compile C functions on Linux</h3>
 <p>On linux you will need to install:</p>
-
 <ul>
 <li>git</li>
 <li>GSL libraries</li>
 </ul>
-
 <p><a name="upgrade"/></p>
-
-<h3>Keeping updated / Upgrade</h3>
-
+<h3 id="keeping-updated-upgrade">Keeping updated / Upgrade</h3>
 <p>If DOTTER is installed from a zip file, repeat the installation instructions.</p>
-
-<p>If DOTTER was installed via git GIT you can go to a terminal, <code>cd</code> to
-the directory with DOTTER and do a</p>
-
-<p><code>shell
-git pull
-</code>
-Then build it C-functions again.</p>
-
+<p>If DOTTER was installed via git GIT you can go to a terminal, <code>cd</code> to the directory with DOTTER and do a</p>
+<pre class="shell"><code>git pull</code></pre>
+<p>Then build it C-functions again.</p>
 <p><a name="downgrade"/></p>
-
-<h3>Downgrading</h3>
-
-<p>In case that you want to use an older version, <code>git</code> is your friend.
-To see all old version use (in terminal)</p>
-
-<p><code>shell
-git log --pretty=format:'%h %ad | %s%d [%an]' --graph --date=short
-</code></p>
-
+<h3 id="downgrading">Downgrading</h3>
+<p>In case that you want to use an older version, <code>git</code> is your friend. To see all old version use (in terminal)</p>
+<pre class="shell"><code>git log --pretty=format:&#39;%h %ad | %s%d [%an]&#39; --graph --date=short</code></pre>
 <p>and then to get a specific version, use</p>
-
-<p><code>shell
-git checkout &lt;hash&gt;
-</code></p>
-
+<pre class="shell"><code>git checkout &lt;hash&gt;</code></pre>
 <p>Example:</p>
-
-<p><code>shell
-git log --pretty=format:'%h %ad | %s%d [%an]' --graph --date=short
+<pre class="shell"><code>git log --pretty=format:&#39;%h %ad | %s%d [%an]&#39; --graph --date=short
 * 57a3363 2017-11-24 | v 0.471 [erikw]
 * 8d18c29 2017-11-22 | v 0.462 [erikw]
 ...
-git checkout 8d18c29
-</code></p>
-
+git checkout 8d18c29</code></pre>
 <p><a name="usage"/></p>
-
-<h2>Usage</h2>
-
-<p>At this time there is no manual or user guide, hands on knowledge is passed down
-from one user to the other.</p>
-
+<h2 id="usage">Usage</h2>
+<p>At this time there is no manual or user guide, hands on knowledge is passed down from one user to the other.</p>
 <p><a name="bugs"/></p>
-
-<h3>Bugs and Feature Requests</h3>
-
+<h3 id="bugs-and-feature-requests">Bugs and Feature Requests</h3>
 <p>Please use the <a href="https://github.com/elgw/dotter/issues">issues</a> page on github.</p>
-
 <p><a name="workflow"/></p>
-
-<h3>Workflow</h3>
-
+<h3 id="workflow">Workflow</h3>
 <p>The general workflow is:</p>
-
 <ul>
 <li>Acquire images</li>
 <li>Convert native image formats such that <code>nd2</code> to <code>tif</code> using <a href="https://github.com/ggirelli/radiantkit">radiantkit</a>.</li>
@@ -207,132 +193,73 @@ from one user to the other.</p>
 <li>Select dots</li>
 <li>Analyze the results, plot and export</li>
 </ul>
-
 <p><a name="shifts"/></p>
-
-<h3>Shifts and chromatic aberrations</h3>
-
+<h3 id="shifts-and-chromatic-aberrations">Shifts and chromatic aberrations</h3>
 <p>There are two major sources of geometric distortions to the images,</p>
-
-<ol>
-<li>Shifts between channels, caused mainly by incorrectly aligned
-mirrors in the optical path (they might not be mechanically
-stable and wiggle around).</li>
-<li>Chromatic aberrations, including a wavelength dependent
-magnifications and some other non-linearities.</li>
+<ol type="1">
+<li>Shifts between channels, caused mainly by incorrectly aligned mirrors in the optical path (they might not be mechanically stable and wiggle around).</li>
+<li>Chromatic aberrations, including a wavelength dependent magnifications and some other non-linearities.</li>
 </ol>
-
-<h4>Detecting them</h4>
-
-<p>These disturbances are easiest to see when imaging beads, small
-particles which emit light at all wavelengths that we are interested
-in. In the ideal case, a field of view with beads captured at any
-wavelength should look the same -- but they look different.</p>
-
-<p>Given an image with beads, we detect and localize dots from each
-channel, to get $x<em>1^A, x</em>2^A, ...$ for channel A and $x<em>1^B, X</em>2^B,
-...$ for channel B, etc.</p>
-
+<h4 id="detecting-them">Detecting them</h4>
+<p>These disturbances are easiest to see when imaging beads, small particles which emit light at all wavelengths that we are interested in. In the ideal case, a field of view with beads captured at any wavelength should look the same – but they look different.</p>
+<p>Given an image with beads, we detect and localize dots from each channel, to get <span class="math inline"><em>x</em><sub>1</sub><sup><em>A</em></sup>, <em>x</em><sub>2</sub><sup><em>A</em></sup>, ...</span> for channel A and <span class="math inline"><em>x</em><sub>1</sub><sup><em>B</em></sup>, <em>X</em><sub>2</sub><sup><em>B</em></sup>, ...</span> for channel B, etc.</p>
 <p>First we have to identify which dots corresponds to the same bead.</p>
-
 <ul>
-<li><em>Algorithm 1</em> -- translation detection</li>
-<li>For each $x<em>i^A$, find the closest point in channel B,
-$m</em>B(x_i^A)$.</li>
-<li><p>Look at the distribution of $\delta<em>i = (x</em>i^A-m<em>B(x</em>i^A))$. Assumption: in
-most cases the closest point to $x<em>i$ in channel B corresponds to
-the same bead. $\hat{\delta} = \hat{r}
-(cos \hat{\theta},\sin \hat{\theta})$.
-$\hat{r}=median(\delta</em>i)$, $\hat{\theta} = atan2(\sum\delta_i)$.</p>
-
-<ol>
-<li>$\hat{x}<em>i^A = x</em>i^A + \delta<em>i$, $\hat{A} = { \hat{a}</em>i^A
-}$</li>
-<li>Match $\hat{A}$ vs $\hat{B}$ as in step 1 and 2 above, assume that
-two dots corresponds to the same bead whenever $\delta_i|<T$,
-where $T$ is a threshold set so to tolerate the small non-linear
-deformations caused by chromatic aberrations.</li>
-<li>In the end, a set of matched points is returned, ${ (x<em>i^A,
-x</em>j^B) : |(x^A<em>i+delta-x^B</em>j)|<T }$</li>
-</ol></li>
-<li><p><em>Algorithm 2</em> -- find polynomial transformation between channels.</p>
-
-<p>This is quite straight forward, see
-<a href="http://dx.doi.org/10.1046/j.1365-2818.2000.00754.x">kozubek</a>.
-Some notes A) Order 2 is used by default since order 3 does not show
-an significant advantage. B) In z, a constant offset is used rather
-than a polynomial model.</p></li>
+<li><em>Algorithm 1</em> – translation detection</li>
 </ul>
-
-<h4>In practice</h4>
-
+<ol type="1">
+<li>For each <span class="math inline"><em>x</em><sub><em>i</em></sub><sup><em>A</em></sup></span>, find the closest point in channel B, <span class="math inline"><em>m</em><sub><em>B</em></sub>(<em>x</em><sub><em>i</em></sub><sup><em>A</em></sup>)</span>.</li>
+<li>Look at the distribution of <span class="math inline"><em>δ</em><sub><em>i</em></sub> = (<em>x</em><sub><em>i</em></sub><sup><em>A</em></sup> − <em>m</em><sub><em>B</em></sub>(<em>x</em><sub><em>i</em></sub><sup><em>A</em></sup>))</span>. Assumption: in most cases the closest point to <span class="math inline"><em>x</em><sub><em>i</em></sub></span> in channel B corresponds to the same bead. <span class="math inline"><em>δ̂</em> = <em>r̂</em>(<em>c</em><em>o</em><em>s</em><em>θ̂</em>, sin <em>θ̂</em>)</span>. <span class="math inline"><em>r̂</em> = <em>m</em><em>e</em><em>d</em><em>i</em><em>a</em><em>n</em>(<em>δ</em><sub><em>i</em></sub>)</span>, <span class="math inline"><em>θ̂</em> = <em>a</em><em>t</em><em>a</em><em>n</em>2(∑<em>δ</em><sub><em>i</em></sub>)</span>.</li>
+<li><span class="math inline"><em>x̂</em><sub><em>i</em></sub><sup><em>A</em></sup> = <em>x</em><sub><em>i</em></sub><sup><em>A</em></sup> + <em>δ</em><sub><em>i</em></sub></span>, <span class="math inline"><em>Â</em> = <em>â</em><sub><em>i</em></sub><sup><em>A</em></sup></span></li>
+<li>Match <span class="math inline"><em>Â</em></span> vs <span class="math inline"><em>B̂</em></span> as in step 1 and 2 above, assume that two dots corresponds to the same bead whenever <span class="math inline"><em>δ</em><sub><em>i</em></sub>| &lt; <em>T</em></span>, where <span class="math inline"><em>T</em></span> is a threshold set so to tolerate the small non-linear deformations caused by chromatic aberrations.</li>
+<li>In the end, a set of matched points is returned, <span class="math inline">(<em>x</em><sub><em>i</em></sub><sup><em>A</em></sup>, <em>x</em><sub><em>j</em></sub><sup><em>B</em></sup>) : |(<em>x</em><sub><em>i</em></sub><sup><em>A</em></sup> + <em>d</em><em>e</em><em>l</em><em>t</em><em>a</em> − <em>x</em><sub><em>j</em></sub><sup><em>B</em></sup>)| &lt; <em>T</em></span></li>
+</ol>
+<ul>
+<li><em>Algorithm 2</em> – find polynomial transformation between channels.</li>
+</ul>
+<p>This is quite straight forward, see <a href="http://dx.doi.org/10.1046/j.1365-2818.2000.00754.x">kozubek</a>. Some notes A) Order 2 is used by default since order 3 does not show an significant advantage. B) In z, a constant offset is used rather than a polynomial model.</p>
+<h4 id="in-practice">In practice</h4>
 <p>Whenever an important experiment is about to be image,</p>
-
-<ol>
-<li>Prepare and image beads for all relevant channels.</li>
+<ol type="1">
+<li><p>Prepare and image beads for all relevant channels.</p></li>
 <li><p>Create a correction file (.cc) in DOTTER.</p></li>
-<li><p>Apply the correction, either on A) images directly or B) when dot
-selection/detection is done. (A) is the obvious choice when the
-shifts are large, otherwhise it will be hard to determine which dots
-that belong to which nuclei. Alternative B) can always be used (just
-make sure that A was not applied before).</p></li>
+<li><p>Apply the correction, either on A) images directly or B) when dot selection/detection is done. (A) is the obvious choice when the shifts are large, otherwhise it will be hard to determine which dots that belong to which nuclei. Alternative B) can always be used (just make sure that A was not applied before).</p></li>
 </ol>
-
 <p><a name="exportColumns"></p>
-
-<h2>Exported dot tables</h2>
-
-<p>The columns in the csv files produced by 'DOTTER'->'Measure'->'Export Dots' are:</p>
-
-<ol>
-<li><code>File</code> -- The NM file that the dot was stored in.</li>
-<li><code>Channel</code> -- The flourophore or channel name of the images file, i.e. in an image called <code>tmr_001.tif</code> the value in this column will be <code>tmr</code></li>
-<li><code>Nuclei</code> -- The nuclei number in this FOV. The same as the pixel value of <code>M.mask</code></li>
-<li><code>x,y,z</code> -- the coordinate of the dot, integers if no fitting was used or if the fitting failed.</li>
-<li><code>Value</code> -- Depending on how the dots were ranked, the value of the ranking (for example the DoG value if DoG was used).</li>
-<li><code>FWHM</code> -- FWHM in 2D based on 1D lines crossing the dot in x and y.</li>
-<li><code>SNR</code> -- Signal To Noise Ratio, defined by <code>df_snr</code></li>
-<li><code>NSNR</code> -- Signal To Noise Ratio relative to the nuclei, see <code>df_nsnr</code></li>
-<li><code>Label</code> -- The label given to the point, will be set if any clustering was used.</li>
-<li><code>PixelValue</code> -- The pixel value, i.e., the value of the image over the dot.</li>
-<li><code>FWHM_fitting</code> -- FWHM determined by fitting (if enabled).</li>
-<li><code>lamin_distance_2d_pixels</code> -- 2D lamin distance given in pixels.</li>
+<h2 id="exported-dot-tables">Exported dot tables</h2>
+<p>The columns in the csv files produced by ‘DOTTER’-&gt;‘Measure’-&gt;‘Export Dots’ are:</p>
+<ol type="1">
+<li><code>File</code> – The NM file that the dot was stored in.</li>
+<li><code>Channel</code> – The flourophore or channel name of the images file, i.e. in an image called <code>tmr_001.tif</code> the value in this column will be <code>tmr</code></li>
+<li><code>Nuclei</code> – The nuclei number in this FOV. The same as the pixel value of <code>M.mask</code></li>
+<li><code>x,y,z</code> – the coordinate of the dot, integers if no fitting was used or if the fitting failed.</li>
+<li><code>Value</code> – Depending on how the dots were ranked, the value of the ranking (for example the DoG value if DoG was used).</li>
+<li><code>FWHM</code> – FWHM in 2D based on 1D lines crossing the dot in x and y.</li>
+<li><code>SNR</code> – Signal To Noise Ratio, defined by <code>df_snr</code></li>
+<li><code>NSNR</code> – Signal To Noise Ratio relative to the nuclei, see <code>df_nsnr</code></li>
+<li><code>Label</code> – The label given to the point, will be set if any clustering was used.</li>
+<li><code>PixelValue</code> – The pixel value, i.e., the value of the image over the dot.</li>
+<li><code>FWHM_fitting</code> – FWHM determined by fitting (if enabled).</li>
+<li><code>lamin_distance_2d_pixels</code> – 2D lamin distance given in pixels.</li>
 </ol>
-
 <p><a name="QA"/></p>
-
-<h2>Questions and Answers</h2>
-
+<h2 id="questions-and-answers">Questions and Answers</h2>
 <ul>
-<li><p><em>I set a value somewhere and now I can't change it!</em></p>
-
-<p>Data that is not specific to any experiment is saved in the
-folder <code>~/.DOTTER/</code>. Remove the whole folder to reset the
-configuration. This includes default directories, window placements
-and emission wavelengths for fluorophores.</p></li>
+<li><p><em>I set a value somewhere and now I can’t change it!</em></p>
+<p>Data that is not specific to any experiment is saved in the folder <code>~/.DOTTER/</code>. Remove the whole folder to reset the configuration. This includes default directories, window placements and emission wavelengths for fluorophores.</p></li>
 <li><p><em>Equations look funky on this page!</em></p>
-
-<p>This document is converted to HTML by Pandoc and should look better when displayed from 'DOTTER'->'Help'.</p></li>
+<p>This document is converted to HTML by Pandoc and should look better when displayed from ‘DOTTER’-&gt;‘Help’.</p></li>
 </ul>
-
-<p><hr/>
-Didn't find what you were looking for? Please file a <a href="#bugs">bug report</a>.</p>
-
-<h2>License</h2>
-
+<hr/>
+<p>Didn’t find what you were looking for? Please file a <a href="#bugs">bug report</a>.</p>
+<h2 id="license">License</h2>
 <p>DOTTER is available under the MIT license. It includes the following libraries / external code:</p>
-
 <ul>
-<li><a href="https://docs.openmicroscopy.org/bio-formats/6.3.1/users/matlab/index.html">bfmatlab</a>
-<a href="http://www.gnu.org/copyleft/">GNU Copyleft</a></li>
-<li>geom3d from <a href="https://github.com/mattools/matGeom/">matGeom</a>
-Copyright (c) 2019, David Legland
-<a href="https://github.com/mattools/matGeom/blob/master/LICENSE.txt">license</a></li>
-<li><a href="https://se.mathworks.com/matlabcentral/fileexchange/6668-structdlg-structure-based-gui-definition">structdlg</a>
-Copyright (c) 2005, Alon Fishbach</li>
-<li><a href="http://pub.ist.ac.at/~vnk/software.html">maxflow</a>
-Copyright 2001-2006 Vladimir Kolmogorov and Yuri Boykov
-GPL</li>
+<li><a href="https://docs.openmicroscopy.org/bio-formats/6.3.1/users/matlab/index.html">bfmatlab</a> <a href="http://www.gnu.org/copyleft/">GNU Copyleft</a></li>
+<li>geom3d from <a href="https://github.com/mattools/matGeom/">matGeom</a> Copyright (c) 2019, David Legland <a href="https://github.com/mattools/matGeom/blob/master/LICENSE.txt">license</a></li>
+<li><a href="https://se.mathworks.com/matlabcentral/fileexchange/6668-structdlg-structure-based-gui-definition">structdlg</a> Copyright (c) 2005, Alon Fishbach</li>
+<li><a href="http://pub.ist.ac.at/~vnk/software.html">maxflow</a> Copyright 2001-2006 Vladimir Kolmogorov and Yuri Boykov GPL</li>
 </ul>
-
 <p><a href="#top">top</a></p>
+</body>
+</html>

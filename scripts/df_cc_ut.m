@@ -2,6 +2,8 @@ function df_cc_ut()
 
 s.plot = 0;
 
+test_df_cc_cluster();
+
 disp('>>> df_cc_create');
 disp('>> Random displacement in X and Y')
 
@@ -19,7 +21,7 @@ for kk = 1:10
             D{aa,bb} = [P{aa} P{bb}];
         end
     end
-    
+     
     
     t = df_cc_create('getDefaults');
     t.filename = [tempdir() 'test.cc'];
@@ -72,33 +74,65 @@ cc = load(t.filename, '-mat');
 assert(abs(mean(C(:,3))-mean(D{1}(:,3))) < 10e-6)
 assert(max(cc.E(:))<10e-6);
 
+
+    
+end
+
+function test_df_cc_cluster()
 disp('>>> df_cc_cluster')
 
-% N    dots with some noise
-% N-NX colocalized dots
-% NX   non-colocalized dots
+N = 100; % Number of dots
+NX = 20; % Number of co-localized dots
+sigma1 = 0.5; % Gaussian additive to the pixel locations
+maxDisplacement = [5, 5, 10]; % Max displacement per dimension
 
-N = 300;
-NX = 50;
-sigma1 = 1.5;
-sigma2 = 30;
+% A: First set of dots
+A = [1024*rand(N,2), 60*rand(N,1)];
+B = [1024*rand(N,2), 60*rand(N,1)];
+B(1:NX, :) = A(1:NX, :); % NX dots are the same
+% Make sure that the order is different
+idx = randperm(size(B,1));
+B = B(idx,:);
+%idx2 = dsearchn(A, B);
 
-A = 1024*rand(N,3);
-B = A;
-dxy = 10*rand(1,2);
-B(:,1) = B(:,1) + dxy(1);
-B(:,2) = B(:,2) + dxy(2);
-B = B + sigma1*rand(size(B));
-B(1:NX,:) = B(1:NX,:) + sigma2*rand(NX,3);
-B = B(randperm(size(B,1)),:);
+% Make sure that we dont assume same size of A and B
+if rand(1) > 0.5
+B = B(1:end-5, :);
+else
+A = A(1:end-5, :);
+end
+
+%keyboard
+% Add a shift
+delta0 = maxDisplacement.*(2*(rand(1,3)-0.5));
+for kk = 1:3
+    B(:,kk) = B(:,kk) + delta0(kk);
+end
+
+% Additive Gaussian noise
+% Just so that the poistions are not identical
+B = B + sigma1*randn(size(B));
+
+if 0
+    figure,
+    scatter3(A(:,2), A(:,1), A(:,3));
+    hold on
+    scatter3(B(:,2), B(:,1), B(:,3), 'x');
+    legend({'A, original', 'B, distorted'})
+end
+
 D = cell(1,1);
 D{1} = A;
 D{2} = B;
 
 t = df_cc_cluster('getDefaults');
-C = df_cc_cluster('dots', D, 'settings', t);
+[C, Delta] = df_cc_cluster('dots', D, 'settings', t);
 
-assert(size(C{1,2},1) >= N-NX);
-assert(size(C{2,1},1) >= N-NX);
+% The displacement vector should be found with reasonable precision
+assert(norm(delta0 + Delta{1,2}) < 1)
+
+% At least 80% of the matching dots should be found
+assert(size(C{1,2},1) >= 0.8*NX);
+assert(size(C{2,1},1) >= 0.8*NX);
 
 end

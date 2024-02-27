@@ -1,32 +1,65 @@
-function AD = df_cc_cluster(varargin)
-% Input: a cell with dots from a number of channels
-% Output: associated dots in the sense that
-% A{a,b}(kk,1:3) corresponds to A{a,b}(kk,4:6)
+function [AD, Delta] = df_cc_cluster(varargin)
+%% function [AD, Delta] = df_cc_cluster(varargin)
+% Input: 
+% A n-cell, D, with dots from n channels specified by a [N x 3]
+% array.
+% 
+% Output: 
+% A [n x n] cell where A{a,b} is a [ . x 6 ] array
+% so that 
+% the point A{a,b}(kk,1:3) from D{a} corresponds to 
+% the point A{a,b}(kk,4:6) from D{b}.
+%
+% delta is the linear displacement that was found and used in
+% the registration.
+%
+% General info
+% This function performs Point set registration
+% https://en.wikipedia.org/wiki/Point-set_registration
+% only looking for a translation. It minimizes
+% sum(erf(d/4)) over all d, beeing the distance from each point
+% in A to the closest point in B.
+%
+% In a future version it should be merged with df_cc_create
+% and some version of ICP should be used.
+% Points could also be weighed based on the fitting error 
+% and their intensity
 
-%keyboard
-
-s.maxDist1 = 15; % max distance between same dot in different channels
-s.maxDist2 = 2;  % max distance after translation
+s.maxDist = 2;  % max distance translation to identify matching pairs
 s.plot = 0;
 s.verbose = 0;
+
+gotDots = 0;
+gotSettings = 0;
 
 for kk = 1:numel(varargin)
     if strcmpi(varargin{kk}, 'dots')
         D = varargin{kk+1};
+        gotDots = 1;
     end
     if strcmpi(varargin{kk}, 'settings')
         s = varargin{kk+1};
-    end
-    if strcmpi(varargin{kk}, 'channels')
-        channels = varargin{kk+1};
+        gotSettings = 1;
     end
     if strcmpi(varargin{kk}, 'getDefaults')
         AD = s;
         return
     end
 end
-   
+
+if gotDots == 0
+    fprintf('Error: Not dots specified\n');
+end
+if gotSettings == 0
+    fprintf('Error: No settings provided\n');
+end
+
+if gotSettings*gotDots == 0
+    error('Invalid usage');
+end
+
 AD = cell(numel(D));
+Delta = cell(numel(D));
 
 if ~exist('channels', 'var')
     channels = cell(1, numel(D));
@@ -41,52 +74,41 @@ for aa = 1:numel(D)
         if aa ~= bb
             A = D{aa}(:,1:3); B = D{bb}(:,1:3);
             
-            C = closest(A,B, s.maxDist1);
+            % TODO: optimization over shifts
+            delta = get_registration_displacement(A, B);
+            Delta{aa,bb} = delta;
             
-            delta = C(:,4:5)- C(:,1:2);  % delta xt
-            r = (delta(:,1).^2 + delta(:,2).^2).^(1/2); % r xy
-            rhat = median(r);
+            Bshift = [B(:, 1)+delta(1), ...
+                B(:, 2)+delta(2), ...
+                B(:, 3)+ delta(3)];
+            
+            idx = dsearchn(A, Bshift);
+            
+            C = [A(idx, :), B];
+            
+            C_shifted = [A(idx, :), Bshift];
+            
+            d = eudist(C_shifted(:, 1:3), C_shifted(:, 4:6));
+            % Ideally this is a very low threshold
+            % but when strong chromatic aberrations besides 
+            % shifts it needs to be higher
+            Cuse = C(d < s.maxDist, :); 
                         
-            if rhat < 10e-4
-                d = [0,0];
-            else
-                deltan = delta;
-                deltan(:,1) = deltan(:,1)./r;
-                deltan(:,2) = deltan(:,2)./r;  
-                
-                mask = isfinite(sum(deltan,2));
-                deltan = deltan(mask,:);
-                thetahat = atan2(sum(deltan(:,1)), sum(deltan(:,2)));
-                
-                d = rhat*[sin(thetahat), cos(thetahat)]; % Model for average displancement
-            end
-               
-            if s.verbose
-                whos
-                rhat                
-                d
-                thetahat                
-            end            
-            
-            % Translate for more narrow matching
-            C = closest(A+repmat([d 0], [size(A,1),1]),B, s.maxDist2);
-            C(:,1:3) = C(:,1:3) - repmat([d 0], [size(C,1),1]); % Translate back for the original locations
-            
-            if s.plot
-            
-            figure, 
-            plot(A(:,1),A(:,2), 'k.'), 
-            hold on, 
-            plot(B(:,1),B(:,2), 'r.'), 
-            
-            plot(C(:,1),C(:,2), 'kx'),             
-            plot(C(:,4),C(:,5), 'ro')
-            plot((C(:,1)+ C(:,4))/2, (C(:,2) + C(:,5))/2, 'g.')            
-            fprintf('%d dots between set %s and %s\n', size(C,1), channels{aa}, channels{bb});            
-            pause
+            if s.plot            
+                figure, 
+                scatter3(A(:,2),A(:,1), A(:,3), 'ko'), 
+                hold on, 
+                scatter3(B(:,2),B(:,1), B(:,3), 'ro'), 
+                for pp = 1:size(Cuse, 1)
+                    plot3([Cuse(pp, 2), Cuse(pp,5)], ...
+                        [Cuse(pp, 1), Cuse(pp,4)], ...
+                        [Cuse(pp, 3), Cuse(pp,6)], 'g')
+                end                
+                title(sprintf('%d dots between set %s and %s\n', ...
+                    size(Cuse,1), channels{aa}, channels{bb}));                        
             end
             
-            AD{aa,bb} = C;
+            AD{aa,bb} = Cuse;
         end
     end
 end
@@ -94,28 +116,50 @@ end
 end
 
 
-function C = closest(A, B, maxDist)
-% Find the closest dot in B for each dot in A.
-% TODO: is it better to include all dots within the maximal distance?
+function delta = get_registration_displacement(A, B)
 
-C = zeros(size(A,1), 6);
-nFound = 0;
+gridSearch = 1;
+gridN = 20;
 
-for kk = 1:size(A,1)
-    p = A(kk,1:3);
-    
-    d = eudist(p, B);
-    mind = min(d(:));
-    if mind<maxDist
-        nFound = nFound + 1;
-        idx = find(d==mind);
-        idx = idx(1);
-        C(nFound,:) = [p, B(idx,:)];
-        
+delta0 = [0,0,0];
+
+if gridSearch
+g0 = goodness(A, B, delta0);
+% Initial grid search
+for dx = linspace(-10, 10, gridN)
+    for dy = linspace(-10, 10, gridN)
+        for dz = linspace(-10, 10, gridN)
+            g = goodness(A, B, [dx, dy, dz]);
+            if g < g0
+                delta0 = [dx, dy, dz];
+                g0 = g;
+            end
+        end
     end
-           
-    C = C(1:nFound,:);    
-    
 end
+
+end
+
+% figure, scatter3(A(:,1), A(:,2), A(:,3)), hold on, scatter3(B(:,1), B(:,2), B(:,3))
+[delta, ~] = fminsearch(@(x) goodness(A, B, x), delta0);
+
+end
+
+function g = goodness(A, B, delta)
+
+idx = dsearchn(A, ...
+    [B(:,1) + delta(1), B(:,2) + delta(2), B(:,3) + delta(3)]);
+A = A(idx, :);
+Bm = B;
+%Bm = B(idx, :);
+d = ( (A(:,1)-(Bm(:,1)+delta(1))).^2 ...
+    + (A(:,2)-(Bm(:,2)+delta(2))).^2 ...
+    + (A(:,3)-(Bm(:,3)+delta(3))).^2 ).^(1/2);
+
+
+e = erf(d/4); %  0.22 with grid search, 0.39 without
+
+
+g = sum(e);
 
 end

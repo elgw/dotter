@@ -16,8 +16,6 @@ Cy = cc.Cy;
 channels = cc.channels;
 E = cc.E;
 
-
-
 fprintf('\ncc file: %s\n', filename);
 fprintf('created %s with DOTTER %s\n', M.creationDate, M.dotterVersion);
 
@@ -25,11 +23,10 @@ fprintf('\n\n2D MSE Errors after correction (pixels):\n\n')
 TE = array2table(E, 'VariableNames', channels, 'RowNames', channels);
 disp(TE);
 
-
 if isfield(cc, 'E3')
-fprintf('\n\n3D MSE Errors after correction (pixels):\n\n')
-TE = array2table(cc.E3, 'VariableNames', channels, 'RowNames', channels);
-disp(TE);
+    fprintf('\n\n3D MSE Errors after correction (pixels):\n\n')
+    TE = array2table(cc.E3, 'VariableNames', channels, 'RowNames', channels);
+    disp(TE);
 end
 
 if isfield(cc, 'E0')

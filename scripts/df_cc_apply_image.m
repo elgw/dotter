@@ -1,4 +1,14 @@
-function varargout = cc_apply_image(varargin)
+function varargout = df_cc_apply_image(varargin)
+%% function varargout = cc_apply_image(varargin)
+% cc_apply_image('setting1', value1, 'settings2', value2, ...)
+% Settings:
+% 'image' -- the image to correct
+% 'from' -- from what channel name
+% 'to' -- to what channel name
+% 'ccFile' -- correction file, typically .cc
+% 'ccData', -- if ccFile already loaded, pass the data here
+%
+% Output: corrected image.
 
 s.verbose = 1;
 

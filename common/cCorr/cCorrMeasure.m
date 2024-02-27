@@ -6,7 +6,7 @@ function cCorrMeasure()
 % can be used to correct dots or images for shifts and chromatic
 % aberrations.
 %
-% Parameters:
+% Parameters in the GUI:
 % N -- The number of dots to use from each channel.
 % D -- the maximal distance, in pixels between dots from different channels
 %      that potentially could be the same bead. Typically the default is
@@ -32,6 +32,7 @@ function cCorrMeasure()
 %
 
 %% All settings go into the struct s
+s = []; % Global variable for the settings
 s.folder = '';
 s.refchannel = '';
 s.maxDist = 10; % pixels
@@ -49,12 +50,16 @@ s.CX = [];
 s.CY = [];
 s.new = 1;
 
+GUI = []; % Global variable for the GUI components
+
+start_GUI()
+
+    function start_GUI()
 %% Create GUI components
 GUI.fig = figure('Position', [0,200,400,600], 'Menubar', 'none', ...
     'NumberTitle','off', ...
-    'Name', 'CC Analyzer', ...
+    'Name', 'DOTTER CC Analyzer', ...
     'Resize', 'Off');
-%    'Color', [.8,1,.8], ...
 
 uicontrol(GUI.fig, 'Style', 'text', ...
     'HorizontalAlignment', 'left', ...
@@ -168,6 +173,7 @@ GUI.export  = uicontrol(GUI.fig, 'Style', 'pushbutton', ...
     'Visible', 'off', ...
     'Callback', @gui_export, ...
     'TooltipString', sprintf('Exports correction files to a folder\nthe final step of this tool'));
+    end
 
     function gui_showDots(varargin)
         s.N = str2num(GUI.setN.String);        
@@ -309,7 +315,7 @@ uicontrol(GUI.fig, 'Style', 'pushbutton', ...
         folder = df_getConfig('cCorrMeasure', 'folder', '~/Desktop/');
         folder = uigetdir(folder, 'Select folder with tif images');
         if isnumeric(folder)
-            disp('No folder selected, quiting')
+            disp('No folder selected')
             return
         end
         if(~strcmp(folder(end), '/'))
@@ -322,10 +328,7 @@ uicontrol(GUI.fig, 'Style', 'pushbutton', ...
         s.folder = folder;
         set(GUI.pickFolder, 'visible', 'off');
         set(GUI.folder, 'visible', 'on');
-        set(GUI.setField, 'visible', 'on');
-        %set(GUI.export, 'visible', 'on');        
-        %set(GUI.export, 'enable', 'off');
-        
+        set(GUI.setField, 'visible', 'on');        
         gui_detectChannels();
         
         gui_refresh();
@@ -397,9 +400,7 @@ uicontrol(GUI.fig, 'Style', 'pushbutton', ...
         
         w = waitbar(0, 'Loading images and detecting dots');
         s.D = cell(1,numel(s.chan));
-        
-       
-        
+                       
         for kk = 1:numel(s.chan)
             
             waitbar((2*kk-1)/(numel(s.chan)*2));
@@ -433,8 +434,12 @@ uicontrol(GUI.fig, 'Style', 'pushbutton', ...
                 %keyboard
                 %s.D{kk} = dot_candidates(s.I{kk});%
                 
-                dotSettings = df_getDots('getDefaults', 'voxelSize', [130,130,300], 'lambda', df_getEmission(s.chan{kk}));
-                s.D{kk} = df_getDots('Image', s.I{kk}, 'settings', dotSettings);
+                dotSettings = df_getDots('getDefaults', ...
+                    'voxelSize', [130,130,300], ...
+                    'lambda', df_getEmission(s.chan{kk}));
+                
+                s.D{kk} = df_getDots('Image', s.I{kk}, ...
+                    'settings', dotSettings);
                 
                 M.dots{kk} = s.D{kk};
                 [pathstr,~,~] = fileparts(nmFile);
@@ -478,7 +483,8 @@ uicontrol(GUI.fig, 'Style', 'pushbutton', ...
         w = waitbar(0, 'Fitting Dots');
         N = str2num(get(GUI.setN, 'String'));
         for kk = 1:numel(s.chan)
-            s.F{kk} = dotFitting(double(s.I{kk}), s.D{kk}(1:N, :), dotFittingSettings);
+            s.F{kk} = dotFitting(double(s.I{kk}), s.D{kk}(1:N, :), ...
+                dotFittingSettings);
             waitbar(kk/numel(s.chan));
         end
         close(w)                

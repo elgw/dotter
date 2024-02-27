@@ -38,17 +38,12 @@ catch
     % No old logfile
 end
 
-%logf = fopen(logfile, 'w');
-%fprintf(logf, '');
-%fclose(logf);
-
 try
     diary(logfile);
     % will be turned off when the DOTTER window is closed
 catch
     fprintf('Unable to open the log file but that is not critical\n');
 end
-
 
 helpFile = [getenv('DOTTER_PATH') 'README.html'];
 helpFile = ['file://' unRelFileName(helpFile)];
